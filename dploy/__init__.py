@@ -8,10 +8,10 @@ import sys
 import os
 import shutil
 
-from setup.util import resolve_abs_path
-from setup.util import resolve_path
-from setup.util import time_stamped
-from setup.util import get_absolute_dirname
+from dploy.util import resolve_abs_path
+from dploy.util import resolve_path
+from dploy.util import time_stamped
+from dploy.util import get_absolute_dirname
 
 # ============================================================================
 def backup(dotfiles, dotfiles_directory):
