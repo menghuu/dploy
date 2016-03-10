@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = 'dploy',
-    version = '0.0.0',
+    version = '0.0.1',
     license = 'CC0',
     description = '',
     long_description=read('README.rst'),
@@ -32,6 +32,6 @@ setup(
     ],
 
     entry_points = {
-        'console_scripts': ['dploy=dploy.__main__.py:main']
+        'console_scripts': ['dploy=dploy.__main__:main']
     },
 )
