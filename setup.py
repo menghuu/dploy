@@ -10,7 +10,8 @@ def read(fname):
 
 setup(
     name = 'dploy',
-    version = '0.0.1',
+    version = '0.0.2',
+    download_url = 'https://github.com/arecarn/dploy/tarball/0.0.2',
     license = 'CC0',
     description = '',
     long_description=read('README.rst'),
@@ -19,7 +20,6 @@ setup(
     author_email = 'arecarn@gmail.com',
 
     url = 'https://github.com/arecarn/dploy',
-    download_url = 'https://github.com/arecarn/dploy/tarball/0.0.1',
 
     packages = ['dploy'],
     classifiers = [
