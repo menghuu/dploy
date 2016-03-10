@@ -19,7 +19,7 @@ setup(
     author_email = 'arecarn@gmail.com',
 
     url = 'https://github.com/arecarn/dploy',
-    download_url = 'https://github.com/arecarn/dploy/tarball/0.0.0',
+    download_url = 'https://github.com/arecarn/dploy/tarball/0.0.1',
 
     packages = ['dploy'],
     classifiers = [
