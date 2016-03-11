@@ -13,7 +13,6 @@ from dploy.util import resolve_path
 from dploy.util import time_stamped
 from dploy.util import get_absolute_dirname
 
-# ============================================================================
 def backup(dotfiles, dotfiles_directory):
 
     dotfiles_directory_name = os.path.basename(dotfiles_directory)
@@ -49,13 +48,12 @@ def symlink_files(dotfiles, dotfiles_directory):
 
         source_name = resolve_path(dotfile["source"])
         source_path = os.path.join(dotfiles_directory, source_name)
-        source_path_absolute =  resolve_abs_path(source_path)
+        source_path_absolute = resolve_abs_path(source_path)
 
         # get a relative path to the source from the destination location of
         # the dotfile, this way we will have a relative symlink
-        source_path_relative = os.path.relpath(
-                source_path_absolute,
-                start=dotfile_location_directory)
+        source_path_relative = os.path.relpath(source_path_absolute,
+                                               start=dotfile_location_directory)
 
         print("Creating link {dest} pointing to {source}".format(
             source=source_path_relative,

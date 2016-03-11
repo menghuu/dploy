@@ -1,36 +1,41 @@
 #!/usr/bin/env python3
 
+"""
+The main entry point to the dploy script
+"""
+
 import argparse
 
 import dploy
 from dploy.util import dynamic_import
 
-parser = argparse.ArgumentParser(description='dploy dotfiles')
-parser.add_argument(
-        "--file",
-        default="~/dotfiles/setup_config.py",
-        help="path of the dploy file")
+PARSER = argparse.ArgumentParser(description='dploy dotfiles')
+PARSER.add_argument("--file",
+                    default="~/dotfiles/setup_config.py",
+                    help="path of the dploy file")
 
-args = parser.parse_args()
+ARGS = PARSER.parse_args()
 
-setup_config = dynamic_import(args.file, "")
+SETUP_CONFIG = dynamic_import(ARGS.file, "")
 
 
 def main():
-    dploy.backup(
-            setup_config.DOTFILES,
-            setup_config.DOTFILES_DIRECTORY)
+    """
+    Main entry function
+    """
+
+    dploy.backup(SETUP_CONFIG.DOTFILES,
+                 SETUP_CONFIG.DOTFILES_DIRECTORY)
     print("\n")
 
-    dploy.symlink_files(
-            setup_config.DOTFILES,
-            setup_config.DOTFILES_DIRECTORY)
+    dploy.symlink_files(SETUP_CONFIG.DOTFILES,
+                        SETUP_CONFIG.DOTFILES_DIRECTORY)
     print("\n")
 
-    dploy.create_files(setup_config.FILES)
+    dploy.create_files(SETUP_CONFIG.FILES)
     print("\n")
 
-    dploy.create_directories(setup_config.DIRECTORIES)
+    dploy.create_directories(SETUP_CONFIG.DIRECTORIES)
     print("\n")
 
 if __name__ == "__main__":
