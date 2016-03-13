@@ -34,8 +34,8 @@ def dploy(target, dest):
     if os.path.islink(dest_absolute):
         link_location = os.readlink(dest_absolute)
         if resolve_abs_path(os.readlink(dest_absolute)) == target_absolute:
-            print("Link: Already Linked {dest} => {target}".format(target=target,
-                                                                   dest=dest))
+            print("Link: Already Linked {dest} => {target}".format(target=target_absolute,
+                                                                   dest=dest_absolute))
         else:
             print("Abort: Dest Is A Link That Points To {link_location}".format(
                 link_location=resolve_abs_path(link_location)))
@@ -44,7 +44,7 @@ def dploy(target, dest):
     elif os.path.isdir(dest_absolute):
         for file in os.listdir(target_absolute):
             link(os.path.join(target_absolute, file),
-                      os.path.join(dest_absolute, file))
+                 os.path.join(dest_absolute, file))
     else:
         os.makedirs(os.path.dirname(dest_absolute), exist_ok=True)
         link(target_absolute, dest_absolute)
