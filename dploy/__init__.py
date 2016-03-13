@@ -10,6 +10,7 @@ import shutil
 
 from dploy.util import resolve_abs_path
 
+
 def link(target, dest):
     """
     create symbolic link relative to the target file or directory
@@ -29,16 +30,18 @@ def dploy(target, dest):
     main script entry point
     """
     target_absolute = resolve_abs_path(target)
+    dest_dir = os.path.dirname(dest)
+    target_relative = os.path.relpath(target, start=dest_dir)
     dest_absolute = resolve_abs_path(dest)
 
     if os.path.islink(dest_absolute):
         link_location = os.readlink(dest_absolute)
-        if resolve_abs_path(os.readlink(dest_absolute)) == target_absolute:
-            print("Link: Already Linked {dest} => {target}".format(target=target_absolute,
+        if os.readlink(dest_absolute) == target_relative:
+            print("Link: Already Linked {dest} => {target}".format(target=target_relative,
                                                                    dest=dest_absolute))
         else:
             print("Abort: Dest Is A Link That Points To {link_location}".format(
-                link_location=resolve_abs_path(link_location)))
+                link_location=link_location))
     elif os.path.isfile(dest_absolute):
         print("Abort: file Already Exists")
     elif os.path.isdir(dest_absolute):
