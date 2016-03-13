@@ -41,4 +41,5 @@ def deploy_files(target, dest):
             link_file(os.path.join(target_absolute, file),
                       os.path.join(dest_absolute, file))
     else:
+        os.makedirs(os.path.dirname(dest_absolute), exist_ok=True)
         link_file(target_absolute, dest_absolute)
