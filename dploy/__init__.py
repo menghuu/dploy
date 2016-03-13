@@ -10,7 +10,7 @@ import shutil
 
 from dploy.util import resolve_abs_path
 
-def link_file(target, dest):
+def link(target, dest):
     """
     create symbolic link relative to the target file or directory
     """
@@ -24,7 +24,7 @@ def link_file(target, dest):
     except Exception as exception_message:
         print(exception_message)
 
-def deploy_files(target, dest):
+def dploy(target, dest):
     """
     main script entry point
     """
@@ -43,8 +43,8 @@ def deploy_files(target, dest):
         print("Abort: file Already Exists")
     elif os.path.isdir(dest_absolute):
         for file in os.listdir(target_absolute):
-            link_file(os.path.join(target_absolute, file),
+            link(os.path.join(target_absolute, file),
                       os.path.join(dest_absolute, file))
     else:
         os.makedirs(os.path.dirname(dest_absolute), exist_ok=True)
-        link_file(target_absolute, dest_absolute)
+        link(target_absolute, dest_absolute)

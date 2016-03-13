@@ -24,7 +24,7 @@ def main():
     """
 
     for dest in ARGS.dest:
-        dploy.deploy_files(ARGS.target, dest)
+        dploy.dploy(ARGS.target, dest)
 
 if __name__ == "__main__":
     main()
