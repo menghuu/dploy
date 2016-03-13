@@ -11,9 +11,11 @@ import shutil
 from dploy.util import resolve_abs_path
 
 def link_file(target, dest):
+    """
+    create symbolic link relative to the target file or directory
+    """
+
     dest_dir = os.path.dirname(dest)
-    # get a relative path to the target from the destination location of
-    # the file, this way we will have a relative symlink
     target_relative = os.path.relpath(target, start=dest_dir)
 
     try:
@@ -23,6 +25,9 @@ def link_file(target, dest):
         print(exception_message)
 
 def deploy_files(target, dest):
+    """
+    main script entry point
+    """
     target_absolute = resolve_abs_path(target)
     dest_absolute = resolve_abs_path(dest)
 
