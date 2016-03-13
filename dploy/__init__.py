@@ -42,15 +42,3 @@ def deploy_files(target, dest):
                       os.path.join(dest_absolute, file))
     else:
         link_file(target_absolute, dest_absolute)
-
-def create_directories(directories):
-    print("Creating Directories")
-
-    for directory in directories:
-        directory = resolve_abs_path(directory)
-        print("Creating Directory: {0}".format(directory))
-
-        try:
-            os.makedirs(directory)
-        except Exception as exception_message:
-            print(exception_message)
