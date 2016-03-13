@@ -7,7 +7,6 @@ The main entry point to the dploy script
 import argparse
 
 import dploy
-from dploy.util import dynamic_import
 
 PARSER = argparse.ArgumentParser(description='dploy dotfiles')
 PARSER.add_argument('target',
