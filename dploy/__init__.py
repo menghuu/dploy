@@ -5,6 +5,7 @@ Requires python 3
 """
 
 import sys
+assert sys.version_info >= (3, 4), 'Requires Python 3.4 or Greater'
 import os
 import shutil
 
