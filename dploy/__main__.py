@@ -9,10 +9,10 @@ import argparse
 import dploy
 
 PARSER = argparse.ArgumentParser(description='dploy dotfiles')
-PARSER.add_argument('target',
-                    help='target or source of the files to dploy')
+PARSER.add_argument('source',
+                    help='source files or directories to dploy')
 PARSER.add_argument('dest',
-                    help='dest path to dploy file')
+                    help='destination path to dploy source to')
 ARGS = PARSER.parse_args()
 
-dploy.dploy(ARGS.target, ARGS.dest)
+dploy.dploy(ARGS.source, ARGS.dest)
