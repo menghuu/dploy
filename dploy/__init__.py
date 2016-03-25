@@ -5,7 +5,7 @@ Windows as well as *nix
 
 
 import sys
-assert sys.version_info >= (3, 4), 'Requires Python 3.4 or Greater'
+assert sys.version_info >= (3, 3), 'Requires Python 3.3 or Greater'
 import os
 import pathlib
 
@@ -40,7 +40,7 @@ def _dploy_absolute_paths(source, dest):
             print(msg.format(source=src_file_relative, dest=dploy_path))
 
         except FileExistsError:
-            if dploy_path.samefile(src_file):
+            if _is_pathlib_same_file(dploy_path, src_file):
                 msg = "Link: Already Linked {dest} => {source}"
                 print(msg.format(source=src_file_relative, dest=dploy_path))
 
@@ -88,6 +88,12 @@ def unfold(dest):
         source = pathlib.Path(child)
         dploy_path = dest / source.stem
         dploy_path.symlink_to(source)
+
+
+def _is_pathlib_same_file(file1, file2):
+    # Note python 3.5 supports pathlib.Path(...).samefile(file)
+    return file1.resolve() == file2.resolve()
+
 
 def _pathlib_relative_path(path, start_at):
     return os.path.relpath(path.__str__(), start_at.__str__())
