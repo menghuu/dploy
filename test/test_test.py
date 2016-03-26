@@ -75,7 +75,10 @@ def test_test(source_a, dest):
     assert os.path.islink('dest/aaa')
 
 
-def test_test_test(source_a, source_b, dest):
+def test_dploy_twice(source_a, dest):
+    dploy.dploy('source_a', 'dest')
+    dploy.dploy('source_a', 'dest')
+    assert os.path.islink('dest/aaa')
     dploy.dploy('source_a', 'dest')
     assert os.path.islink('dest/aaa')
 
