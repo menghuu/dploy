@@ -19,20 +19,19 @@ def dploy(source, dest):
     source_absolute = resolve_abs_path(source)
     dest_absolute = resolve_abs_path(dest)
 
-    _dploy_absolute_paths(pathlib.Path(source_absolute),
+    _stow_absolute_paths(pathlib.Path(source_absolute),
                           pathlib.Path(dest_absolute))
 
 
-
-def _dploy_absolute_paths(source, dest):
+def _stow_absolute_paths(source, dest):
     assert source.is_dir()
     assert source.is_absolute()
     assert dest.is_absolute()
 
     for src_file in source.iterdir():
         dploy_path = dest / pathlib.Path(src_file.stem)
-        src_file_relative = _pathlib_relative_path(src_file,
-                                                   dploy_path.parent)
+        src_file_relative = _get_pathlib_relative_path(src_file,
+                                                       dploy_path.parent)
 
         try:
             dploy_path.symlink_to(src_file_relative)
@@ -46,9 +45,9 @@ def _dploy_absolute_paths(source, dest):
 
             elif dploy_path.is_dir() and src_file.is_dir:
                 if dploy_path.is_symlink():
-                    unfold(dploy_path)
+                    _stow_unfold(dploy_path)
 
-                _dploy_absolute_paths(src_file, dploy_path)
+                _stow_absolute_paths(src_file, dploy_path)
 
             else:
                 msg = "Abort: {file} Already Exists"
@@ -60,7 +59,8 @@ def _dploy_absolute_paths(source, dest):
             print(msg.format(dest=dest))
             sys.exit(1)
 
-def unfold(dest):
+
+def _stow_unfold(dest):
     """
     we are dploying some more files and we have a conflic
     top level dest is a symlink that now needs to be a plain directory
@@ -76,11 +76,11 @@ def unfold(dest):
     """
 
     children = []
-    for child in dest.iterdir(): # TODO re-implement as a list comprehension
-        child_relative = _pathlib_relative_path(child.resolve(), dest.parent)
+    for child in dest.iterdir():
+        # TODO re-implement as a list comprehension
+        child_relative = _get_pathlib_relative_path(child.resolve(), dest.parent)
         children.append(child_relative)
 
-    print(children)
     dest.unlink()
     dest.mkdir()
 
@@ -95,6 +95,5 @@ def _is_pathlib_same_file(file1, file2):
     return file1.resolve() == file2.resolve()
 
 
-def _pathlib_relative_path(path, start_at):
-    return os.path.relpath(path.__str__(), start_at.__str__())
-
+def _get_pathlib_relative_path(path, start_at):
+    return pathlib.Path(os.path.relpath(path.__str__(), start_at.__str__()))
