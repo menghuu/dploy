@@ -12,7 +12,7 @@ import pathlib
 from dploy.util import resolve_abs_path
 
 
-def dploy(source, dest):
+def stow(source, dest):
     """
     main script entry point
     """
@@ -29,29 +29,29 @@ def _stow_absolute_paths(source, dest):
     assert dest.is_absolute()
 
     for src_file in source.iterdir():
-        dploy_path = dest / pathlib.Path(src_file.stem)
+        stow_path = dest / pathlib.Path(src_file.stem)
         src_file_relative = _get_pathlib_relative_path(src_file,
-                                                       dploy_path.parent)
+                                                       stow_path.parent)
 
         try:
-            dploy_path.symlink_to(src_file_relative)
+            stow_path.symlink_to(src_file_relative)
             msg = "Link: {dest} => {source}"
-            print(msg.format(source=src_file_relative, dest=dploy_path))
+            print(msg.format(source=src_file_relative, dest=stow_path))
 
         except FileExistsError:
-            if _is_pathlib_same_file(dploy_path, src_file):
+            if _is_pathlib_same_file(stow_path, src_file):
                 msg = "Link: Already Linked {dest} => {source}"
-                print(msg.format(source=src_file_relative, dest=dploy_path))
+                print(msg.format(source=src_file_relative, dest=stow_path))
 
-            elif dploy_path.is_dir() and src_file.is_dir:
-                if dploy_path.is_symlink():
-                    _stow_unfold(dploy_path)
+            elif stow_path.is_dir() and src_file.is_dir:
+                if stow_path.is_symlink():
+                    _stow_unfold(stow_path)
 
-                _stow_absolute_paths(src_file, dploy_path)
+                _stow_absolute_paths(src_file, stow_path)
 
             else:
                 msg = "Abort: {file} Already Exists"
-                print(msg.format(file=dploy_path))
+                print(msg.format(file=stow_path))
                 sys.exit(1)
 
         except FileNotFoundError:
@@ -62,7 +62,7 @@ def _stow_absolute_paths(source, dest):
 
 def _stow_unfold(dest):
     """
-    we are dploying some more files and we have a conflic
+    we are stowing some more files and we have a conflict
     top level dest is a symlink that now needs to be a plain directory
 
     steps:
@@ -86,8 +86,8 @@ def _stow_unfold(dest):
 
     for child in children:
         source = pathlib.Path(child)
-        dploy_path = dest / source.stem
-        dploy_path.symlink_to(source)
+        stow_path = dest / source.stem
+        stow_path.symlink_to(source)
 
 
 def _is_pathlib_same_file(file1, file2):

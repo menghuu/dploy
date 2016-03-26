@@ -70,23 +70,26 @@ def dest(request):
     request.addfinalizer(dest_teardown)
 
 
-def test_test(source_a, dest):
-    dploy.dploy('source_a', 'dest')
+def test_stow_basic(source_a, dest):
+    dploy.stow('source_a', 'dest')
     assert os.path.islink('dest/aaa')
 
 
-def test_dploy_twice(source_a, dest):
-    dploy.dploy('source_a', 'dest')
-    dploy.dploy('source_a', 'dest')
+def test_stow_twice(source_a, dest):
+    dploy.stow('source_a', 'dest')
+    dploy.stow('source_a', 'dest')
     assert os.path.islink('dest/aaa')
-    dploy.dploy('source_a', 'dest')
+
+
+def test_stow_unfolding(source_a, source_b, dest):
+    dploy.stow('source_a', 'dest')
     assert os.path.islink('dest/aaa')
 
     assert os.path.isfile('dest/aaa/aaa')
     assert os.path.isfile('dest/aaa/bbb')
     assert os.path.isdir('dest/aaa/ccc')
 
-    dploy.dploy('source_b', 'dest')
+    dploy.stow('source_b', 'dest')
     assert os.path.isdir('dest/aaa')
 
     assert os.path.islink('dest/aaa/aaa')

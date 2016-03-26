@@ -17,4 +17,4 @@ PARSER.add_argument('dest',
 ARGS = PARSER.parse_args()
 
 for source in ARGS.source:
-    dploy.dploy(source, ARGS.dest)
+    dploy.stow(source, ARGS.dest)
