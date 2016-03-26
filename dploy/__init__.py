@@ -29,7 +29,7 @@ def _stow_absolute_paths(source, dest):
     assert dest.is_absolute()
 
     for src_file in source.iterdir():
-        stow_path = dest / pathlib.Path(src_file.stem)
+        stow_path = dest / pathlib.Path(src_file.name)
         src_file_relative = _get_pathlib_relative_path(src_file,
                                                        stow_path.parent)
 
