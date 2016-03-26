@@ -11,7 +11,6 @@ import pathlib
 
 from dploy.util import resolve_abs_path
 
-
 def stow(source, dest):
     """
     sub command stow
@@ -23,6 +22,17 @@ def stow(source, dest):
                           pathlib.Path(dest_absolute))
 
 
+def link(source, dest):
+    """
+    sub command link
+    """
+    source_absolute = resolve_abs_path(source)
+    dest_absolute = resolve_abs_path(dest)
+
+    _link_absolute_paths(pathlib.Path(source_absolute),
+                        pathlib.Path(dest_absolute))
+
+
 def _stow_absolute_paths(source, dest):
     assert source.is_dir()
     assert source.is_absolute()
@@ -32,7 +42,6 @@ def _stow_absolute_paths(source, dest):
         stow_path = dest / pathlib.Path(src_file.name)
         src_file_relative = _get_pathlib_relative_path(src_file,
                                                        stow_path.parent)
-
         try:
             stow_path.symlink_to(src_file_relative)
             msg = "Link: {dest} => {source}"
@@ -58,6 +67,34 @@ def _stow_absolute_paths(source, dest):
             msg = "Abort: {dest} Not Found"
             print(msg.format(dest=dest))
             sys.exit(1)
+
+
+def _link_absolute_paths(source, dest):
+    assert source.is_absolute()
+    assert dest.is_absolute()
+    assert source.exists()
+
+    src_file_relative = _get_pathlib_relative_path(source,
+                                                   dest.parent)
+    try:
+        dest.symlink_to(src_file_relative)
+        msg = "Link: {dest} => {source}"
+        print(msg.format(source=src_file_relative, dest=dest))
+
+    except FileExistsError:
+        if _is_pathlib_same_file(dest, source):
+            msg = "Link: Already Linked {dest} => {source}"
+            print(msg.format(source=src_file_relative, dest=dest))
+
+        else:
+            msg = "Abort: {file} Already Exists"
+            print(msg.format(file=dest))
+            sys.exit(1)
+
+    except FileNotFoundError:
+        msg = "Abort: {dest} Not Found"
+        print(msg.format(dest=dest))
+        sys.exit(1)
 
 
 def _stow_unfold(dest):

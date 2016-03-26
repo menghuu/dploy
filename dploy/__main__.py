@@ -17,8 +17,18 @@ STOW_PARSER.add_argument('source',
                          help='source directory to stow')
 STOW_PARSER.add_argument('dest',
                          help='destination path to stow into')
+
+LINK_PARSER = SUB_PARSERS.add_parser('link')
+LINK_PARSER.add_argument('source',
+                         help='source files or directories to link')
+LINK_PARSER.add_argument('dest',
+                         help='destination path to link')
+
 ARGS = PARSER.parse_args()
 
 if ARGS.subparser_name == 'stow':
     for source in ARGS.source:
         dploy.stow(source, ARGS.dest)
+elif ARGS.subparser_name == 'link':
+    dploy.link(ARGS.source, ARGS.dest)
+
