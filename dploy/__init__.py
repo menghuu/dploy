@@ -14,7 +14,7 @@ from dploy.util import resolve_abs_path
 
 def stow(source, dest):
     """
-    main script entry point
+    sub command stow
     """
     source_absolute = resolve_abs_path(source)
     dest_absolute = resolve_abs_path(dest)
