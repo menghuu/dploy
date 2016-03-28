@@ -19,5 +19,5 @@ Does not work on windows network drives
 Development
 -----------
 Testing:
-``python -m pytest``
+``make test``
 
