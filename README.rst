@@ -6,7 +6,9 @@ OSX, Linux) cli script and python module
 
 Usage
 -----
-``dploy source-directories destination-directory``
+``dploy stow source-directories destination-directory``
+
+``dploy link source destination``
 
 
 Known Issues
