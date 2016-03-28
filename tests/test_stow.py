@@ -6,9 +6,10 @@ import dploy
 
 @pytest.fixture(scope='module')
 def source_a(request):
+    name = 'source_a'
     tree = [
         {
-            'source_a' : [
+            name : [
                 {
                     'aaa': [
                         'aaa',
@@ -27,15 +28,16 @@ def source_a(request):
     util.create_tree(tree)
 
     def source_a_teardown():
-        util.remove_tree('source_a')
+        util.remove_tree(name)
     request.addfinalizer(source_a_teardown)
 
 
 @pytest.fixture(scope='module')
 def source_b(request):
+    name = 'source_b'
     tree = [
         {
-            'source_b' : [
+            name : [
                 {
                     'aaa': [
                         'ddd',
@@ -54,16 +56,17 @@ def source_b(request):
     util.create_tree(tree)
 
     def source_b_teardown():
-        util.remove_tree('source_b')
+        util.remove_tree(name)
     request.addfinalizer(source_b_teardown)
 
 
 @pytest.fixture(scope='module')
 def dest(request):
-    util.create_directory('dest')
+    name = 'dest'
+    util.create_directory(name)
 
     def dest_teardown():
-        util.remove_tree('dest')
+        util.remove_tree(name)
     request.addfinalizer(dest_teardown)
 
 
