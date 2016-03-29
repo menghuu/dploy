@@ -103,13 +103,13 @@ def test_stow_basic(source_a, dest):
     assert os.path.islink('dest/aaa')
 
 
-def test_stow_twice(source_a, dest):
+def test_stow_the_same_tree_twice(source_a, dest):
     dploy.stow('source_a', 'dest')
     dploy.stow('source_a', 'dest')
     assert os.path.islink('dest/aaa')
 
 
-def test_stow_unfolding(source_a, source_b, dest):
+def test_stow_unfolding_basic(source_a, source_b, dest):
     dploy.stow('source_a', 'dest')
     assert os.path.islink('dest/aaa')
 
@@ -128,6 +128,6 @@ def test_stow_unfolding(source_a, source_b, dest):
     assert os.path.islink('dest/aaa/eee')
     assert os.path.islink('dest/aaa/fff')
 
-def test_unfoling with conflicts(source_a, source_c, dest):
+def test_unfoling_with_conflicts(source_a, source_c, dest):
     dploy.stow('source_a', 'dest')
     dploy.stow('source_c', 'dest')
