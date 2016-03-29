@@ -130,4 +130,6 @@ def test_stow_unfolding_basic(source_a, source_b, dest):
 
 def test_unfoling_with_conflicts(source_a, source_c, dest):
     dploy.stow('source_a', 'dest')
-    dploy.stow('source_c', 'dest')
+
+    with pytest.raises(SystemExit):
+        dploy.stow('source_c', 'dest')
