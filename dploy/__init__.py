@@ -5,7 +5,7 @@ Windows as well as *nix
 
 
 import sys
-assert sys.version_info >= (3, 3), 'Requires Python 3.3 or Greater'
+assert sys.version_info >= (3, 3), "Requires Python 3.3 or Greater"
 import os
 import pathlib
 
@@ -14,21 +14,25 @@ import dploy.command as command
 
 class Stow():
     def __init__(self, source, dest):
-        self.source_input = source
-        self.dest_input = dest
-        self.source_absolute = resolve_abs_path(source)
-        self.dest_absolute = resolve_abs_path(dest)
-        self.source = pathlib.Path(self.source_absolute)
-        self.dest = pathlib.Path(self.dest_absolute)
+        source_input = source
+        dest_input = dest
+
+        source_absolute = resolve_abs_path(source_input)
+        dest_absolute = resolve_abs_path(dest_input)
+
+        source_pathlib = pathlib.Path(source_absolute)
+        dest_pathlib = pathlib.Path(dest_absolute)
 
         self.commands = []
-        self.basic(self.source, self.dest)
+        self.basic(source_pathlib, dest_pathlib)
         self.execute_commands()
+
 
     def execute_commands(self):
         for command in self.commands:
             print(command)
             command.execute()
+
 
     def unfold(self, dest):
         children = []
@@ -54,13 +58,14 @@ class Stow():
 
         self.collect_commands(src_files, dest)
 
+
     def collect_commands(self, sources, dest, is_unfolding=False):
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
             source_relative = _get_pathlib_relative_path(source,
                                                          dest_path.parent)
             if dest_path.exists():
-                if _is_pathlib_same_file(dest_path, source): #TODO should we also check if this is a symlink
+                if _is_pathlib_same_file(dest_path, source):
                     if is_unfolding:
                         self.commands.append(command.SymbolicLink(source_relative, dest_path))
                     else:
@@ -132,7 +137,7 @@ def _link_absolute_paths(source, dest):
 
 
 def _is_pathlib_same_file(file1, file2):
-    # Note python 3.5 supports pathlib.Path.samefile(file)
+    # NOTE: python 3.5 supports pathlib.Path.samefile(file)
     return file1.resolve() == file2.resolve()
 
 
