@@ -64,9 +64,14 @@ def _stow_absolute_paths(source, dest):
                 print(msg.format(dest=dest))
                 sys.exit(1)
 
-    files = zip(src_files, src_files_relative, stow_paths)
+    _stow_files(src_files, src_files_relative, dest)
 
-    for src_file, src_file_relative, stow_path in files:
+
+def _stow_files(src_files, src_files_relative, dest):
+    files = zip(src_files, src_files_relative)
+
+    for src_file, src_file_relative in files:
+        stow_path = dest / pathlib.Path(src_file.name)
         try:
             stow_path.symlink_to(src_file_relative)
             msg = "Link: {dest} => {source}"
@@ -138,18 +143,18 @@ def _stow_unfold(dest):
     """
 
     children = []
+    children_relative = []
+
     for child in dest.iterdir():
         # TODO re-implement as a list comprehension
         child_relative = _get_pathlib_relative_path(child.resolve(), dest.parent)
-        children.append(child_relative)
+        children.append(child)
+        children_relative.append(child_relative)
 
     dest.unlink()
     dest.mkdir()
 
-    for child in children:
-        source = pathlib.Path(child)
-        stow_path = dest / source.name
-        stow_path.symlink_to(source)
+    _stow_files(children, children_relative, dest)
 
 
 def _is_pathlib_same_file(file1, file2):
