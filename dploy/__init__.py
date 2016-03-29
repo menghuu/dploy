@@ -10,16 +10,86 @@ import os
 import pathlib
 
 from dploy.util import resolve_abs_path
+import dploy.command as command
+
+class Stow():
+    def __init__(self, source, dest):
+        self.source_input = source
+        self.dest_input = dest
+        self.source_absolute = resolve_abs_path(source)
+        self.dest_absolute = resolve_abs_path(dest)
+        self.source = pathlib.Path(self.source_absolute)
+        self.dest = pathlib.Path(self.dest_absolute)
+
+        self.commands = []
+        self.basic(self.source, self.dest)
+        self.execute_commands()
+
+    def execute_commands(self):
+        for command in self.commands:
+            print(command)
+            command.execute()
+
+    def unfold(self, dest):
+        children = []
+
+        for child in dest.iterdir():
+            child_relative = _get_pathlib_relative_path(child.resolve(), dest.parent)
+            children.append(child)
+
+        self.commands.append(command.UnLink(dest))
+        self.commands.append(command.MakeDirectory(dest))
+        self.collect_commands(children, dest, is_unfolding=True)
+
+
+    def basic(self, source, dest):
+        assert source.is_dir()
+        assert source.is_absolute()
+        assert dest.is_absolute()
+
+        src_files = []
+
+        for src_file in source.iterdir():
+            src_files.append(src_file)
+
+        self.collect_commands(src_files, dest)
+
+    def collect_commands(self, sources, dest, is_unfolding=False):
+        for source in sources:
+            dest_path = dest / pathlib.Path(source.name)
+            source_relative = _get_pathlib_relative_path(source,
+                                                         dest_path.parent)
+            if dest_path.exists():
+                if _is_pathlib_same_file(dest_path, source): #TODO should we also check if this is a symlink
+                    if is_unfolding:
+                        self.commands.append(command.SymbolicLink(source_relative, dest_path))
+                    else:
+                        msg = "Link: Already Linked {dest} => {source}"
+                        print(msg.format(source=source, dest=dest_path))
+                elif dest_path.is_dir() and source.is_dir:
+                    if dest_path.is_symlink():
+                        self.unfold(dest_path)
+                    self.basic(source, dest_path)
+
+                else:
+                    msg = "Abort: {file} Already Exists"
+                    print(msg.format(file=dest_path))
+                    sys.exit(1)
+            elif not dest_path.parent.exists():
+                    msg = "Abort: {dest} Not Found"
+                    print(msg.format(dest=dest_path))
+                    sys.exit(1)
+            else:
+                self.commands.append(command.SymbolicLink(source_relative, dest_path))
+
+
 
 def stow(source, dest):
     """
     sub command stow
     """
-    source_absolute = resolve_abs_path(source)
-    dest_absolute = resolve_abs_path(dest)
 
-    _stow_absolute_paths(pathlib.Path(source_absolute),
-                          pathlib.Path(dest_absolute))
+    Stow(source, dest)
 
 
 def link(source, dest):
@@ -31,72 +101,6 @@ def link(source, dest):
 
     _link_absolute_paths(pathlib.Path(source_absolute),
                         pathlib.Path(dest_absolute))
-
-
-def _stow_absolute_paths(source, dest):
-    assert source.is_dir()
-    assert source.is_absolute()
-    assert dest.is_absolute()
-
-    src_files = []
-    src_files_relative = []
-    stow_paths = []
-
-    for src_file in source.iterdir():
-        stow_path = dest / pathlib.Path(src_file.name)
-        src_file_relative = _get_pathlib_relative_path(src_file,
-                                                       stow_path.parent)
-        src_files.append(src_file)
-        src_files_relative.append(src_file_relative)
-        stow_paths.append(stow_path)
-
-        if stow_path.exists():
-            if _is_pathlib_same_file(stow_path, src_file):
-                pass
-            elif stow_path.is_dir():
-                pass
-            else:
-                msg = "Abort: {file} Already Exists"
-                print(msg.format(file=stow_path))
-                sys.exit(1)
-        elif not stow_path.parent.parent.exists():
-                msg = "Abort: {dest} Not Found"
-                print(msg.format(dest=dest))
-                sys.exit(1)
-
-    _stow_files(src_files, src_files_relative, dest)
-
-
-def _stow_files(src_files, src_files_relative, dest):
-    files = zip(src_files, src_files_relative)
-
-    for src_file, src_file_relative in files:
-        stow_path = dest / pathlib.Path(src_file.name)
-        try:
-            stow_path.symlink_to(src_file_relative)
-            msg = "Link: {dest} => {source}"
-            print(msg.format(source=src_file_relative, dest=stow_path))
-
-        except FileExistsError:
-            if _is_pathlib_same_file(stow_path, src_file):
-                msg = "Link: Already Linked {dest} => {source}"
-                print(msg.format(source=src_file_relative, dest=stow_path))
-
-            elif stow_path.is_dir() and src_file.is_dir:
-                if stow_path.is_symlink():
-                    _stow_unfold(stow_path)
-
-                _stow_absolute_paths(src_file, stow_path)
-
-            else:
-                msg = "Abort: {file} Already Exists"
-                print(msg.format(file=stow_path))
-                sys.exit(1)
-
-        except FileNotFoundError:
-            msg = "Abort: {dest} Not Found"
-            print(msg.format(dest=dest))
-            sys.exit(1)
 
 
 def _link_absolute_paths(source, dest):
@@ -125,36 +129,6 @@ def _link_absolute_paths(source, dest):
         msg = "Abort: {dest} Not Found"
         print(msg.format(dest=dest))
         sys.exit(1)
-
-
-def _stow_unfold(dest):
-    """
-    we are stowing some more files and we have a conflict
-    top level dest is a symlink that now needs to be a plain directory
-
-    steps:
-    - record children of the top level dest dir
-    - unlink top level dir
-    - create directory in place of the top level dest dir
-    - individually symlink recorded children
-
-    todo:
-    there is also the case were this will need to be undone
-    """
-
-    children = []
-    children_relative = []
-
-    for child in dest.iterdir():
-        # TODO re-implement as a list comprehension
-        child_relative = _get_pathlib_relative_path(child.resolve(), dest.parent)
-        children.append(child)
-        children_relative.append(child_relative)
-
-    dest.unlink()
-    dest.mkdir()
-
-    _stow_files(children, children_relative, dest)
 
 
 def _is_pathlib_same_file(file1, file2):
