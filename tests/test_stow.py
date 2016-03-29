@@ -4,7 +4,7 @@ import os
 import dploy
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture()
 def source_a(request):
     name = 'source_a'
     tree = [
@@ -32,7 +32,7 @@ def source_a(request):
     request.addfinalizer(source_a_teardown)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture()
 def source_b(request):
     name = 'source_b'
     tree = [
@@ -60,7 +60,7 @@ def source_b(request):
     request.addfinalizer(source_b_teardown)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture()
 def source_c(request):
     name = 'source_c'
     tree = [
@@ -88,7 +88,7 @@ def source_c(request):
     request.addfinalizer(source_c_teardown)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture()
 def dest(request):
     name = 'dest'
     util.create_directory(name)
