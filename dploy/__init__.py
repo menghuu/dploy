@@ -148,12 +148,12 @@ def _stow_unfold(dest):
 
     for child in children:
         source = pathlib.Path(child)
-        stow_path = dest / source.stem
+        stow_path = dest / source.name
         stow_path.symlink_to(source)
 
 
 def _is_pathlib_same_file(file1, file2):
-    # Note python 3.5 supports pathlib.Path(...).samefile(file)
+    # Note python 3.5 supports pathlib.Path.samefile(file)
     return file1.resolve() == file2.resolve()
 
 
