@@ -38,10 +38,35 @@ def _stow_absolute_paths(source, dest):
     assert source.is_absolute()
     assert dest.is_absolute()
 
+    src_files = []
+    src_files_relative = []
+    stow_paths = []
+
     for src_file in source.iterdir():
         stow_path = dest / pathlib.Path(src_file.name)
         src_file_relative = _get_pathlib_relative_path(src_file,
                                                        stow_path.parent)
+        src_files.append(src_file)
+        src_files_relative.append(src_file_relative)
+        stow_paths.append(stow_path)
+
+        if stow_path.exists():
+            if _is_pathlib_same_file(stow_path, src_file):
+                pass
+            elif stow_path.is_dir():
+                pass
+            else:
+                msg = "Abort: {file} Already Exists"
+                print(msg.format(file=stow_path))
+                sys.exit(1)
+        elif not stow_path.parent.parent.exists():
+                msg = "Abort: {dest} Not Found"
+                print(msg.format(dest=dest))
+                sys.exit(1)
+
+    files = zip(src_files, src_files_relative, stow_paths)
+
+    for src_file, src_file_relative, stow_path in files:
         try:
             stow_path.symlink_to(src_file_relative)
             msg = "Link: {dest} => {source}"

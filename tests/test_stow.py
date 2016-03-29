@@ -61,6 +61,34 @@ def source_b(request):
 
 
 @pytest.fixture(scope='module')
+def source_c(request):
+    name = 'source_c'
+    tree = [
+        {
+            name : [
+                {
+                    'aaa': [
+                        'aaa',
+                        'bbb',
+                        {
+                            'ccc': [
+                                'aaa',
+                                'bbb',
+                            ],
+                        },
+                    ],
+                },
+            ],
+        },
+    ]
+    util.create_tree(tree)
+
+    def source_c_teardown():
+        util.remove_tree(name)
+    request.addfinalizer(source_c_teardown)
+
+
+@pytest.fixture(scope='module')
 def dest(request):
     name = 'dest'
     util.create_directory(name)
@@ -99,3 +127,7 @@ def test_stow_unfolding(source_a, source_b, dest):
     assert os.path.islink('dest/aaa/ddd')
     assert os.path.islink('dest/aaa/eee')
     assert os.path.islink('dest/aaa/fff')
+
+def test_unfoling with conflicts(source_a, source_c, dest):
+    dploy.stow('source_a', 'dest')
+    dploy.stow('source_c', 'dest')
