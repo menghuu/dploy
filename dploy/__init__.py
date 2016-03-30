@@ -18,12 +18,12 @@ class Stow():
         dest_input = dest
 
         if not pathlib.Path(source_input).exists():
-            msg = "dploy stow: cannot stow '{file}': No such directory"
+            msg = "dploy stow: can not stow '{file}': No such directory"
             print(msg.format(file=source_input))
             sys.exit(1)
 
         if not pathlib.Path(dest_input).exists():
-            msg = "dploy stow: cannot stow into '{file}': No such directory"
+            msg = "dploy stow: can not stow into '{file}': No such directory"
             print(msg.format(file=dest_input))
             sys.exit(1)
 
@@ -34,14 +34,19 @@ class Stow():
         dest_pathlib = pathlib.Path(dest_absolute)
 
         self.commands = []
+        self.abort = False
+
         self.basic(source_pathlib, dest_pathlib)
         self.execute_commands()
 
 
     def execute_commands(self):
-        for command in self.commands:
-            print(command)
-            command.execute()
+        if self.abort:
+            sys.exit(1)
+        else:
+            for command in self.commands:
+                print(command)
+                command.execute()
 
 
     def unfold(self, dest):
@@ -79,21 +84,19 @@ class Stow():
                     if is_unfolding:
                         self.commands.append(command.SymbolicLink(source_relative, dest_path))
                     else:
-                        msg = "Link: Already Linked {dest} => {source}"
-                        print(msg.format(source=source, dest=dest_path))
+                        self.commands.append(command.SymbolicLinkExists(source_relative, dest_path))
                 elif dest_path.is_dir() and source.is_dir:
                     if dest_path.is_symlink():
                         self.unfold(dest_path)
                     self.basic(source, dest_path)
-
                 else:
-                    msg = "Abort: {file} Already Exists"
+                    msg = "dploy stow: can not stow '{file}': Conflicts with existing file"
                     print(msg.format(file=dest_path))
-                    sys.exit(1)
+                    self.abort = True
             elif not dest_path.parent.exists():
-                    msg = "Abort: {dest} Not Found"
-                    print(msg.format(dest=dest_path))
-                    sys.exit(1)
+                    msg = "dploy stow: can not stow into '{dest}': No such directory"
+                    print(msg.format(dest=dest_path.parent))
+                    self.abort = True
             else:
                 self.commands.append(command.SymbolicLink(source_relative, dest_path))
 

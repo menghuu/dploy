@@ -12,7 +12,6 @@ class AbstractCommand():
         self.logic()
 
 
-
 class SymbolicLink(AbstractCommand):
     def __init__(self, source, dest):
         self.source = source
@@ -21,6 +20,16 @@ class SymbolicLink(AbstractCommand):
     def logic(self):
         self.dest.symlink_to(self.source)
         msg = "Link: {dest} => {source}"
+        print(msg.format(source=self.source, dest=self.dest))
+
+
+class SymbolicLinkExists(AbstractCommand):
+    def __init__(self, source, dest):
+        self.source = source
+        self.dest = dest
+
+    def logic(self):
+        msg = "Link: Nothing To Do Already Linked {dest} => {source}"
         print(msg.format(source=self.source, dest=self.dest))
 
 
