@@ -17,6 +17,16 @@ class Stow():
         source_input = source
         dest_input = dest
 
+        if not pathlib.Path(source_input).exists():
+            msg = "dploy stow: cannot stow '{file}': No such directory"
+            print(msg.format(file=source_input))
+            sys.exit(1)
+
+        if not pathlib.Path(dest_input).exists():
+            msg = "dploy stow: cannot stow into '{file}': No such directory"
+            print(msg.format(file=dest_input))
+            sys.exit(1)
+
         source_absolute = resolve_abs_path(source_input)
         dest_absolute = resolve_abs_path(dest_input)
 
