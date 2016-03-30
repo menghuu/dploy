@@ -29,9 +29,11 @@ LINK_PARSER.add_argument('dest',
 
 ARGS = PARSER.parse_args()
 
-if ARGS.subparser_name == 'stow':
-    for source in ARGS.source:
-        dploy.stow(source, ARGS.dest)
-elif ARGS.subparser_name == 'link':
-    dploy.link(ARGS.source, ARGS.dest)
-
+if ARGS.subparser_name != None:
+    if ARGS.subparser_name == 'stow':
+        for source in ARGS.source:
+            dploy.stow(source, ARGS.dest)
+    elif ARGS.subparser_name == 'link':
+        dploy.link(ARGS.source, ARGS.dest)
+else:
+    PARSER.print_help()
