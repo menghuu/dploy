@@ -5,10 +5,13 @@ The main entry point to the dploy script
 """
 
 import argparse
+import dploy.version
 
-import dploy
+PARSER = argparse.ArgumentParser(prog='dploy')
+PARSER.add_argument('--version',
+                    action='version',
+                    version='%(prog)s {version}'.format(version=dploy.version.__version__))
 
-PARSER = argparse.ArgumentParser(description='dploy dotfiles')
 SUB_PARSERS = PARSER.add_subparsers(dest="subparser_name")
 
 STOW_PARSER = SUB_PARSERS.add_parser('stow')

@@ -1,23 +1,23 @@
 """
-descrbibes this package for distrubution and about to install
+describes this package for distribution and installation
 """
 
 import os
 from setuptools import setup
 
-def read(fname):
-    """
-    Utility function to read the README file for the long_description.
-    """
+def read_file_for_long_description(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+# get version string variable __version__
+exec(open('yourpackage/version.py').read())
 
 setup(
     name='dploy',
-    version='0.0.2',
-    download_url='https://github.com/arecarn/dploy/tarball/0.0.2',
+    version=__version__,
+    download_url='https://github.com/arecarn/dploy/tarball/' + __version__,
     license='CC0',
     description='',
-    long_description=read('README.rst'),
+    long_description=read_file_for_long_description('README.rst'),
 
     author='Ryan Carney',
     author_email='arecarn@gmail.com',
