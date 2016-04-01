@@ -12,7 +12,7 @@ PARSER.add_argument('--version',
                     action='version',
                     version='%(prog)s {version}'.format(version=dploy.version.__version__))
 
-SUB_PARSERS = PARSER.add_subparsers(dest="subparser_name")
+SUB_PARSERS = PARSER.add_subparsers(dest="sub_command")
 
 STOW_PARSER = SUB_PARSERS.add_parser('stow')
 STOW_PARSER.add_argument('source',
@@ -29,11 +29,11 @@ LINK_PARSER.add_argument('dest',
 
 ARGS = PARSER.parse_args()
 
-if ARGS.subparser_name != None:
-    if ARGS.subparser_name == 'stow':
+if ARGS.sub_command != None:
+    if ARGS.sub_command == 'stow':
         for source in ARGS.source:
             dploy.stow(source, ARGS.dest)
-    elif ARGS.subparser_name == 'link':
+    elif ARGS.sub_command == 'link':
         dploy.link(ARGS.source, ARGS.dest)
 else:
     PARSER.print_help()
