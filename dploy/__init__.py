@@ -51,7 +51,7 @@ class Stow():
         children = []
 
         for child in dest.iterdir():
-            child_relative = _get_pathlib_relative_path(child.resolve(), dest.parent)
+            child_relative = _get_relative_path(child.resolve(), dest.parent)
             children.append(child)
 
         self.commands.append(command.UnLink(dest))
@@ -75,10 +75,11 @@ class Stow():
     def collect_commands(self, sources, dest, is_unfolding=False):
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
-            source_relative = _get_pathlib_relative_path(source,
+            source_relative = _get_relative_path(source,
                                                          dest_path.parent)
             if dest_path.exists():
-                if _is_pathlib_same_file(dest_path, source):
+                if _is_same_file(dest_path, source):
+
                     if is_unfolding:
                         self.commands.append(command.SymbolicLink(source_relative, dest_path))
                     else:
@@ -124,7 +125,7 @@ def _link_absolute_paths(source, dest):
     assert dest.is_absolute()
     assert source.exists()
 
-    src_file_relative = _get_pathlib_relative_path(source,
+    src_file_relative = _get_relative_path(source,
                                                    dest.parent)
     try:
         dest.symlink_to(src_file_relative)
@@ -132,7 +133,7 @@ def _link_absolute_paths(source, dest):
         print(msg.format(source=src_file_relative, dest=dest))
 
     except FileExistsError:
-        if _is_pathlib_same_file(dest, source):
+        if _is_same_file(dest, source):
             msg = "Link: Already Linked {dest} => {source}"
             print(msg.format(source=src_file_relative, dest=dest))
 
@@ -147,12 +148,13 @@ def _link_absolute_paths(source, dest):
         sys.exit(1)
 
 
-def _is_pathlib_same_file(file1, file2):
+def _is_same_file(file1, file2):
     # NOTE: python 3.5 supports pathlib.Path.samefile(file)
     return file1.resolve() == file2.resolve()
 
 def _get_absolute_path(file):
     return pathlib.Path(resolve_abs_path(file.__str__()))
 
-def _get_pathlib_relative_path(path, start_at):
+def _get_relative_path(path, start_at):
+    # NOTE: python 3.4.5 & 3.5.2 support pathlib.Path.path = pathlib.Path.__str__()
     return pathlib.Path(os.path.relpath(path.__str__(), start_at.__str__()))
