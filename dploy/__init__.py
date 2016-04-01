@@ -14,29 +14,27 @@ import dploy.command as command
 
 class Stow():
     def __init__(self, source, dest):
-        source_input = source
-        dest_input = dest
+        source_input = pathlib.Path(source)
+        dest_input = pathlib.Path(dest)
 
-        if not pathlib.Path(source_input).exists():
+        if not source_input.exists():
             msg = "dploy stow: can not stow '{file}': No such directory"
             print(msg.format(file=source_input))
             sys.exit(1)
 
-        if not pathlib.Path(dest_input).exists():
+        if not dest_input.exists():
             msg = "dploy stow: can not stow into '{file}': No such directory"
             print(msg.format(file=dest_input))
             sys.exit(1)
 
-        source_absolute = resolve_abs_path(source_input)
-        dest_absolute = resolve_abs_path(dest_input)
+        source_absolute = _get_absolute_path(source_input)
+        dest_absolute = _get_absolute_path(dest_input)
 
-        source_pathlib = pathlib.Path(source_absolute)
-        dest_pathlib = pathlib.Path(dest_absolute)
 
         self.commands = []
         self.abort = False
 
-        self.basic(source_pathlib, dest_pathlib)
+        self.basic(source_absolute, dest_absolute)
         self.execute_commands()
 
 
@@ -153,6 +151,8 @@ def _is_pathlib_same_file(file1, file2):
     # NOTE: python 3.5 supports pathlib.Path.samefile(file)
     return file1.resolve() == file2.resolve()
 
+def _get_absolute_path(file):
+    return pathlib.Path(resolve_abs_path(file.__str__()))
 
 def _get_pathlib_relative_path(path, start_at):
     return pathlib.Path(os.path.relpath(path.__str__(), start_at.__str__()))
