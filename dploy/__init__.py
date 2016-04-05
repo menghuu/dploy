@@ -8,7 +8,6 @@ import sys
 assert sys.version_info >= (3, 3), "Requires Python 3.3 or Greater"
 import os
 import pathlib
-from dploy.util import resolve_abs_path
 import dploy.command
 
 class Stow():
@@ -132,11 +131,10 @@ def link(source, dest):
     """
     sub command link
     """
-    source_absolute = resolve_abs_path(source)
-    dest_absolute = resolve_abs_path(dest)
+    source_absolute = _get_absolute_path(source)
+    dest_absolute = _get_absolute_path(dest)
 
-    _link_absolute_paths(pathlib.Path(source_absolute),
-                        pathlib.Path(dest_absolute))
+    _link_absolute_paths(source_absolute, dest_absolute)
 
 
 def _link_absolute_paths(source, dest):
@@ -182,6 +180,8 @@ def _get_absolute_path(file):
     """
     todo
     """
+    absolute_path = os.path.abspath(os.path.expanduser(file.__str__()))
+    return pathlib.Path(absolute_path)
 
 def _get_relative_path(path, start_at):
     """
