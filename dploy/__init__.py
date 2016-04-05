@@ -8,9 +8,8 @@ import sys
 assert sys.version_info >= (3, 3), "Requires Python 3.3 or Greater"
 import os
 import pathlib
-
 from dploy.util import resolve_abs_path
-import dploy.command as command
+import dploy.command
 
 class Stow():
     """
@@ -48,9 +47,9 @@ class Stow():
         if self.abort:
             sys.exit(1)
         else:
-            for command in self.commands:
-                print(command)
-                command.execute()
+            for cmd in self.commands:
+                print(cmd)
+                cmd.execute()
 
 
     def unfold(self, dest):
@@ -63,8 +62,8 @@ class Stow():
             child_relative = _get_relative_path(child.resolve(), dest.parent)
             children.append(child)
 
-        self.commands.append(command.UnLink(dest))
-        self.commands.append(command.MakeDirectory(dest))
+        self.commands.append(dploy.command.UnLink(dest))
+        self.commands.append(dploy.command.MakeDirectory(dest))
         self.collect_commands(children, dest, is_unfolding=True)
 
 
@@ -96,9 +95,13 @@ class Stow():
                 if _is_same_file(dest_path, source):
 
                     if is_unfolding:
-                        self.commands.append(command.SymbolicLink(source_relative, dest_path))
+                        self.commands.append(
+                            dploy.command.SymbolicLink(source_relative,
+                                                       dest_path))
                     else:
-                        self.commands.append(command.SymbolicLinkExists(source_relative, dest_path))
+                        self.commands.append(
+                            dploy.command.SymbolicLinkExists(source_relative,
+                                                             dest_path))
                 elif dest_path.is_dir() and source.is_dir:
                     if dest_path.is_symlink():
                         self.unfold(dest_path)
@@ -112,7 +115,8 @@ class Stow():
                 print(msg.format(dest=dest_path.parent))
                 self.abort = True
             else:
-                self.commands.append(command.SymbolicLink(source_relative, dest_path))
+                self.commands.append(
+                    dploy.command.SymbolicLink(source_relative, dest_path))
 
 
 
