@@ -58,7 +58,6 @@ class Stow():
         children = []
 
         for child in dest.iterdir():
-            child_relative = _get_relative_path(child.resolve(), dest.parent)
             children.append(child)
 
         self.commands.append(dploy.command.UnLink(dest))
