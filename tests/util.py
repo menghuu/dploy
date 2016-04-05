@@ -30,20 +30,20 @@ def create_directory(directory_name):
     """
     os.makedirs(directory_name)
 
-class cd:
+class ChangeDirectory:
     # pylint: disable=too-few-public-methods
     """
     Context manager for changing the current working directory
     """
-    def __init__(self, newPath):
-        self.newPath = os.path.expanduser(newPath)
+    def __init__(self, new_path):
+        self.new_path = os.path.expanduser(new_path)
+        self.saved_path = os.getcwd()
 
     def __enter__(self):
-        self.savedPath = os.getcwd()
-        os.chdir(self.newPath)
+        os.chdir(self.new_path)
 
     def __exit__(self, etype, value, traceback):
-        os.chdir(self.savedPath)
+        os.chdir(self.saved_path)
 
 def create_tree(tree):
     """
@@ -55,5 +55,6 @@ def create_tree(tree):
         elif type(branch) == type({}):
             for directory, file_objs in branch.items():
                 create_directory(directory)
-                with cd(directory):
+
+                with ChangeDirectory(directory):
                     create_tree(file_objs)
