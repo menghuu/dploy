@@ -11,14 +11,14 @@ class AbstractCommand():
     def __init__(self):
         pass
 
-    def logic(self):
+    def _logic(self):
         pass
 
     def execute(self):
         """
         todo
         """
-        self.logic()
+        self._logic()
 
 
 class SymbolicLink(AbstractCommand):
@@ -31,7 +31,7 @@ class SymbolicLink(AbstractCommand):
         self.source = source
         self.dest = dest
 
-    def logic(self):
+    def _logic(self):
         self.dest.symlink_to(self.source)
         msg = "Link: {dest} => {source}"
         print(msg.format(source=self.source, dest=self.dest))
@@ -47,7 +47,7 @@ class SymbolicLinkExists(AbstractCommand):
         self.source = source
         self.dest = dest
 
-    def logic(self):
+    def _logic(self):
         msg = "Link: Nothing To Do Already Linked {dest} => {source}"
         print(msg.format(source=self.source, dest=self.dest))
 
@@ -61,7 +61,7 @@ class UnLink(AbstractCommand):
         super().__init__()
         self.target = target
 
-    def logic(self):
+    def _logic(self):
         self.target.unlink()
 
 
@@ -74,5 +74,5 @@ class MakeDirectory(AbstractCommand):
         super().__init__()
         self.target = target
 
-    def logic(self):
+    def _logic(self):
         self.target.mkdir()
