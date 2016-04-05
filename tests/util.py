@@ -50,9 +50,10 @@ def create_tree(tree):
     todo
     """
     for branch in tree:
-        if type(branch) == type(''):
+        if isinstance(branch, str):
             create_file(branch)
-        elif type(branch) == type({}):
+
+        elif isinstance(branch, dict):
             for directory, file_objs in branch.items():
                 create_directory(directory)
 
