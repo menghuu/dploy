@@ -32,9 +32,9 @@ def source_a(request):
     ]
     util.create_tree(tree)
 
-    def source_a_teardown():
+    def _source_a_teardown():
         util.remove_tree(name)
-    request.addfinalizer(source_a_teardown)
+    request.addfinalizer(_source_a_teardown)
 
 
 @pytest.fixture()
@@ -63,9 +63,9 @@ def source_b(request):
     ]
     util.create_tree(tree)
 
-    def source_b_teardown():
+    def _source_b_teardown():
         util.remove_tree(name)
-    request.addfinalizer(source_b_teardown)
+    request.addfinalizer(_source_b_teardown)
 
 
 @pytest.fixture()
@@ -94,9 +94,9 @@ def source_c(request):
     ]
     util.create_tree(tree)
 
-    def source_c_teardown():
+    def _source_c_teardown():
         util.remove_tree(name)
-    request.addfinalizer(source_c_teardown)
+    request.addfinalizer(_source_c_teardown)
 
 
 @pytest.fixture()
@@ -107,6 +107,6 @@ def dest(request):
     name = 'dest'
     util.create_directory(name)
 
-    def dest_teardown():
+    def _dest_teardown():
         util.remove_tree(name)
-    request.addfinalizer(dest_teardown)
+    request.addfinalizer(_dest_teardown)
