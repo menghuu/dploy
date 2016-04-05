@@ -6,7 +6,7 @@ describes this package for distribution and installation
 import os
 from setuptools import setup
 
-def read_file_for_long_description(fname):
+def _read_file_for_long_description(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 # pylint: disable=exec-used
@@ -20,7 +20,7 @@ setup(
     download_url='https://github.com/arecarn/dploy/tarball/' + __version__,
     license='CC0',
     description='',
-    long_description=read_file_for_long_description('README.rst'),
+    long_description=_read_file_for_long_description('README.rst'),
 
     author='Ryan Carney',
     author_email='arecarn@gmail.com',
