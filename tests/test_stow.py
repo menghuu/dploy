@@ -1,21 +1,36 @@
-import pytest
-import util
+"""
+todo
+"""
+
 import os
+import pytest
 import dploy
 
 
 def test_stow_basic(source_a, dest):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
     dploy.stow('source_a', 'dest')
     assert os.path.islink('dest/aaa')
 
 
 def test_stow_the_same_tree_twice(source_a, dest):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
     dploy.stow('source_a', 'dest')
     dploy.stow('source_a', 'dest')
     assert os.path.islink('dest/aaa')
 
 
 def test_stow_unfolding_basic(source_a, source_b, dest):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
     dploy.stow('source_a', 'dest')
     assert os.path.islink('dest/aaa')
 
@@ -35,6 +50,10 @@ def test_stow_unfolding_basic(source_a, source_b, dest):
     assert os.path.islink('dest/aaa/fff')
 
 def test_unfoling_with_conflicts(source_a, source_c, dest):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
     dploy.stow('source_a', 'dest')
 
     with pytest.raises(SystemExit):
@@ -42,9 +61,17 @@ def test_unfoling_with_conflicts(source_a, source_c, dest):
 
 
 def test_with_non_existant_source(dest):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
     with pytest.raises(SystemExit):
         dploy.stow('source', 'dest')
 
 def test_with_non_existant_dest(source_a):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
     with pytest.raises(SystemExit):
         dploy.stow('source_a', 'dest')

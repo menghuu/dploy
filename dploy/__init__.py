@@ -13,6 +13,9 @@ from dploy.util import resolve_abs_path
 import dploy.command as command
 
 class Stow():
+    """
+    todo
+    """
     def __init__(self, source, dest):
         source_input = pathlib.Path(source)
         dest_input = pathlib.Path(dest)
@@ -39,6 +42,9 @@ class Stow():
 
 
     def execute_commands(self):
+        """
+        todo
+        """
         if self.abort:
             sys.exit(1)
         else:
@@ -48,6 +54,9 @@ class Stow():
 
 
     def unfold(self, dest):
+        """
+        todo
+        """
         children = []
 
         for child in dest.iterdir():
@@ -60,6 +69,9 @@ class Stow():
 
 
     def basic(self, source, dest):
+        """
+        todo
+        """
         assert source.is_dir()
         assert source.is_absolute()
         assert dest.is_absolute()
@@ -73,10 +85,13 @@ class Stow():
 
 
     def collect_commands(self, sources, dest, is_unfolding=False):
+        """
+        todo
+        """
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
             source_relative = _get_relative_path(source,
-                                                         dest_path.parent)
+                                                 dest_path.parent)
             if dest_path.exists():
                 if _is_same_file(dest_path, source):
 
@@ -93,9 +108,9 @@ class Stow():
                     print(msg.format(file=dest_path))
                     self.abort = True
             elif not dest_path.parent.exists():
-                    msg = "dploy stow: can not stow into '{dest}': No such directory"
-                    print(msg.format(dest=dest_path.parent))
-                    self.abort = True
+                msg = "dploy stow: can not stow into '{dest}': No such directory"
+                print(msg.format(dest=dest_path.parent))
+                self.abort = True
             else:
                 self.commands.append(command.SymbolicLink(source_relative, dest_path))
 
@@ -121,12 +136,15 @@ def link(source, dest):
 
 
 def _link_absolute_paths(source, dest):
+    """
+    todo
+    """
     assert source.is_absolute()
     assert dest.is_absolute()
     assert source.exists()
 
     src_file_relative = _get_relative_path(source,
-                                                   dest.parent)
+                                           dest.parent)
     try:
         dest.symlink_to(src_file_relative)
         msg = "Link: {dest} => {source}"
@@ -149,12 +167,20 @@ def _link_absolute_paths(source, dest):
 
 
 def _is_same_file(file1, file2):
-    # NOTE: python 3.5 supports pathlib.Path.samefile(file)
+    """
+    todo
+
+    NOTE: python 3.5 supports pathlib.Path.samefile(file)
+    """
     return file1.resolve() == file2.resolve()
 
 def _get_absolute_path(file):
-    return pathlib.Path(resolve_abs_path(file.__str__()))
+    """
+    todo
+    """
 
 def _get_relative_path(path, start_at):
-    # NOTE: python 3.4.5 & 3.5.2 support pathlib.Path.path = pathlib.Path.__str__()
+    """
+    NOTE: python 3.4.5 & 3.5.2 support pathlib.Path.path = pathlib.Path.__str__()
+    """
     return pathlib.Path(os.path.relpath(path.__str__(), start_at.__str__()))

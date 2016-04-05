@@ -1,8 +1,16 @@
+"""
+todo
+"""
+
 import pytest
 import util
 
+
 @pytest.fixture()
 def source_a(request):
+    """
+    todo
+    """
     name = 'source_a'
     tree = [
         {
@@ -31,6 +39,9 @@ def source_a(request):
 
 @pytest.fixture()
 def source_b(request):
+    """
+    todo
+    """
     name = 'source_b'
     tree = [
         {
@@ -59,6 +70,9 @@ def source_b(request):
 
 @pytest.fixture()
 def source_c(request):
+    """
+    todo
+    """
     name = 'source_c'
     tree = [
         {
@@ -87,6 +101,9 @@ def source_c(request):
 
 @pytest.fixture()
 def dest(request):
+    """
+    todo
+    """
     name = 'dest'
     util.create_directory(name)
 

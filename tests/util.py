@@ -1,19 +1,37 @@
+"""
+todo
+"""
+
 import os
 import shutil
 
+
 def remove_tree(tree):
+    """
+    todo
+    """
     shutil.rmtree(tree)
 
 def remove_file(file_name):
+    """
+    todo
+    """
     os.remove(file_name)
 
 def create_file(file_name):
+    """
+    todo
+    """
     open(file_name, 'w').close()
 
 def create_directory(directory_name):
+    """
+    todo
+    """
     os.makedirs(directory_name)
 
 class cd:
+    # pylint: disable=too-few-public-methods
     """
     Context manager for changing the current working directory
     """
@@ -28,6 +46,9 @@ class cd:
         os.chdir(self.savedPath)
 
 def create_tree(tree):
+    """
+    todo
+    """
     for branch in tree:
         if type(branch) == type(''):
             create_file(branch)

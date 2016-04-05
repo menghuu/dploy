@@ -1,7 +1,16 @@
+"""
+todo
+"""
+
 import os
 import pathlib
 
+
 class AbstractCommand():
+    # pylint: disable=too-few-public-methods
+    """
+    todo
+    """
     def __init__(self):
         pass
 
@@ -9,10 +18,17 @@ class AbstractCommand():
         pass
 
     def execute(self):
+        """
+        todo
+        """
         self.logic()
 
 
 class SymbolicLink(AbstractCommand):
+    # pylint: disable=too-few-public-methods
+    """
+    todo
+    """
     def __init__(self, source, dest):
         self.source = source
         self.dest = dest
@@ -24,6 +40,10 @@ class SymbolicLink(AbstractCommand):
 
 
 class SymbolicLinkExists(AbstractCommand):
+    # pylint: disable=too-few-public-methods
+    """
+    todo
+    """
     def __init__(self, source, dest):
         self.source = source
         self.dest = dest
@@ -34,6 +54,10 @@ class SymbolicLinkExists(AbstractCommand):
 
 
 class UnLink(AbstractCommand):
+    # pylint: disable=too-few-public-methods
+    """
+    todo
+    """
     def __init__(self, target):
         self.target = target
 
@@ -42,6 +66,10 @@ class UnLink(AbstractCommand):
 
 
 class MakeDirectory(AbstractCommand):
+    # pylint: disable=too-few-public-methods
+    """
+    todo
+    """
     def __init__(self, target):
         self.target = target
 
