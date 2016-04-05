@@ -2,9 +2,6 @@
 todo
 """
 
-import os
-import pathlib
-
 
 class AbstractCommand():
     # pylint: disable=too-few-public-methods
