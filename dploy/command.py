@@ -27,6 +27,7 @@ class SymbolicLink(AbstractCommand):
     todo
     """
     def __init__(self, source, dest):
+        super().__init__()
         self.source = source
         self.dest = dest
 
@@ -42,6 +43,7 @@ class SymbolicLinkExists(AbstractCommand):
     todo
     """
     def __init__(self, source, dest):
+        super().__init__()
         self.source = source
         self.dest = dest
 
@@ -56,6 +58,7 @@ class UnLink(AbstractCommand):
     todo
     """
     def __init__(self, target):
+        super().__init__()
         self.target = target
 
     def logic(self):
@@ -68,6 +71,7 @@ class MakeDirectory(AbstractCommand):
     todo
     """
     def __init__(self, target):
+        super().__init__()
         self.target = target
 
     def logic(self):
