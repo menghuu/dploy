@@ -130,8 +130,16 @@ def link(source, dest):
     """
     sub command link
     """
-    source_absolute = _get_absolute_path(source)
-    dest_absolute = _get_absolute_path(dest)
+    source_input = pathlib.Path(source)
+    dest_input = pathlib.Path(dest)
+
+    if not source_input.exists():
+        msg = "dploy link: can not link '{file}': No such directory"
+        print(msg.format(file=source_input))
+        sys.exit(1)
+
+    source_absolute = _get_absolute_path(source_input)
+    dest_absolute = _get_absolute_path(dest_input)
 
     _link_absolute_paths(source_absolute, dest_absolute)
 
