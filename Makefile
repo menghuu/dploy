@@ -1,8 +1,10 @@
-test:
-	py.test
+all: clean lint test
+
+clean:
+	git clean -x -d --force
 
 lint:
 	pylint dploy setup.py tests/*
 
-clean:
-	git clean -x -d --force
+test:
+	py.test
