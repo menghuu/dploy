@@ -5,36 +5,47 @@ The main entry point to the dploy script
 """
 
 import argparse
+import dploy
 import dploy.version
 
 def main():
-    PARSER = argparse.ArgumentParser(prog='dploy')
-    PARSER.add_argument('--version',
-                action='version',
-                version='%(prog)s {version}'.format(version=dploy.version.__version__))
+    """
+    todo
+    """
 
-    SUB_PARSERS = PARSER.add_subparsers(dest="sub_command")
+    parser = argparse.ArgumentParser(prog='dploy')
+    parser.add_argument('--version',
+                        action='version',
+                        version='%(prog)s {version}'.format(version=dploy.version.__version__))
 
-    STOW_PARSER = SUB_PARSERS.add_parser('stow')
-    STOW_PARSER.add_argument('source',
-                 nargs='+',
-                 help='source directory to stow')
-    STOW_PARSER.add_argument('dest',
-                 help='destination path to stow into')
+    sub_parsers = parser.add_subparsers(dest="sub_command")
 
-    LINK_PARSER = SUB_PARSERS.add_parser('link')
-    LINK_PARSER.add_argument('source',
-                 help='source files or directories to link')
-    LINK_PARSER.add_argument('dest',
-                 help='destination path to link')
+    stow_parser = sub_parsers.add_parser('stow')
+    stow_parser.add_argument('source',
+                             nargs='+',
+                             help='source directory to stow')
+    stow_parser.add_argument('dest',
+                             help='destination path to stow into')
 
-    ARGS = PARSER.parse_args()
+    link_parser = sub_parsers.add_parser('link')
+    link_parser.add_argument('source',
+                             help='source files or directories to link')
+    link_parser.add_argument('dest',
+                             help='destination path to link')
 
-    if ARGS.sub_command != None:
-        if ARGS.sub_command == 'stow':
-            for source in ARGS.source:
-                dploy.stow(source, ARGS.dest)
-        elif ARGS.sub_command == 'link':
-            dploy.link(ARGS.source, ARGS.dest)
+    args = parser.parse_args()
+
+    if args.sub_command != None:
+        if args.sub_command == 'stow':
+            for source in args.source:
+                dploy.stow(source, args.dest)
+        elif args.sub_command == 'link':
+            dploy.link(args.source, args.dest)
+        else:
+            parser.print_help()
     else:
-        PARSER.print_help()
+        parser.print_help()
+
+
+if __name__ == '__main__':
+    main()
