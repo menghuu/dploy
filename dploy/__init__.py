@@ -47,7 +47,7 @@ class Stow():
             sys.exit(1)
         else:
             for cmd in self.commands:
-                print(cmd)
+                # print(cmd)
                 cmd.execute()
 
 
