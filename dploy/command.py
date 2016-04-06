@@ -33,7 +33,7 @@ class SymbolicLink(AbstractCommand):
 
     def _logic(self):
         self.dest.symlink_to(self.source)
-        msg = "Link: {dest} => {source}"
+        msg = "dploy stow: link {dest} => {source}"
         print(msg.format(source=self.source, dest=self.dest))
 
 
@@ -48,7 +48,7 @@ class SymbolicLinkExists(AbstractCommand):
         self.dest = dest
 
     def _logic(self):
-        msg = "Link: Nothing To Do Already Linked {dest} => {source}"
+        msg = "dploy stow: already linked {dest} => {source}"
         print(msg.format(source=self.source, dest=self.dest))
 
 
@@ -62,6 +62,8 @@ class UnLink(AbstractCommand):
         self.target = target
 
     def _logic(self):
+        msg = "dploy stow: unlink {target}"
+        print(msg.format(target=self.target))
         self.target.unlink()
 
 
@@ -75,4 +77,6 @@ class MakeDirectory(AbstractCommand):
         self.target = target
 
     def _logic(self):
+        msg = "dploy stow: make directory {target}"
+        print(msg.format(target=self.target))
         self.target.mkdir()
