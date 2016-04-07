@@ -42,12 +42,18 @@ def test_stow_unfolding_basic(source_a, source_b, dest):
     assert os.path.isdir('dest/aaa')
 
     assert os.path.islink('dest/aaa/aaa')
+    assert os.path.samefile('dest/aaa/aaa','source_a/aaa/aaa')
     assert os.path.islink('dest/aaa/bbb')
+    assert os.path.samefile('dest/aaa/bbb','source_a/aaa/bbb')
     assert os.path.islink('dest/aaa/ccc')
+    assert os.path.samefile('dest/aaa/ccc','source_a/aaa/ccc')
 
     assert os.path.islink('dest/aaa/ddd')
+    assert os.path.samefile('dest/aaa/ddd','source_b/aaa/ddd')
     assert os.path.islink('dest/aaa/eee')
+    assert os.path.samefile('dest/aaa/eee','source_b/aaa/eee')
     assert os.path.islink('dest/aaa/fff')
+    assert os.path.samefile('dest/aaa/fff','source_b/aaa/fff')
 
 def test_unfoling_with_conflicts(source_a, source_c, dest):
     """
