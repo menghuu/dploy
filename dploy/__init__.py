@@ -51,18 +51,18 @@ class Stow():
                 cmd.execute()
 
 
-    def unfold(self, dest):
+    def unfold(self, dest, source):
         """
         todo
         """
-        children = []
+        sources = []
 
-        for child in dest.iterdir():
-            children.append(child)
+        for source_child in source.iterdir():
+            sources.append(source_child)
 
         self.commands.append(dploy.command.UnLink(dest))
         self.commands.append(dploy.command.MakeDirectory(dest))
-        self.collect_commands(children, dest, is_unfolding=True)
+        self.collect_commands(sources, dest)
 
 
     def basic(self, source, dest):
@@ -81,7 +81,7 @@ class Stow():
         self.collect_commands(src_files, dest)
 
 
-    def collect_commands(self, sources, dest, is_unfolding=False):
+    def collect_commands(self, sources, dest):
         """
         todo
         """
@@ -91,18 +91,12 @@ class Stow():
                                                  dest_path.parent)
             if dest_path.exists():
                 if _is_same_file(dest_path, source):
-
-                    if is_unfolding:
-                        self.commands.append(
-                            dploy.command.SymbolicLink(source_relative,
-                                                       dest_path))
-                    else:
-                        self.commands.append(
-                            dploy.command.SymbolicLinkExists(source_relative,
-                                                             dest_path))
+                    self.commands.append(
+                        dploy.command.SymbolicLinkExists(source_relative,
+                                                         dest_path))
                 elif dest_path.is_dir() and source.is_dir:
                     if dest_path.is_symlink():
-                        self.unfold(dest_path)
+                        self.unfold(dest_path, source)
                     self.basic(source, dest_path)
                 else:
                     msg = "dploy stow: can not stow '{file}': Conflicts with existing file"
