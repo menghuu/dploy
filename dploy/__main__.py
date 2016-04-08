@@ -27,6 +27,13 @@ def main():
     stow_parser.add_argument('dest',
                              help='destination path to stow into')
 
+    stow_parser = sub_parsers.add_parser('unstow')
+    stow_parser.add_argument('source',
+                             nargs='+',
+                             help='source directory to unstow from')
+    stow_parser.add_argument('dest',
+                             help='destination path to unstow')
+
     link_parser = sub_parsers.add_parser('link')
     link_parser.add_argument('source',
                              help='source files or directories to link')
@@ -39,8 +46,14 @@ def main():
         if args.sub_command == 'stow':
             for source in args.source:
                 dploy.stow(source, args.dest)
+
+        elif args.sub_command == 'unstow':
+            for source in args.source:
+                dploy.unstow(source, args.dest)
+
         elif args.sub_command == 'link':
             dploy.link(args.source, args.dest)
+
         else:
             parser.print_help()
     else:
