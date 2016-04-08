@@ -84,6 +84,12 @@ class UnStow():
                 else:
                     msg = "dploy stow: can not unstow '{file}': Conflicts with existing file"
                     print(msg.format(file=dest_path))
+
+            elif dest_path.is_symlink():
+                    # TODO add test for this
+                    msg = "dploy stow: can not unstow '{file}': Conflicts with a broken link"
+                    print(msg.format(file=dest_path))
+
             elif not dest_path.parent.exists():
                 pass
                 msg = "dploy stow: can not unstow '{dest}': No such directory"
@@ -190,10 +196,18 @@ class Stow():
                     msg = "dploy stow: can not stow '{file}': Conflicts with existing file"
                     print(msg.format(file=dest_path))
                     self.abort = True
+
+            elif dest_path.is_symlink():
+                    # TODO add test for this
+                    msg = "dploy stow: can not stow '{file}': Conflicts with a broken link"
+                    print(msg.format(file=dest_path))
+                    self.abort = True
+
             elif not dest_path.parent.exists():
                 msg = "dploy stow: can not stow into '{dest}': No such directory"
                 print(msg.format(dest=dest_path.parent))
                 self.abort = True
+
             else:
                 self.commands.append(
                     dploy.command.SymbolicLink(source_relative, dest_path))
