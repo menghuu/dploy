@@ -62,8 +62,8 @@ class UnLink(AbstractCommand):
         self.target = target
 
     def _logic(self):
-        msg = "dploy stow: unlink {target}"
-        print(msg.format(target=self.target))
+        msg = "dploy stow: unlink {target} => {source}"
+        print(msg.format(target=self.target, source=self.target.resolve()))
         self.target.unlink()
 
 
