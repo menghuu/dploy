@@ -41,6 +41,18 @@ class AbstractStow():
         self.basic(source, dest)
         self.execute_commands()
 
+    def basic(self, source, dest):
+        """
+        todo
+        """
+        assert source.is_dir()
+        assert source.is_absolute()
+        assert dest.is_absolute()
+
+        source_contents = get_directory_contents(source)
+
+        self.collect_commands(source_contents, dest)
+
     def execute_commands(self):
         """
         todo
@@ -61,17 +73,6 @@ class UnStow(AbstractStow):
         self.invalid_dest_message =   "dploy stow: can not unstow '{file}': No such directory"
         super().__init__(source, dest)
 
-    def basic(self, source, dest):
-        """
-        todo
-        """
-        assert source.is_dir()
-        assert source.is_absolute()
-        assert dest.is_absolute()
-
-        source_contents = get_directory_contents(source)
-
-        self.collect_commands(source_contents, dest)
 
     def collect_commands(self, sources, dest):
         """
@@ -128,18 +129,6 @@ class Stow(AbstractStow):
         self.commands.append(dploy.command.UnLink(dest))
         self.commands.append(dploy.command.MakeDirectory(dest))
         self.collect_commands(sources, dest, is_unfolding=True)
-
-    def basic(self, source, dest):
-        """
-        todo
-        """
-        assert source.is_dir()
-        assert source.is_absolute()
-        assert dest.is_absolute()
-
-        source_contents = get_directory_contents(source)
-
-        self.collect_commands(source_contents, dest)
 
     def collect_commands(self, sources, dest, is_unfolding=False):
         """
