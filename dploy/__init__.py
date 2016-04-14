@@ -26,7 +26,11 @@ class AbstractBaseStow():
         self.abort = False
 
         self.validate_input(source_input, dest_input)
-        self.run(source_absolute, dest_absolute)
+        assert source_absolute.is_dir()
+        assert source_absolute.is_absolute()
+        assert dest_absolute.is_absolute()
+        self.collect_commands(source_absolute, dest_absolute)
+        self.execute_commands()
 
     def validate_input(self, source, dest):
         if not source.exists():
@@ -37,21 +41,11 @@ class AbstractBaseStow():
             print(self.invalid_dest_message.format(file=dest))
             sys.exit(1)
 
-    def run(self, source, dest):
-        self.basic(source, dest)
-        self.execute_commands()
-
-    def basic(self, source, dest):
+    def collect_commands(self, source, dest):
         """
         todo
         """
-        assert source.is_dir()
-        assert source.is_absolute()
-        assert dest.is_absolute()
-
-        source_contents = get_directory_contents(source)
-
-        self.collect_commands(source_contents, dest)
+        pass
 
     def execute_commands(self):
         """
@@ -63,9 +57,6 @@ class AbstractBaseStow():
             for cmd in self.commands:
                 cmd.execute()
 
-    def collect_commands(self, sources, dest):
-        pass
-
 
 class UnStow(AbstractBaseStow):
     """
@@ -76,11 +67,13 @@ class UnStow(AbstractBaseStow):
         self.invalid_dest_message =   "dploy stow: can not unstow '{file}': No such directory"
         super().__init__(source, dest)
 
-
-    def collect_commands(self, sources, dest):
+    def collect_commands(self, source, dest):
         """
         todo
         """
+
+        sources = get_directory_contents(source)
+
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
             source_relative = _get_relative_path(source,
@@ -92,7 +85,7 @@ class UnStow(AbstractBaseStow):
 
                 elif dest_path.is_dir() and source.is_dir:
                     if not dest_path.is_symlink():
-                        self.basic(source, dest_path)
+                        self.collect_commands(source, dest_path)
                 else:
                     msg = "dploy stow: can not unstow '{file}': Conflicts with existing file"
                     print(msg.format(file=dest_path))
@@ -123,15 +116,17 @@ class Stow(AbstractBaseStow):
         """
         todo
         """
-        sources = get_directory_contents(dest.resolve())
         self.commands.append(dploy.command.UnLink(dest))
         self.commands.append(dploy.command.MakeDirectory(dest))
-        self.collect_commands(sources, dest, is_unfolding=True)
+        self.collect_commands(dest.resolve(), dest, is_unfolding=True)
 
-    def collect_commands(self, sources, dest, is_unfolding=False):
+    def collect_commands(self, source, dest, is_unfolding=False):
         """
         todo
         """
+
+        sources = get_directory_contents(source)
+
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
             source_relative = _get_relative_path(source,
@@ -150,7 +145,7 @@ class Stow(AbstractBaseStow):
                 elif dest_path.is_dir() and source.is_dir:
                     if dest_path.is_symlink():
                         self.unfold(dest_path)
-                    self.basic(source, dest_path)
+                    self.collect_commands(source, dest_path)
                 else:
                     msg = "dploy stow: can not stow '{file}': Conflicts with existing file"
                     print(msg.format(file=dest_path))
