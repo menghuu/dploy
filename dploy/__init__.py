@@ -123,12 +123,7 @@ class Stow(AbstractStow):
         """
         todo
         """
-        sources = []
-
-        source = dest.resolve()
-        for source_child in source.iterdir():
-            sources.append(source_child)
-
+        sources = get_directory_contents(dest.resolve())
         self.commands.append(dploy.command.UnLink(dest))
         self.commands.append(dploy.command.MakeDirectory(dest))
         self.collect_commands(sources, dest, is_unfolding=True)
