@@ -11,34 +11,35 @@ import pathlib
 import dploy.command
 
 
-class UnStow():
+class AbstractStow():
     """
-    todo
+    An abstract class to unify shared functionality in stow commands
     """
+
     def __init__(self, source, dest):
         source_input = pathlib.Path(source)
         dest_input = pathlib.Path(dest)
-
-        if not source_input.exists():
-            msg = "dploy stow: can not unstow from '{file}': No such directory"
-            print(msg.format(file=source_input))
-            sys.exit(1)
-
-        if not dest_input.exists():
-            msg = "dploy stow: can not unstow '{file}': No such directory"
-            print(msg.format(file=dest_input))
-            sys.exit(1)
-
         source_absolute = _get_absolute_path(source_input)
         dest_absolute = _get_absolute_path(dest_input)
-
 
         self.commands = []
         self.abort = False
 
-        self.basic(source_absolute, dest_absolute)
-        self.execute_commands()
+        self.validate_input(source_input, dest_input)
+        self.run(source_absolute, dest_absolute)
 
+    def validate_input(self, source, dest):
+        if not source.exists():
+            print(self.invalid_source_message.format(file=source))
+            sys.exit(1)
+
+        if not dest.exists():
+            print(self.invalid_dest_message.format(file=dest))
+            sys.exit(1)
+
+    def run(self, source, dest):
+        self.basic(source, dest)
+        self.execute_commands()
 
     def execute_commands(self):
         """
@@ -51,6 +52,14 @@ class UnStow():
                 cmd.execute()
 
 
+class UnStow(AbstractStow):
+    """
+    todo
+    """
+    def __init__(self, source, dest):
+        self.invalid_source_message =  "dploy stow: can not unstow from '{file}': No such directory"
+        self.invalid_dest_message =   "dploy stow: can not unstow '{file}': No such directory"
+        super().__init__(source, dest)
 
     def basic(self, source, dest):
         """
@@ -63,7 +72,6 @@ class UnStow():
         source_contents = get_directory_contents(source)
 
         self.collect_commands(source_contents, dest)
-
 
     def collect_commands(self, sources, dest):
         """
@@ -98,47 +106,14 @@ class UnStow():
                 pass
 
 
-
-
-class Stow():
+class Stow(AbstractStow):
     """
     todo
     """
     def __init__(self, source, dest):
-        source_input = pathlib.Path(source)
-        dest_input = pathlib.Path(dest)
-
-        if not source_input.exists():
-            msg = "dploy stow: can not stow '{file}': No such directory"
-            print(msg.format(file=source_input))
-            sys.exit(1)
-
-        if not dest_input.exists():
-            msg = "dploy stow: can not stow into '{file}': No such directory"
-            print(msg.format(file=dest_input))
-            sys.exit(1)
-
-        source_absolute = _get_absolute_path(source_input)
-        dest_absolute = _get_absolute_path(dest_input)
-
-
-        self.commands = []
-        self.abort = False
-
-        self.basic(source_absolute, dest_absolute)
-        self.execute_commands()
-
-
-    def execute_commands(self):
-        """
-        todo
-        """
-        if self.abort:
-            sys.exit(1)
-        else:
-            for cmd in self.commands:
-                cmd.execute()
-
+        self.invalid_source_message =  "dploy stow: can not stow '{file}': No such directory"
+        self.invalid_dest_message =  "dploy stow: can not stow into '{file}': No such directory"
+        super().__init__(source, dest)
 
     def unfold(self, dest):
         """
@@ -154,7 +129,6 @@ class Stow():
         self.commands.append(dploy.command.MakeDirectory(dest))
         self.collect_commands(sources, dest, is_unfolding=True)
 
-
     def basic(self, source, dest):
         """
         todo
@@ -166,8 +140,6 @@ class Stow():
         source_contents = get_directory_contents(source)
 
         self.collect_commands(source_contents, dest)
-
-
 
     def collect_commands(self, sources, dest, is_unfolding=False):
         """
@@ -219,6 +191,7 @@ def stow(source, dest):
     """
 
     Stow(source, dest)
+
 
 def unstow(source, dest):
     """
@@ -276,6 +249,7 @@ def _link_absolute_paths(source, dest):
         print(msg.format(dest=dest))
         sys.exit(1)
 
+
 def get_directory_contents(directory):
     contents = []
 
@@ -283,6 +257,7 @@ def get_directory_contents(directory):
 
         contents.append(child)
     return contents
+
 
 def _is_same_file(file1, file2):
     """
@@ -292,12 +267,14 @@ def _is_same_file(file1, file2):
     """
     return file1.resolve() == file2.resolve()
 
+
 def _get_absolute_path(file):
     """
     todo
     """
     absolute_path = os.path.abspath(os.path.expanduser(file.__str__()))
     return pathlib.Path(absolute_path)
+
 
 def _get_relative_path(path, start_at):
     """
