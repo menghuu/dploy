@@ -12,5 +12,5 @@ lint:
 	pylint dploy setup.py tests/*
 
 .PHONY: test
-test: clean
+test:
 	py.test
