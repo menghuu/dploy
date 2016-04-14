@@ -14,3 +14,7 @@ lint:
 .PHONY: test
 test:
 	py.test
+
+.PHONY: install-req
+install-req:
+	python3 -m pip install -r requirments.txt
