@@ -3,7 +3,7 @@ todo
 """
 
 
-class AbstractCommand():
+class AbstractBaseCommand():
     # pylint: disable=too-few-public-methods
     """
     todo
@@ -21,7 +21,7 @@ class AbstractCommand():
         self._logic()
 
 
-class SymbolicLink(AbstractCommand):
+class SymbolicLink(AbstractBaseCommand):
     # pylint: disable=too-few-public-methods
     """
     todo
@@ -37,7 +37,7 @@ class SymbolicLink(AbstractCommand):
         print(msg.format(source=self.source, dest=self.dest))
 
 
-class SymbolicLinkExists(AbstractCommand):
+class SymbolicLinkExists(AbstractBaseCommand):
     # pylint: disable=too-few-public-methods
     """
     todo
@@ -52,7 +52,7 @@ class SymbolicLinkExists(AbstractCommand):
         print(msg.format(source=self.source, dest=self.dest))
 
 
-class UnLink(AbstractCommand):
+class UnLink(AbstractBaseCommand):
     # pylint: disable=too-few-public-methods
     """
     todo
@@ -67,7 +67,7 @@ class UnLink(AbstractCommand):
         self.target.unlink()
 
 
-class MakeDirectory(AbstractCommand):
+class MakeDirectory(AbstractBaseCommand):
     # pylint: disable=too-few-public-methods
     """
     todo

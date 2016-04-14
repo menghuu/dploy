@@ -11,7 +11,7 @@ import pathlib
 import dploy.command
 
 
-class AbstractStow():
+class AbstractBaseStow():
     """
     An abstract class to unify shared functionality in stow commands
     """
@@ -67,7 +67,7 @@ class AbstractStow():
         pass
 
 
-class UnStow(AbstractStow):
+class UnStow(AbstractBaseStow):
     """
     todo
     """
@@ -110,7 +110,7 @@ class UnStow(AbstractStow):
                 pass
 
 
-class Stow(AbstractStow):
+class Stow(AbstractBaseStow):
     """
     todo
     """
