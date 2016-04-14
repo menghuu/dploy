@@ -63,6 +63,9 @@ class AbstractStow():
             for cmd in self.commands:
                 cmd.execute()
 
+    def collect_commands(self, sources, dest):
+        pass
+
 
 class UnStow(AbstractStow):
     """
@@ -243,8 +246,8 @@ def get_directory_contents(directory):
     contents = []
 
     for child in directory.iterdir():
-
         contents.append(child)
+
     return contents
 
 
