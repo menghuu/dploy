@@ -24,6 +24,7 @@ class AbstractBaseStow():
             assert dest_absolute.is_absolute()
             self.collect_commands(source_absolute, dest_absolute)
 
+        self.check_for_conflicting_commands()
         self.execute_commands()
 
     def validate_input(self, source, dest):
@@ -40,6 +41,30 @@ class AbstractBaseStow():
         todo
         """
         pass
+
+    def check_for_conflicting_commands(self):
+        """
+        check for symbolic link commands that would cause conflicting symbolic
+        links to the same destination.
+        """
+        link_commands_arugments = []
+        for cmd in self.commands:
+            if isinstance(cmd, dploy.command.SymbolicLink):
+                link_commands_arugments.append(cmd.arguments)
+
+        duplicates = []
+        seen = []
+        for source, dest in link_commands_arugments:
+            if dest in seen:
+                duplicates.append((source, dest))
+            seen.append(dest)
+
+        if len(duplicates) > 0:
+            for duplicate in duplicates:
+                source, dest = duplicate
+                msg = "dploy stow: can not stow '{source}': Conflicts with another source"
+                print(msg.format(source=source))
+            self.abort = True
 
     def execute_commands(self):
         """

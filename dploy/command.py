@@ -31,6 +31,11 @@ class SymbolicLink(AbstractBaseCommand):
         self.source = source
         self.dest = dest
 
+    @property
+    def arguments(self):
+        return (self.source, self.dest)
+
+
     def _logic(self):
         self.dest.symlink_to(self.source)
         msg = "dploy stow: link {dest} => {source}"
