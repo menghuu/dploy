@@ -8,20 +8,22 @@ class AbstractBaseStow():
     An abstract class to unify shared functionality in stow commands
     """
 
-    def __init__(self, source, dest):
-        source_input = pathlib.Path(source)
-        dest_input = pathlib.Path(dest)
-        source_absolute = dploy.util.get_absolute_path(source_input)
-        dest_absolute = dploy.util.get_absolute_path(dest_input)
-
+    def __init__(self, sources, dest):
         self.commands = []
         self.abort = False
 
-        self.validate_input(source_input, dest_input)
-        assert source_absolute.is_dir()
-        assert source_absolute.is_absolute()
-        assert dest_absolute.is_absolute()
-        self.collect_commands(source_absolute, dest_absolute)
+        for source in sources:
+            source_input = pathlib.Path(source)
+            dest_input = pathlib.Path(dest)
+            source_absolute = dploy.util.get_absolute_path(source_input)
+            dest_absolute = dploy.util.get_absolute_path(dest_input)
+
+            self.validate_input(source_input, dest_input)
+            assert source_absolute.is_dir()
+            assert source_absolute.is_absolute()
+            assert dest_absolute.is_absolute()
+            self.collect_commands(source_absolute, dest_absolute)
+
         self.execute_commands()
 
     def validate_input(self, source, dest):

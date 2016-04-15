@@ -10,20 +10,20 @@ import dploy._stow
 import dploy._link
 
 
-def stow(source, dest):
+def stow(sources, dest):
     """
     sub command stow
     """
 
-    dploy._stow.Stow(source, dest)
+    dploy._stow.Stow(sources, dest)
 
 
-def unstow(source, dest):
+def unstow(sources, dest):
     """
     sub command unstow
     """
 
-    dploy._stow.UnStow(source, dest)
+    dploy._stow.UnStow(sources, dest)
 
 
 def link(source, dest):

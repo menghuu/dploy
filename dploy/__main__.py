@@ -44,12 +44,10 @@ def main():
 
     if args.sub_command != None:
         if args.sub_command == 'stow':
-            for source in args.source:
-                dploy.stow(source, args.dest)
+            dploy.stow(args.source, args.dest)
 
         elif args.sub_command == 'unstow':
-            for source in args.source:
-                dploy.unstow(source, args.dest)
+            dploy.unstow(args.source, args.dest)
 
         elif args.sub_command == 'link':
             dploy.link(args.source, args.dest)
