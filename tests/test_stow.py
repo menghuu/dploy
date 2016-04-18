@@ -49,7 +49,22 @@ def test_stow_unfolding_basic(source_a, source_b, dest):
     assert os.readlink('dest/aaa/eee') == '../../source_b/aaa/eee'
     assert os.readlink('dest/aaa/fff') == '../../source_b/aaa/fff'
 
-def test_unfoling_with_conflicts(source_a, source_c, dest):
+def test_stow_unfolding_mutliple_sources(source_a, source_b, dest):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
+    dploy.stow(['source_a', 'source_b'], 'dest')
+
+    assert os.path.isdir('dest/aaa')
+    assert os.readlink('dest/aaa/aaa') == '../../source_a/aaa/aaa'
+    assert os.readlink('dest/aaa/bbb') == '../../source_a/aaa/bbb'
+    assert os.readlink('dest/aaa/ccc') == '../../source_a/aaa/ccc'
+    assert os.readlink('dest/aaa/ddd') == '../../source_b/aaa/ddd'
+    assert os.readlink('dest/aaa/eee') == '../../source_b/aaa/eee'
+    assert os.readlink('dest/aaa/fff') == '../../source_b/aaa/fff'
+
+def test_existing_conflicts(source_a, source_c, dest):
     """
     todo
     """
