@@ -60,6 +60,15 @@ def test_unfoling_with_conflicts(source_a, source_c, dest):
         dploy.stow(['source_c'], 'dest')
 
 
+def test_source_conflicts(source_a, source_c):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
+    with pytest.raises(SystemExit):
+        dploy.stow(['source_a', 'source_c'], 'dest')
+
+
 def test_with_non_existant_source(dest):
     """
     todo
