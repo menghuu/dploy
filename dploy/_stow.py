@@ -2,6 +2,7 @@ import sys
 import pathlib
 import dploy.command
 import dploy.util
+from collections import defaultdict
 
 class AbstractBaseStow():
     """
@@ -42,29 +43,45 @@ class AbstractBaseStow():
         """
         pass
 
+    def list_duplicates(self):
+        tally = defaultdict(list)
+        for i, item in enumerate(self.commands):
+            if (isinstance(item, dploy.command.SymbolicLink)):
+                tally[item.dest].append(i)
+        return ((key,locs) for key,locs in tally.items()
+                                if len(locs)>1)
+
     def check_for_conflicting_commands(self):
         """
         check for symbolic link commands that would cause conflicting symbolic
         links to the same destination.
         """
-        link_commands_arugments = []
-        for cmd in self.commands:
-            if isinstance(cmd, dploy.command.SymbolicLink):
-                link_commands_arugments.append(cmd.arguments)
+        dupes = []
+        for dup in self.list_duplicates():
+            dupes.append(dup)
 
-        duplicates = []
-        seen = []
-        for source, dest in link_commands_arugments:
-            if dest in seen:
-                duplicates.append((source, dest))
-            seen.append(dest)
+        if len(dupes) == 0:
+            return
 
-        if len(duplicates) > 0:
-            for duplicate in duplicates:
-                source, dest = duplicate
+        for dest, indicies in dupes:
+            first_index = indicies[0]
+            if self.commands[first_index].source.is_dir():
+                self.unfold(self.commands[first_index].source, self.commands[first_index].dest)
+                for index in indicies[1:]:
+                    self.collect_commands(self.commands[index].source, self.commands[index].dest, is_unfolding=True)
+            else:
                 msg = "dploy stow: can not stow '{source}': Conflicts with another source"
-                print(msg.format(source=source))
-            self.abort = True
+                print(msg.format(source=self.commands[first_index].source))
+                self.abort = True
+                return
+
+        for dest, indicies in dupes:
+            for index in reversed(indicies[1:]):
+                del(self.commands[index])
+
+        self.check_for_conflicting_commands()
+
+
 
     def execute_commands(self):
         """
@@ -95,8 +112,7 @@ class UnStow(AbstractBaseStow):
 
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
-            source_relative = dploy.util.get_relative_path(source,
-                                                 dest_path.parent)
+
             if dest_path.exists():
                 if dploy.util.is_same_file(dest_path, source):
                     self.commands.append(
@@ -131,13 +147,13 @@ class Stow(AbstractBaseStow):
         self.invalid_dest_message =  "dploy stow: can not stow into '{file}': No such directory"
         super().__init__(source, dest)
 
-    def unfold(self, dest):
+    def unfold(self, source, dest):
         """
         todo
         """
         self.commands.append(dploy.command.UnLink(dest))
         self.commands.append(dploy.command.MakeDirectory(dest))
-        self.collect_commands(dest.resolve(), dest, is_unfolding=True)
+        self.collect_commands(source, dest, is_unfolding=True)
 
     def collect_commands(self, source, dest, is_unfolding=False):
         """
@@ -148,22 +164,19 @@ class Stow(AbstractBaseStow):
 
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
-            source_relative = dploy.util.get_relative_path(source,
-                                                 dest_path.parent)
             if dest_path.exists():
                 if dploy.util.is_same_file(dest_path, source):
 
                     if is_unfolding:
                         self.commands.append(
-                            dploy.command.SymbolicLink(source_relative,
-                                                       dest_path))
+                            dploy.command.SymbolicLink(source, dest_path))
                     else:
                         self.commands.append(
-                            dploy.command.SymbolicLinkExists(source_relative,
+                            dploy.command.SymbolicLinkExists(source,
                                                              dest_path))
                 elif dest_path.is_dir() and source.is_dir:
                     if dest_path.is_symlink():
-                        self.unfold(dest_path)
+                        self.unfold(dest_path.resolve(), dest_path)
                     self.collect_commands(source, dest_path)
                 else:
                     msg = "dploy stow: can not stow '{file}': Conflicts with existing file"
@@ -176,11 +189,11 @@ class Stow(AbstractBaseStow):
                     print(msg.format(file=dest_path))
                     self.abort = True
 
-            elif not dest_path.parent.exists():
+            elif not dest_path.parent.exists() and not is_unfolding:
                 msg = "dploy stow: can not stow into '{dest}': No such directory"
                 print(msg.format(dest=dest_path.parent))
                 self.abort = True
 
             else:
                 self.commands.append(
-                    dploy.command.SymbolicLink(source_relative, dest_path))
+                    dploy.command.SymbolicLink(source, dest_path))

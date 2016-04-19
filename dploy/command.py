@@ -2,6 +2,8 @@
 todo
 """
 
+import dploy.util
+
 
 class AbstractBaseCommand():
     # pylint: disable=too-few-public-methods
@@ -28,18 +30,30 @@ class SymbolicLink(AbstractBaseCommand):
     """
     def __init__(self, source, dest):
         super().__init__()
-        self.source = source
-        self.dest = dest
+        self._source = source
+        self._source_relative = dploy.util.get_relative_path(source,
+                                                             dest.parent)
+        self._dest = dest
 
     @property
-    def arguments(self):
-        return (self.source, self.dest)
+    def dest(self):
+        return (self._dest)
 
+    @property
+    def source(self):
+        return (self._source)
+
+    @property
+    def source_relative(self):
+        return (self._source_relative)
 
     def _logic(self):
-        self.dest.symlink_to(self.source)
-        msg = "dploy stow: link {dest} => {source}"
-        print(msg.format(source=self.source, dest=self.dest))
+        print(self)
+        self.dest.symlink_to(self.source_relative)
+
+    def __repr__(self):
+        return "dploy stow: link {dest} => {source}".format(
+            dest=self.dest, source=self.source)
 
 
 class SymbolicLinkExists(AbstractBaseCommand):
