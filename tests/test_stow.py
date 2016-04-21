@@ -99,3 +99,27 @@ def test_with_non_existant_dest(source_a):
     # pylint: disable=unused-argument
     with pytest.raises(SystemExit):
         dploy.stow(['source_a'], 'dest')
+
+def test_with_file_as_source(file_a, dest):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
+    with pytest.raises(SystemExit):
+        dploy.stow(['file_a'], 'dest')
+
+def test_with_file_as_dest(source_a, file_a):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
+    with pytest.raises(SystemExit):
+        dploy.stow(['source_a'], 'file_a')
+
+def test_with_file_as_dest_and_source(file_a, file_b):
+    """
+    todo
+    """
+    # pylint: disable=unused-argument
+    with pytest.raises(SystemExit):
+        dploy.stow(['file_a'], 'file_b')
