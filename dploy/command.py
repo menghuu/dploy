@@ -37,15 +37,15 @@ class SymbolicLink(AbstractBaseCommand):
 
     @property
     def dest(self):
-        return (self._dest)
+        return self._dest
 
     @property
     def source(self):
-        return (self._source)
+        return self._source
 
     @property
     def source_relative(self):
-        return (self._source_relative)
+        return self._source_relative
 
     def _logic(self):
         print(self)

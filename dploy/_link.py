@@ -28,8 +28,8 @@ def _link_absolute_paths(source, dest):
     assert dest.is_absolute()
     assert source.exists()
 
-    src_file_relative = dploy.util.get_relative_path(source,
-                                           dest.parent)
+    src_file_relative = dploy.util.get_relative_path(source, dest.parent)
+
     try:
         dest.symlink_to(src_file_relative)
         msg = "Link: {dest} => {source}"

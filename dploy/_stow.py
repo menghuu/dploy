@@ -1,17 +1,20 @@
 import sys
+from collections import defaultdict
 import pathlib
 import dploy.command
 import dploy.util
-from collections import defaultdict
 
 class AbstractBaseStow():
     """
     An abstract class to unify shared functionality in stow commands
     """
 
-    def __init__(self, sources, dest):
+    def __init__(self, sources, dest, invalid_source_message,
+                 invalid_dest_message):
         self.commands = []
         self.abort = False
+        self.invalid_source_message = invalid_source_message
+        self.invalid_dest_message = invalid_dest_message
 
         for source in sources:
             source_input = pathlib.Path(source)
@@ -48,10 +51,10 @@ class AbstractBaseStow():
         """
         tally = defaultdict(list)
         for i, item in enumerate(self.commands):
-            if (isinstance(item, dploy.command.SymbolicLink)):
+            if isinstance(item, dploy.command.SymbolicLink):
                 tally[item.dest].append(i)
-        return ((key,locs) for key,locs in tally.items()
-                                if len(locs)>1)
+        return ((key, locs) for key, locs in tally.items()
+                if len(locs) > 1)
 
     def check_for_conflicting_commands(self):
         """
@@ -82,7 +85,7 @@ class AbstractBaseStow():
 
         for dest, indicies in dupes:
             for index in reversed(indicies[1:]):
-                del(self.commands[index])
+                del self.commands[index]
 
         self.check_for_conflicting_commands()
 
@@ -104,9 +107,10 @@ class UnStow(AbstractBaseStow):
     todo
     """
     def __init__(self, source, dest):
-        self.invalid_source_message =  "dploy stow: can not unstow from '{file}': No such directory"
-        self.invalid_dest_message =   "dploy stow: can not unstow '{file}': No such directory"
-        super().__init__(source, dest)
+        invalid_source_message = "dploy stow: can not unstow from '{file}': No such directory"
+        invalid_dest_message = "dploy stow: can not unstow '{file}': No such directory"
+        super().__init__(source, dest, invalid_source_message,
+                         invalid_dest_message)
 
     def collect_commands(self, source, dest):
         """
@@ -131,9 +135,9 @@ class UnStow(AbstractBaseStow):
                     print(msg.format(file=dest_path))
 
             elif dest_path.is_symlink():
-                    # TODO add test for this
-                    msg = "dploy stow: can not unstow '{file}': Conflicts with a existing link"
-                    print(msg.format(file=dest_path))
+                # TODO add test for this
+                msg = "dploy stow: can not unstow '{file}': Conflicts with a existing link"
+                print(msg.format(file=dest_path))
 
             elif not dest_path.parent.exists():
                 msg = "dploy stow: can not unstow '{dest}': No such directory"
@@ -146,8 +150,10 @@ class Link(AbstractBaseStow):
     todo
     """
     def __init__(self, source, dest):
-        self.invalid_source_message = "dploy link: can not link '{file}': No such file or directory"
-        super().__init__(source, dest)
+        invalid_source_message = "dploy link: can not link '{file}': No such file or directory"
+        invalid_dest_message = ""
+        super().__init__(source, dest, invalid_source_message,
+                         invalid_dest_message)
 
     def validate_input(self, source, dest):
         """
@@ -190,9 +196,10 @@ class Stow(AbstractBaseStow):
     todo
     """
     def __init__(self, source, dest):
-        self.invalid_source_message = "dploy stow: can not stow '{file}': No such directory"
-        self.invalid_dest_message = "dploy stow: can not stow into '{file}': No such directory"
-        super().__init__(source, dest)
+        invalid_source_message = "dploy stow: can not stow '{file}': No such directory"
+        invalid_dest_message = "dploy stow: can not stow into '{file}': No such directory"
+        super().__init__(source, dest, invalid_source_message,
+                         invalid_dest_message)
 
     def unfold(self, source, dest):
         """
