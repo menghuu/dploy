@@ -1,35 +1,29 @@
 """
-todo
+Tests for the stow stub command
 """
+# pylint: disable=unused-argument
+# pylint: disable=missing-docstring
 
 import os
 import pytest
 import dploy
+import util
 
 
-def test_stow_basic(source_a, dest):
-    """
-    todo
-    """
+def test_stow_with_basic_senario(source_a, dest):
     # pylint: disable=unused-argument
     dploy.stow(['source_a'], 'dest')
     assert os.readlink('dest/aaa') == '../source_a/aaa'
 
 
-def test_stow_the_same_tree_twice(source_a, dest):
-    """
-    todo
-    """
+def test_stow_with_the_same_tree_twice(source_a, dest):
     # pylint: disable=unused-argument
     dploy.stow(['source_a'], 'dest')
     dploy.stow(['source_a'], 'dest')
     assert os.readlink('dest/aaa') == '../source_a/aaa'
 
 
-def test_stow_unfolding_basic(source_a, source_b, dest):
-    """
-    todo
-    """
+def test_stow_unfolding_with_two_invocations(source_a, source_b, dest):
     # pylint: disable=unused-argument
     dploy.stow(['source_a'], 'dest')
     assert os.readlink('dest/aaa') == '../source_a/aaa'
@@ -49,10 +43,8 @@ def test_stow_unfolding_basic(source_a, source_b, dest):
     assert os.readlink('dest/aaa/eee') == '../../source_b/aaa/eee'
     assert os.readlink('dest/aaa/fff') == '../../source_b/aaa/fff'
 
-def test_stow_unfolding_mutliple_sources(source_a, source_b, dest):
-    """
-    todo
-    """
+
+def test_stow_unfolding_with_mutliple_sources(source_a, source_b, dest):
     # pylint: disable=unused-argument
     dploy.stow(['source_a', 'source_b'], 'dest')
 
@@ -64,10 +56,8 @@ def test_stow_unfolding_mutliple_sources(source_a, source_b, dest):
     assert os.readlink('dest/aaa/eee') == '../../source_b/aaa/eee'
     assert os.readlink('dest/aaa/fff') == '../../source_b/aaa/fff'
 
-def test_existing_conflicts(source_a, source_c, dest):
-    """
-    todo
-    """
+
+def test_stow_with_existing_file_conflicts(source_a, source_c, dest):
     # pylint: disable=unused-argument
     dploy.stow(['source_a'], 'dest')
 
@@ -75,51 +65,47 @@ def test_existing_conflicts(source_a, source_c, dest):
         dploy.stow(['source_c'], 'dest')
 
 
-def test_source_conflicts(source_a, source_c):
-    """
-    todo
-    """
+def test_stow_with_source_conflicts(source_a, source_c):
     # pylint: disable=unused-argument
     with pytest.raises(SystemExit):
         dploy.stow(['source_a', 'source_c'], 'dest')
 
 
-def test_with_non_existant_source(dest):
-    """
-    todo
-    """
+def test_stow_with_non_existant_source(dest):
     # pylint: disable=unused-argument
     with pytest.raises(SystemExit):
         dploy.stow(['source'], 'dest')
 
-def test_with_non_existant_dest(source_a):
-    """
-    todo
-    """
+
+def test_stow_with_non_existant_dest(source_a):
     # pylint: disable=unused-argument
     with pytest.raises(SystemExit):
         dploy.stow(['source_a'], 'dest')
 
-def test_with_file_as_source(file_a, dest):
-    """
-    todo
-    """
+
+def test_stow_with_file_as_source(file_a, dest):
     # pylint: disable=unused-argument
     with pytest.raises(SystemExit):
         dploy.stow(['file_a'], 'dest')
 
-def test_with_file_as_dest(source_a, file_a):
-    """
-    todo
-    """
+
+def test_stow_with_file_as_dest(source_a, file_a):
     # pylint: disable=unused-argument
     with pytest.raises(SystemExit):
         dploy.stow(['source_a'], 'file_a')
 
-def test_with_file_as_dest_and_source(file_a, file_b):
-    """
-    todo
-    """
+
+def test_stow_with_file_as_dest_and_source(file_a, file_b):
     # pylint: disable=unused-argument
     with pytest.raises(SystemExit):
         dploy.stow(['file_a'], 'file_b')
+
+
+def test_stow_with_read_only_dest(source_a, dest):
+    util.read_only('dest')
+    dploy.stow(['source_a'], 'dest')
+
+
+def test_stow_with_write_only_source(source_a, dest):
+    util.write_only('source_a')
+    dploy.stow(['source_a'], 'dest')

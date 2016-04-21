@@ -3,6 +3,7 @@ todo
 """
 
 import os
+import stat
 import shutil
 
 
@@ -59,3 +60,9 @@ def create_tree(tree):
 
                 with ChangeDirectory(directory):
                     create_tree(file_objs)
+
+def write_only(file_name):
+    os.chmod(file_name, stat.S_IWUSR)
+
+def read_only(file_name):
+    os.chmod(file_name, stat.S_IRUSR)
