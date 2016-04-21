@@ -1,7 +1,7 @@
-default: all
+default: lint test
 
 .PHONY: all
-all: lint test
+all: clean lint test
 
 .PHONY: clean
 clean:
