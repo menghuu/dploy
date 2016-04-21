@@ -30,4 +30,4 @@ def link(source, dest):
     """
     sub command link
     """
-    dploy._link.link(source, dest)
+    dploy._stow.Link(source, dest)

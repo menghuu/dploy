@@ -18,11 +18,7 @@ class AbstractBaseStow():
             dest_input = pathlib.Path(dest)
             source_absolute = dploy.util.get_absolute_path(source_input)
             dest_absolute = dploy.util.get_absolute_path(dest_input)
-
             self.validate_input(source_input, dest_input)
-            assert source_absolute.is_dir()
-            assert source_absolute.is_absolute()
-            assert dest_absolute.is_absolute()
             self.collect_commands(source_absolute, dest_absolute)
 
         self.check_for_conflicting_commands()
@@ -137,6 +133,49 @@ class UnStow(AbstractBaseStow):
             else:
                 pass
 
+class Link(AbstractBaseStow):
+    """
+    todo
+    """
+    def __init__(self, source, dest):
+        self.invalid_source_message = "dploy link: can not link '{file}': No such file or directory"
+        super().__init__(source, dest)
+
+    def validate_input(self, source, dest):
+        """
+        todo
+        """
+        if not source.exists():
+            print(self.invalid_source_message.format(file=source))
+            sys.exit(1)
+
+    def collect_commands(self, source, dest):
+        """
+        todo
+        """
+
+        if dest.exists():
+            if dploy.util.is_same_file(dest, source):
+                self.commands.append(dploy.command.SymbolicLinkExists(source,
+                                                                      dest))
+            else:
+                msg = "dploy link: can not link '{file}': Conflicts with existing file"
+                print(msg.format(file=dest))
+                self.abort = True
+
+        elif dest.is_symlink():
+            # TODO add test for this
+            msg = "dploy link: can not link '{file}': Conflicts with existing link"
+            print(msg.format(file=dest))
+            self.abort = True
+
+        elif not dest.parent.exists():
+            msg = "dploy link: can not link into '{dest}': No such directory"
+            print(msg.format(dest=dest.parent))
+            self.abort = True
+
+        else:
+            self.commands.append(dploy.command.SymbolicLink(source, dest))
 
 class Stow(AbstractBaseStow):
     """
