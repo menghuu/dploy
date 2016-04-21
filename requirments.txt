@@ -2,3 +2,4 @@ pathlib
 pylint
 pytest
 virtualenv
+setuptools
