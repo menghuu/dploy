@@ -25,6 +25,9 @@ class AbstractBaseStow():
         self.execute_commands()
 
     def validate_input(self, source, dest):
+        """
+        todo
+        """
         if not source.exists():
             print(self.invalid_source_message.format(file=source))
             sys.exit(1)
@@ -40,6 +43,9 @@ class AbstractBaseStow():
         pass
 
     def list_duplicates(self):
+        """
+        todo
+        """
         tally = defaultdict(list)
         for i, item in enumerate(self.commands):
             if (isinstance(item, dploy.command.SymbolicLink)):
@@ -62,9 +68,12 @@ class AbstractBaseStow():
         for dest, indicies in dupes:
             first_index = indicies[0]
             if self.commands[first_index].source.is_dir():
-                self.unfold(self.commands[first_index].source, self.commands[first_index].dest)
+                self.unfold(self.commands[first_index].source,
+                            self.commands[first_index].dest)
                 for index in indicies[1:]:
-                    self.collect_commands(self.commands[index].source, self.commands[index].dest, is_unfolding=True)
+                    self.collect_commands(self.commands[index].source,
+                                          self.commands[index].dest,
+                                          is_unfolding=True)
             else:
                 msg = "dploy stow: can not stow '{source}': Conflicts with another source"
                 print(msg.format(source=self.commands[first_index].source))
@@ -127,7 +136,6 @@ class UnStow(AbstractBaseStow):
                     print(msg.format(file=dest_path))
 
             elif not dest_path.parent.exists():
-                pass
                 msg = "dploy stow: can not unstow '{dest}': No such directory"
                 print(msg.format(dest=dest_path.parent))
             else:
@@ -182,8 +190,8 @@ class Stow(AbstractBaseStow):
     todo
     """
     def __init__(self, source, dest):
-        self.invalid_source_message =  "dploy stow: can not stow '{file}': No such directory"
-        self.invalid_dest_message =  "dploy stow: can not stow into '{file}': No such directory"
+        self.invalid_source_message = "dploy stow: can not stow '{file}': No such directory"
+        self.invalid_dest_message = "dploy stow: can not stow into '{file}': No such directory"
         super().__init__(source, dest)
 
     def unfold(self, source, dest):
@@ -223,10 +231,10 @@ class Stow(AbstractBaseStow):
                     self.abort = True
 
             elif dest_path.is_symlink():
-                    # TODO add test for this
-                    msg = "dploy stow: can not stow '{file}': Conflicts with a broken link"
-                    print(msg.format(file=dest_path))
-                    self.abort = True
+                # TODO add test for this
+                msg = "dploy stow: can not stow '{file}': Conflicts with a broken link"
+                print(msg.format(file=dest_path))
+                self.abort = True
 
             elif not dest_path.parent.exists() and not is_unfolding:
                 msg = "dploy stow: can not stow into '{dest}': No such directory"

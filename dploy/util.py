@@ -15,6 +15,7 @@ def is_same_file(file1, file2):
     todo
 
     NOTE: python 3.5 supports pathlib.Path.samefile(file)
+    NOTE: this can raise exception FileNotFoundError 
     """
     return file1.resolve() == file2.resolve()
 
