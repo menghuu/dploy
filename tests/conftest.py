@@ -110,3 +110,27 @@ def dest(request):
     def _dest_teardown():
         util.remove_tree(name)
     request.addfinalizer(_dest_teardown)
+
+@pytest.fixture()
+def file_a(request):
+    """
+    todo
+    """
+    name = 'file_a'
+    util.create_file(name)
+
+    def _file_a_teardown():
+        util.remove_file(name)
+    request.addfinalizer(_file_a_teardown)
+
+@pytest.fixture()
+def file_b(request):
+    """
+    todo
+    """
+    name = 'file_b'
+    util.create_file(name)
+
+    def _file_b_teardown():
+        util.remove_file(name)
+    request.addfinalizer(_file_b_teardown)
