@@ -132,7 +132,7 @@ class UnStow(AbstractBaseStow):
 
             elif dest_path.is_symlink():
                     # TODO add test for this
-                    msg = "dploy stow: can not unstow '{file}': Conflicts with a broken link"
+                    msg = "dploy stow: can not unstow '{file}': Conflicts with a existing link"
                     print(msg.format(file=dest_path))
 
             elif not dest_path.parent.exists():
@@ -232,7 +232,7 @@ class Stow(AbstractBaseStow):
 
             elif dest_path.is_symlink():
                 # TODO add test for this
-                msg = "dploy stow: can not stow '{file}': Conflicts with a broken link"
+                msg = "dploy stow: can not stow '{file}': Conflicts with existing link"
                 print(msg.format(file=dest_path))
                 self.abort = True
 
