@@ -40,3 +40,8 @@ def test_link_with_read_only_dest(file_a, dest):
 def test_link_with_write_only_source(file_a, dest):
     util.write_only('file_a')
     dploy.link(['file_a'], 'dest/file_a_link')
+
+def test_link_with_conflicting_broken_lint_at_dest(file_a, dest):
+    with pytest.raises(SystemExit):
+        os.symlink('non_existant_source', 'dest/file_a_link')
+        dploy.link(['file_a'], 'dest/file_a_link')
