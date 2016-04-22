@@ -1,7 +1,4 @@
-default: lint-errors-only test
-
-.PHONY: all
-all: clean lint test
+default: lint test
 
 .PHONY: clean
 clean:
@@ -9,11 +6,11 @@ clean:
 
 .PHONY: lint
 lint:
-	pylint dploy setup.py tests/*
+	pylint --files-output=n --reports=n dploy setup.py tests/*.py
 
-.PHONY: lint-errors-only
-lint-errors-only:
-	pylint --errors-only dploy setup.py tests/*
+.PHONY: lint-full
+lint-full:
+	pylint dploy setup.py tests/*.py
 
 .PHONY: test
 test:
