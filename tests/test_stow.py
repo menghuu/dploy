@@ -67,6 +67,14 @@ def test_stow_with_existing_file_conflicts(source_a, source_c, dest):
         dploy.stow(['source_c'], 'dest')
 
 
+def test_stow_with_existing_broken_link(source_a, dest):
+    # pylint: disable=unused-argument
+    os.symlink('non_existant_source', 'dest/aaa')
+
+    with pytest.raises(SystemExit):
+        dploy.stow(['source_a'], 'dest')
+
+
 def test_stow_with_source_conflicts(source_a, source_c):
     # pylint: disable=unused-argument
     with pytest.raises(SystemExit):
