@@ -1,3 +1,7 @@
+"""
+The logic and workings behind the stow and unstow sub commands
+"""
+
 import sys
 from collections import defaultdict
 import pathlib
@@ -29,6 +33,9 @@ class AbstractBaseStow():
         self.execute_commands()
 
     def check_for_conflicting_commands(self):
+        """
+        todo
+        """
         pass
 
     def validate_input(self, source, dest):
@@ -93,7 +100,6 @@ class UnStow(AbstractBaseStow):
                     print(msg.format(file=dest_path))
 
             elif dest_path.is_symlink():
-                # TODO add test for this
                 msg = "dploy stow: can not unstow '{file}': Conflicts with a existing link"
                 print(msg.format(file=dest_path))
 
@@ -137,7 +143,6 @@ class Link(AbstractBaseStow):
                 self.abort = True
 
         elif dest.is_symlink():
-            # TODO add test for this
             msg = "dploy link: can not link '{file}': Conflicts with existing link"
             print(msg.format(file=dest))
             self.abort = True
@@ -195,7 +200,7 @@ class Stow(AbstractBaseStow):
         if len(dupes) == 0:
             return
 
-        for dest, indicies in dupes:
+        for _, indicies in dupes:
             first_index = indicies[0]
             if self.commands[first_index].source.is_dir():
                 self.unfold(self.commands[first_index].source,
@@ -209,7 +214,7 @@ class Stow(AbstractBaseStow):
                 self.abort = True
                 return
 
-        for dest, indicies in dupes:
+        for _, indicies in dupes:
             for index in reversed(indicies[1:]):
                 del self.commands[index]
 
@@ -244,7 +249,6 @@ class Stow(AbstractBaseStow):
                     self.abort = True
 
             elif dest_path.is_symlink():
-                # TODO add test for this
                 msg = "dploy stow: can not stow '{file}': Conflicts with existing link"
                 print(msg.format(file=dest_path))
                 self.abort = True

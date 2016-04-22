@@ -62,7 +62,13 @@ def create_tree(tree):
                     create_tree(file_objs)
 
 def write_only(file_name):
+    """
+    change users permissions to a file to write only
+    """
     os.chmod(file_name, stat.S_IWUSR)
 
 def read_only(file_name):
+    """
+    change users permissions to a file to read only
+    """
     os.chmod(file_name, stat.S_IRUSR)

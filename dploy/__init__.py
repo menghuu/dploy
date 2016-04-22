@@ -15,7 +15,7 @@ def stow(sources, dest):
     sub command stow
     """
 
-    dploy._stow.Stow(sources, dest)
+    dploy._stow.Stow(sources, dest) # pylint: disable=protected-access
 
 
 def unstow(sources, dest):
@@ -23,11 +23,11 @@ def unstow(sources, dest):
     sub command unstow
     """
 
-    dploy._stow.UnStow(sources, dest)
+    dploy._stow.UnStow(sources, dest) # pylint: disable=protected-access
 
 
 def link(source, dest):
     """
     sub command link
     """
-    dploy._stow.Link(source, dest)
+    dploy._stow.Link(source, dest) # pylint: disable=protected-access

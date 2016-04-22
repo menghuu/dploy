@@ -37,14 +37,23 @@ class SymbolicLink(AbstractBaseCommand):
 
     @property
     def dest(self):
+        """
+        todo
+        """
         return self._dest
 
     @property
     def source(self):
+        """
+        todo
+        """
         return self._source
 
     @property
     def source_relative(self):
+        """
+        todo
+        """
         return self._source_relative
 
     def _logic(self):

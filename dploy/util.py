@@ -1,7 +1,14 @@
+"""
+todo
+"""
+
 import os
 import pathlib
 
 def get_directory_contents(directory):
+    """
+    todo
+    """
     contents = []
 
     for child in directory.iterdir():
