@@ -19,6 +19,6 @@ lint-errors-only:
 test:
 	py.test
 
-.PHONY: install-requirments
-install-req:
+.PHONY: install-requirements
+install-requirements:
 	python3 -m pip install -r requirments.txt
