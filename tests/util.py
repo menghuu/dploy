@@ -11,19 +11,21 @@ def remove_tree(tree):
     """
     todo
     """
+    os.chmod(tree, 0o777)
     shutil.rmtree(tree)
 
 def remove_file(file_name):
     """
     todo
     """
+    os.chmod(file_name, 0o777)
     os.remove(file_name)
 
 def create_file(file_name):
     """
     todo
     """
-    open(file_name, 'w').close()
+    return open(file_name, 'w').close()
 
 def create_directory(directory_name):
     """

@@ -7,11 +7,11 @@ import util
 
 
 @pytest.fixture()
-def source_a(request):
+def source_a(tmpdir):
     """
     todo
     """
-    name = 'source_a'
+    name = str(tmpdir.join('source_a'))
     tree = [
         {
             name : [
@@ -31,18 +31,15 @@ def source_a(request):
         },
     ]
     util.create_tree(tree)
-
-    def _source_a_teardown():
-        util.remove_tree(name)
-    request.addfinalizer(_source_a_teardown)
+    return name
 
 
 @pytest.fixture()
-def source_b(request):
+def source_b(tmpdir):
     """
     todo
     """
-    name = 'source_b'
+    name = str(tmpdir.join('source_b'))
     tree = [
         {
             name : [
@@ -62,18 +59,15 @@ def source_b(request):
         },
     ]
     util.create_tree(tree)
-
-    def _source_b_teardown():
-        util.remove_tree(name)
-    request.addfinalizer(_source_b_teardown)
+    return name
 
 
 @pytest.fixture()
-def source_c(request):
+def source_c(tmpdir):
     """
     todo
     """
-    name = 'source_c'
+    name = str(tmpdir.join('source_c'))
     tree = [
         {
             name : [
@@ -93,44 +87,34 @@ def source_c(request):
         },
     ]
     util.create_tree(tree)
-
-    def _source_c_teardown():
-        util.remove_tree(name)
-    request.addfinalizer(_source_c_teardown)
+    return name
 
 
 @pytest.fixture()
-def dest(request):
+def dest(tmpdir):
     """
     todo
     """
-    name = 'dest'
+    name = str(tmpdir.join('dest'))
     util.create_directory(name)
+    return name
 
-    def _dest_teardown():
-        util.remove_tree(name)
-    request.addfinalizer(_dest_teardown)
 
 @pytest.fixture()
-def file_a(request):
+def file_a(tmpdir):
     """
     todo
     """
-    name = 'file_a'
+    name = str(tmpdir.join('file_a'))
     util.create_file(name)
+    return name
 
-    def _file_a_teardown():
-        util.remove_file(name)
-    request.addfinalizer(_file_a_teardown)
 
 @pytest.fixture()
-def file_b(request):
+def file_b(tmpdir):
     """
     todo
     """
-    name = 'file_b'
+    name = str(tmpdir.join('file_b'))
     util.create_file(name)
-
-    def _file_b_teardown():
-        util.remove_file(name)
-    request.addfinalizer(_file_b_teardown)
+    return name
