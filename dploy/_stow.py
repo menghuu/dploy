@@ -228,8 +228,10 @@ class Stow(AbstractBaseStow):
                 self.unfold(self.commands[first_index].source,
                             self.commands[first_index].dest)
                 for index in indicies[1:]:
+                    self.is_unfolding = True
                     self.collect_commands(self.commands[index].source,
                                           self.commands[index].dest)
+                    self.is_unfolding = False
             else:
                 msg = "dploy stow: can not stow '{source}': Conflicts with another source"
                 print(msg.format(source=self.commands[first_index].source))
