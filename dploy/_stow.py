@@ -42,11 +42,11 @@ class AbstractBaseStow():
         """
         todo
         """
-        if not source.exists():
+        if not source.is_dir():
             print(self.invalid_source_message.format(file=source))
             sys.exit(1)
 
-        if not dest.exists():
+        if not dest.is_dir():
             print(self.invalid_dest_message.format(file=dest))
             sys.exit(1)
 
