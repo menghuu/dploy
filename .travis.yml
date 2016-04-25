@@ -4,6 +4,14 @@ python:
   - "3.3"
   - "3.4"
   - "3.5"
+  - "3.6"
+  - "nightly"
+
+matrix:
+  allow_failures:
+    - os: osx # Python 3 not supported in Travis OSX environment
+    - python: "3.6" # not supported
+    - python: "nightly"
 
 os:
   - linux
