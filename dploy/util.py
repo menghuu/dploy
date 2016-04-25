@@ -40,3 +40,31 @@ def get_relative_path(path, start_at):
     NOTE: python 3.4.5 & 3.5.2 support pathlib.Path.path = pathlib.Path.__str__()
     """
     return pathlib.Path(os.path.relpath(path.__str__(), start_at.__str__()))
+
+
+def is_file_readable(a_file):
+    """
+    check if a file is readable
+    """
+    return os.access(a_file.__str__(), os.R_OK)
+
+
+def is_file_writable(a_file):
+    """
+    check if a file is readable
+    """
+    return os.access(a_file.__str__(), os.W_OK)
+
+
+def is_directory_readable(directory):
+    """
+    check if a file is readable
+    """
+    return os.access(directory.__str__(), os.R_OK)
+
+
+def is_directory_writable(directory):
+    """
+    check if a file is readable
+    """
+    return os.access(directory.__str__(), os.W_OK)
