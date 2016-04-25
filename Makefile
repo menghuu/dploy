@@ -14,7 +14,7 @@ lint-full:
 
 .PHONY: test
 test:
-	py.test
+	py.test -v
 
 .PHONY: install-requirements
 install-requirements:
