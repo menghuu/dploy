@@ -51,20 +51,20 @@ def is_file_readable(a_file):
 
 def is_file_writable(a_file):
     """
-    check if a file is readable
+    check if a file is writable
     """
     return os.access(a_file.__str__(), os.W_OK)
 
 
 def is_directory_readable(directory):
     """
-    check if a file is readable
+    check if a directory is readable
     """
     return os.access(directory.__str__(), os.R_OK)
 
 
 def is_directory_writable(directory):
     """
-    check if a file is readable
+    check if a directory is writable
     """
     return os.access(directory.__str__(), os.W_OK)
