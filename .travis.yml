@@ -17,6 +17,8 @@ os:
   - linux
   - osx
 
-install: scons setup
+install:
+  - "sudo apt-get install scons"
+  - "scons setup"
 
 script: scons
