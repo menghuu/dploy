@@ -7,7 +7,7 @@ source_test = Glob(os.path.join('tests','*.py'))
 source_all = Glob('*.py') + [Dir('dploy')] +  source_test
 
 PhonyTarget('setup-requirements',
-            'python3 -m pip install -r requirements.txt',
+            'pip install -r requirements.txt',
             env)
 env.Alias('lint', env.Pylint(source_all))
 env.Alias('test', env.Pytest(source_test))
