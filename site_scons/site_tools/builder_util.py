@@ -26,7 +26,7 @@ class BuilderFactory():
     def find_tool_bin(self, env):
         tool_bin = env.WhereIs(self.bin_name)
         if tool_bin == None:
-            print('INFORMATION: {name}: not found.'.format(name=name))
+            print('INFORMATION: {name}: not found.'.format(name=self.bin_name))
         return tool_bin
 
     def complain(self, target, source, env):
