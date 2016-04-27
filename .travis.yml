@@ -17,6 +17,6 @@ os:
   - linux
   - osx
 
-install: make install-requirements
+install: scons setup
 
-script: make
+script: scons
