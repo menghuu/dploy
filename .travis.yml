@@ -17,12 +17,6 @@ os:
   - linux
   - osx
 
-install:
-  - "source ~/virtualenv/python2.7/bin/activate"
-  - "scons setup"
-  - "source ~/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/activate"
+install: make setup
 
-script:
-  - "source ~/virtualenv/python2.7/bin/activate"
-  - "scons"
-  - "source ~/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/activate"
+script: make
