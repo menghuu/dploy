@@ -119,7 +119,13 @@ def test_stow_with_read_only_dest(source_a, dest):
         dploy.stow([source_a], dest)
 
 
-def test_stow_with_write_only_source(source_a, dest):
+def test_stow_with_write_only_source(source_a, source_c, dest):
     util.write_only(source_a)
     with pytest.raises(SystemExit):
-        dploy.stow([source_a], dest)
+        dploy.stow([source_a, source_c], dest)
+
+
+def test_stow_with_write_only_source_file(source_a, source_c, dest):
+    util.write_only(os.path.join(source_a, 'aaa'))
+    with pytest.raises(SystemExit):
+        dploy.stow([source_a, source_c], dest)
