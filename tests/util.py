@@ -63,14 +63,18 @@ def create_tree(tree):
                 with ChangeDirectory(directory):
                     create_tree(file_objs)
 
-def write_only(file_name):
-    """
-    change users permissions to a file to write only
-    """
-    os.chmod(file_name, stat.S_IWUSR)
 
-def read_only(file_name):
+def write_only(path):
     """
-    change users permissions to a file to read only
+    change users permissions to a path to write only
     """
-    os.chmod(file_name, stat.S_IRUSR)
+    mode = os.stat(path)[stat.ST_MODE]
+    os.chmod(path, mode & ~stat.S_IRUSR & ~stat.S_IRGRP & ~stat.S_IROTH)
+
+
+def read_only(path):
+    """
+    change users permissions to a path to read only
+    """
+    mode = os.stat(path)[stat.ST_MODE]
+    os.chmod(path, mode & ~stat.S_IWUSR & ~stat.S_IWGRP & ~stat.S_IWOTH)
