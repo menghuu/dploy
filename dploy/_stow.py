@@ -14,8 +14,11 @@ class AbstractBaseStow():
     An abstract class to unify shared functionality in stow commands
     """
 
-    def __init__(self, sources, dest, invalid_source_message,
+    # TODO
+    # pylint: disable=too-many-arguments
+    def __init__(self, command, sources, dest, invalid_source_message,
                  invalid_dest_message):
+        self.command = command
         self.commands = []
         self.abort = False
         self.invalid_source_message = invalid_source_message
@@ -43,21 +46,21 @@ class AbstractBaseStow():
         todo
         """
         if not source.is_dir():
-            print(self.invalid_source_message.format(file=source))
+            print(self.invalid_source_message.format(command=self.command, file=source))
             sys.exit(1)
 
         elif not dest.is_dir():
-            print(self.invalid_dest_message.format(file=dest))
+            print(self.invalid_dest_message.format(command=self.command, file=dest))
             sys.exit(1)
 
         elif not dploy.util.is_directory_readable(source):
-            msg = "dploy stow: can not stow from '{file}': Insufficient permissions"
-            print(msg.format(file=source))
+            msg = "dploy {command}: can not {command} from '{file}': Insufficient permissions"
+            print(msg.format(command=self.command, file=source))
             sys.exit(1)
 
         elif not dploy.util.is_directory_writable(dest):
-            msg = "dploy stow: can not stow to '{file}': Insufficient permissions"
-            print(msg.format(file=dest))
+            msg = "dploy {command}: can not {command} to '{file}': Insufficient permissions"
+            print(msg.format(command=self.command, file=dest))
             sys.exit(1)
 
     def collect_commands(self, source, dest):
@@ -82,9 +85,10 @@ class UnStow(AbstractBaseStow):
     todo
     """
     def __init__(self, source, dest):
-        invalid_source_message = "dploy stow: can not unstow from '{file}': No such directory"
-        invalid_dest_message = "dploy stow: can not unstow '{file}': No such directory"
-        super().__init__(source, dest, invalid_source_message,
+        invalid_source_message = (
+            "dploy {command}: can not {command} from '{file}': No such directory")
+        invalid_dest_message = "dploy {command}: can not {command} '{file}': No such directory"
+        super().__init__("unstow", source, dest, invalid_source_message,
                          invalid_dest_message)
 
     def collect_commands(self, source, dest):
@@ -100,22 +104,24 @@ class UnStow(AbstractBaseStow):
             if dest_path.exists():
                 if dploy.util.is_same_file(dest_path, source):
                     self.commands.append(
-                        dploy.command.UnLink(dest_path))
+                        dploy.command.UnLink(self.command, dest_path))
 
                 elif dest_path.is_dir() and source.is_dir:
                     if not dest_path.is_symlink():
                         self.collect_commands(source, dest_path)
                 else:
-                    msg = "dploy stow: can not unstow '{file}': Conflicts with existing file"
-                    print(msg.format(file=dest_path))
+                    msg = (
+                        "dploy {command}: can not {command} '{file}': Conflicts with existing file"
+                    )
+                    print(msg.format(command=self.command, file=dest_path))
 
             elif dest_path.is_symlink():
-                msg = "dploy stow: can not unstow '{file}': Conflicts with a existing link"
-                print(msg.format(file=dest_path))
+                msg = "dploy {command}: can not {command} '{file}': Conflicts with a existing link"
+                print(msg.format(command=self.command, file=dest_path))
 
             elif not dest_path.parent.exists():
-                msg = "dploy stow: can not unstow '{file}': No such directory"
-                print(msg.format(file=dest_path.parent))
+                msg = "dploy {command}: can not {command} '{file}': No such directory"
+                print(msg.format(command=self.command, file=dest_path.parent))
             else:
                 pass
 
@@ -125,9 +131,11 @@ class Link(AbstractBaseStow):
     todo
     """
     def __init__(self, source, dest):
-        invalid_source_message = "dploy link: can not link '{file}': No such file or directory"
+        invalid_source_message = (
+            "dploy {command}: can not {command} '{file}': No such file or directory"
+        )
         invalid_dest_message = ""
-        super().__init__([source], dest, invalid_source_message,
+        super().__init__("link", [source], dest, invalid_source_message,
                          invalid_dest_message)
 
     def validate_input(self, source, dest):
@@ -135,18 +143,19 @@ class Link(AbstractBaseStow):
         todo
         """
         if not source.exists():
-            print(self.invalid_source_message.format(file=source))
+            print(self.invalid_source_message.format(command=self.command, file=source))
             sys.exit(1)
 
-        elif not dploy.util.is_file_readable(source) or not dploy.util.is_directory_readable(source):
-            msg = "dploy link: can not link '{file}': Insufficient permissions"
-            print(msg.format(file=source))
+        elif (not dploy.util.is_file_readable(source) or
+              not dploy.util.is_directory_readable(source)):
+            msg = "dploy {command}: can not {command} '{file}': Insufficient permissions"
+            print(msg.format(command=self.command, file=source))
             sys.exit(1)
 
         elif (not dploy.util.is_file_writable(dest.parent) or
-                not dploy.util.is_directory_writable(dest.parent)):
-            msg = "dploy link: can not link to '{file}': Insufficient permissions"
-            print(msg.format(file=dest))
+              not dploy.util.is_directory_writable(dest.parent)):
+            msg = "dploy {command}: can not {command} to '{file}': Insufficient permissions"
+            print(msg.format(command=self.command, file=dest))
             sys.exit(1)
 
 
@@ -157,25 +166,25 @@ class Link(AbstractBaseStow):
 
         if dest.exists():
             if dploy.util.is_same_file(dest, source):
-                self.commands.append(dploy.command.SymbolicLinkExists(source,
+                self.commands.append(dploy.command.SymbolicLinkExists(self.command, source,
                                                                       dest))
             else:
-                msg = "dploy link: can not link '{file}': Conflicts with existing file"
-                print(msg.format(file=dest))
+                msg = "dploy {command}: can not {command} '{file}': Conflicts with existing file"
+                print(msg.format(command=self.command, file=dest))
                 self.abort = True
 
         elif dest.is_symlink():
-            msg = "dploy link: can not link '{file}': Conflicts with existing link"
-            print(msg.format(file=dest))
+            msg = "dploy {command}: can not {command} '{file}': Conflicts with existing link"
+            print(msg.format(command=self.command, file=dest))
             self.abort = True
 
         elif not dest.parent.exists():
-            msg = "dploy link: can not link into '{dest}': No such directory"
-            print(msg.format(dest=dest.parent))
+            msg = "dploy {command}: can not {command} into '{dest}': No such directory"
+            print(msg.format(command=self.command, dest=dest.parent))
             self.abort = True
 
         else:
-            self.commands.append(dploy.command.SymbolicLink(source, dest))
+            self.commands.append(dploy.command.SymbolicLink(self.command, source, dest))
 
 
 class Stow(AbstractBaseStow):
@@ -183,10 +192,10 @@ class Stow(AbstractBaseStow):
     todo
     """
     def __init__(self, source, dest):
-        invalid_source_message = "dploy stow: can not stow '{file}': No such directory"
-        invalid_dest_message = "dploy stow: can not stow into '{file}': No such directory"
+        invalid_source_message = "dploy {command}: can not {command} '{file}': No such directory"
+        invalid_dest_message = "dploy {command}: can not {command} into '{file}': No such directory"
         self.is_unfolding = False
-        super().__init__(source, dest, invalid_source_message,
+        super().__init__("stow", source, dest, invalid_source_message,
                          invalid_dest_message)
 
     def unfold(self, source, dest):
@@ -194,8 +203,8 @@ class Stow(AbstractBaseStow):
         todo
         """
         self.is_unfolding = True
-        self.commands.append(dploy.command.UnLink(dest))
-        self.commands.append(dploy.command.MakeDirectory(dest))
+        self.commands.append(dploy.command.UnLink(self.command, dest))
+        self.commands.append(dploy.command.MakeDirectory(self.command, dest))
         self.collect_commands(source, dest)
         self.is_unfolding = False
 
@@ -233,8 +242,8 @@ class Stow(AbstractBaseStow):
                                           self.commands[index].dest)
                     self.is_unfolding = False
             else:
-                msg = "dploy stow: can not stow '{source}': Conflicts with another source"
-                print(msg.format(source=self.commands[first_index].source))
+                msg = "dploy {command}: can not {command} '{source}': Conflicts with another source"
+                print(msg.format(command=self.command, source=self.commands[first_index].source))
                 self.abort = True
                 return
 
@@ -258,30 +267,32 @@ class Stow(AbstractBaseStow):
 
                     if self.is_unfolding:
                         self.commands.append(
-                            dploy.command.SymbolicLink(source, dest_path))
+                            dploy.command.SymbolicLink(self.command, source, dest_path))
                     else:
                         self.commands.append(
-                            dploy.command.SymbolicLinkExists(source,
+                            dploy.command.SymbolicLinkExists(self.command, source,
                                                              dest_path))
                 elif dest_path.is_dir() and source.is_dir:
                     if dest_path.is_symlink():
                         self.unfold(dest_path.resolve(), dest_path)
                     self.collect_commands(source, dest_path)
                 else:
-                    msg = "dploy stow: can not stow '{file}': Conflicts with existing file"
-                    print(msg.format(file=dest_path))
+                    msg = (
+                        "dploy {command}: can not {command} '{file}': Conflicts with existing file"
+                    )
+                    print(msg.format(command=self.command, file=dest_path))
                     self.abort = True
 
             elif dest_path.is_symlink():
-                msg = "dploy stow: can not stow '{file}': Conflicts with existing link"
-                print(msg.format(file=dest_path))
+                msg = "dploy {command}: can not {command} '{file}': Conflicts with existing link"
+                print(msg.format(command=self.command, file=dest_path))
                 self.abort = True
 
             elif not dest_path.parent.exists() and not self.is_unfolding:
-                msg = "dploy stow: can not stow into '{dest}': No such directory"
-                print(msg.format(dest=dest_path.parent))
+                msg = "dploy {command}: can not {command} into '{dest}': No such directory"
+                print(msg.format(command=self.command, dest=dest_path.parent))
                 self.abort = True
 
             else:
                 self.commands.append(
-                    dploy.command.SymbolicLink(source, dest_path))
+                    dploy.command.SymbolicLink(self.command, source, dest_path))

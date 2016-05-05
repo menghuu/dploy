@@ -28,11 +28,12 @@ class SymbolicLink(AbstractBaseCommand):
     """
     todo
     """
-    def __init__(self, source, dest):
+    def __init__(self, command, source, dest):
         super().__init__()
         self._source = source
         self._source_relative = dploy.util.get_relative_path(source,
                                                              dest.parent)
+        self.command = command
         self._dest = dest
 
     @property
@@ -61,8 +62,8 @@ class SymbolicLink(AbstractBaseCommand):
         self.dest.symlink_to(self.source_relative)
 
     def __repr__(self):
-        return "dploy stow: link {dest} => {source}".format(
-            dest=self.dest, source=self.source)
+        return "dploy {command}: link {dest} => {source}".format(
+            command=self.command, dest=self.dest, source=self.source)
 
 
 class SymbolicLinkExists(AbstractBaseCommand):
@@ -70,14 +71,15 @@ class SymbolicLinkExists(AbstractBaseCommand):
     """
     todo
     """
-    def __init__(self, source, dest):
+    def __init__(self, command, source, dest):
         super().__init__()
         self.source = source
         self.dest = dest
+        self.command = command
 
     def _logic(self):
-        msg = "dploy stow: already linked {dest} => {source}"
-        print(msg.format(source=self.source, dest=self.dest))
+        msg = "dploy {command}: already linked {dest} => {source}"
+        print(msg.format(command=self.command, source=self.source, dest=self.dest))
 
 
 class UnLink(AbstractBaseCommand):
@@ -85,13 +87,14 @@ class UnLink(AbstractBaseCommand):
     """
     todo
     """
-    def __init__(self, target):
+    def __init__(self, command, target):
         super().__init__()
         self.target = target
+        self.command = command
 
     def _logic(self):
-        msg = "dploy stow: unlink {target} => {source}"
-        print(msg.format(target=self.target, source=self.target.resolve()))
+        msg = "dploy {command}: unlink {target} => {source}"
+        print(msg.format(command=self.command, target=self.target, source=self.target.resolve()))
         self.target.unlink()
 
 
@@ -100,11 +103,12 @@ class MakeDirectory(AbstractBaseCommand):
     """
     todo
     """
-    def __init__(self, target):
+    def __init__(self, command, target):
         super().__init__()
         self.target = target
+        self.command = command
 
     def _logic(self):
-        msg = "dploy stow: make directory {target}"
-        print(msg.format(target=self.target))
+        msg = "dploy {command}: make directory {target}"
+        print(msg.format(target=self.target, command=self.command))
         self.target.mkdir()
