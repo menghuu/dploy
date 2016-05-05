@@ -46,16 +46,16 @@ class AbstractBaseStow():
             print(self.invalid_source_message.format(file=source))
             sys.exit(1)
 
-        if not dest.is_dir():
+        elif not dest.is_dir():
             print(self.invalid_dest_message.format(file=dest))
             sys.exit(1)
 
-        if not dploy.util.is_directory_readable(source):
-            msg = "dploy link: can not stow from '{file}': Insufficient permissions"
+        elif not dploy.util.is_directory_readable(source):
+            msg = "dploy stow: can not stow from '{file}': Insufficient permissions"
             print(msg.format(file=source))
             sys.exit(1)
 
-        if not dploy.util.is_directory_writable(dest):
+        elif not dploy.util.is_directory_writable(dest):
             msg = "dploy stow: can not stow to '{file}': Insufficient permissions"
             print(msg.format(file=dest))
             sys.exit(1)
@@ -138,12 +138,12 @@ class Link(AbstractBaseStow):
             print(self.invalid_source_message.format(file=source))
             sys.exit(1)
 
-        if not dploy.util.is_file_readable(source) or not dploy.util.is_directory_readable(source):
+        elif not dploy.util.is_file_readable(source) or not dploy.util.is_directory_readable(source):
             msg = "dploy link: can not link '{file}': Insufficient permissions"
             print(msg.format(file=source))
             sys.exit(1)
 
-        if (not dploy.util.is_file_writable(dest.parent) or
+        elif (not dploy.util.is_file_writable(dest.parent) or
                 not dploy.util.is_directory_writable(dest.parent)):
             msg = "dploy link: can not link to '{file}': Insufficient permissions"
             print(msg.format(file=dest))
