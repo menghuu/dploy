@@ -127,7 +127,7 @@ class Link(AbstractBaseStow):
     def __init__(self, source, dest):
         invalid_source_message = "dploy link: can not link '{file}': No such file or directory"
         invalid_dest_message = ""
-        super().__init__(source, dest, invalid_source_message,
+        super().__init__([source], dest, invalid_source_message,
                          invalid_dest_message)
 
     def validate_input(self, source, dest):
