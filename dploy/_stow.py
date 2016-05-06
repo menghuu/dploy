@@ -63,6 +63,22 @@ class AbstractBaseStow():
             print(msg.format(command=self.command, file=dest))
             sys.exit(1)
 
+    def get_directory_contents(self, directory):
+        """
+        get the contents of a directory while handling permission errors that
+        may occur
+        """
+        contents = []
+
+        try:
+            contents = dploy.util.get_directory_contents(directory)
+        except PermissionError:
+            msg = "dploy {command}: can not {command} '{file}': Permission denied"
+            print(msg.format(command=self.command, file=directory))
+            self.abort = True
+
+        return contents
+
     def collect_commands(self, source, dest):
         """
         todo
@@ -95,8 +111,8 @@ class UnStow(AbstractBaseStow):
         """
         todo
         """
+        sources = self.get_directory_contents(source)
 
-        sources = dploy.util.get_directory_contents(source)
 
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
@@ -157,7 +173,6 @@ class Link(AbstractBaseStow):
             msg = "dploy {command}: can not {command} to '{file}': Insufficient permissions"
             print(msg.format(command=self.command, file=dest))
             sys.exit(1)
-
 
     def collect_commands(self, source, dest):
         """
@@ -258,7 +273,7 @@ class Stow(AbstractBaseStow):
         todo
         """
 
-        sources = dploy.util.get_directory_contents(source)
+        sources = self.get_directory_contents(source)
 
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
