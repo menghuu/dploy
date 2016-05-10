@@ -1,7 +1,6 @@
 """
 Tests for the stow stub command
 """
-# pylint: disable=unused-argument
 # pylint: disable=missing-docstring
 # disable lint errors for function names longer that 30 characters
 # pylint: disable=invalid-name
