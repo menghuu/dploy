@@ -130,14 +130,17 @@ class UnStow(AbstractBaseStow):
                         "dploy {command}: can not {command} '{file}': Conflicts with existing file"
                     )
                     print(msg.format(command=self.command, file=dest_path))
+                    self.abort = True
 
             elif dest_path.is_symlink():
                 msg = "dploy {command}: can not {command} '{file}': Conflicts with a existing link"
                 print(msg.format(command=self.command, file=dest_path))
+                self.abort = True
 
             elif not dest_path.parent.exists():
                 msg = "dploy {command}: can not {command} '{file}': No such directory"
                 print(msg.format(command=self.command, file=dest_path.parent))
+                self.abort = True
             else:
                 pass
 
