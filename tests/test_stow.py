@@ -109,7 +109,7 @@ def test_stow_with_file_as_dest(source_a, file_a):
 
 def test_stow_with_file_as_dest_and_source(file_a, file_b):
     with pytest.raises(SystemExit):
-        dploy.stow([file_a], 'file_b')
+        dploy.stow([file_a], file_b)
 
 
 def test_stow_with_read_only_dest(source_a, dest):
