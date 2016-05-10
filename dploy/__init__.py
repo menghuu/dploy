@@ -7,7 +7,6 @@ Windows as well as *nix
 import sys
 assert sys.version_info >= (3, 3), "Requires Python 3.3 or Greater"
 import dploy._stow
-import dploy._link
 
 
 def stow(sources, dest):
