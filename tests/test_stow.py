@@ -71,60 +71,60 @@ def test_stow_unfolding_with_mutliple_sources(source_a, source_b, dest):
 def test_stow_with_existing_file_conflicts(source_a, source_c, dest):
     dploy.stow([source_a], dest)
 
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.stow([source_c], dest)
 
 
 def test_stow_with_existing_broken_link(source_a, dest):
     os.symlink('non_existant_source', os.path.join(dest, 'aaa'))
 
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.stow([source_a], dest)
 
 
 def test_stow_with_source_conflicts(source_a, source_c, dest):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.stow([source_a, source_c], dest)
 
 
 def test_stow_with_non_existant_source(dest):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.stow(['source'], dest)
 
 
 def test_stow_with_non_existant_dest(source_a):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.stow([source_a], 'dest')
 
 
 def test_stow_with_file_as_source(file_a, dest):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.stow([file_a], dest)
 
 
 def test_stow_with_file_as_dest(source_a, file_a):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.stow([source_a], file_a)
 
 
 def test_stow_with_file_as_dest_and_source(file_a, file_b):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.stow([file_a], file_b)
 
 
 def test_stow_with_read_only_dest(source_a, dest):
     util.read_only(dest)
-    with pytest.raises(SystemExit):
+    with pytest.raises(PermissionError):
         dploy.stow([source_a], dest)
 
 
 def test_stow_with_write_only_source(source_a, source_c, dest):
     util.write_only(source_a)
-    with pytest.raises(SystemExit):
+    with pytest.raises(PermissionError):
         dploy.stow([source_a, source_c], dest)
 
 
 def test_stow_with_write_only_source_file(source_a, source_c, dest):
     util.write_only(os.path.join(source_a, 'aaa'))
-    with pytest.raises(SystemExit):
+    with pytest.raises(PermissionError):
         dploy.stow([source_a, source_c], dest)

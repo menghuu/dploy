@@ -22,28 +22,28 @@ def test_link_file(file_a, dest):
 
 
 def test_link_with_non_existant_source(dest):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.link('source_a', os.path.join(dest, 'source_a_link'))
 
 
 def test_link_with_non_existant_dest(source_a):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.link(source_a, os.path.join('dest', 'source_a_link'))
 
 
 def test_link_with_read_only_dest(file_a, dest):
     util.read_only(dest)
-    with pytest.raises(SystemExit):
+    with pytest.raises(PermissionError):
         dploy.link(file_a, os.path.join(dest, 'file_a_link'))
 
 
 def test_link_with_write_only_source(file_a, dest):
     util.write_only(file_a)
-    with pytest.raises(SystemExit):
+    with pytest.raises(PermissionError):
         dploy.link(file_a, os.path.join(dest, 'file_a_link'))
 
 
-def test_link_with_conflicting_broken_lint_at_dest(file_a, dest):
+def test_link_with_conflicting_broken_link_at_dest(file_a, dest):
     os.symlink('non_existant_source', os.path.join(dest, 'file_a_link'))
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.link(file_a, os.path.join(dest, 'file_a_link'))

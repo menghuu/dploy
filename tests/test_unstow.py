@@ -19,39 +19,39 @@ def test_unstow_with_basic_senario(source_a, dest):
 def test_unstow_with_existing_broken_link(source_a, dest):
     os.symlink('non_existant_source', os.path.join(dest, 'aaa'))
 
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.unstow([source_a], dest)
 
 
 def test_unstow_with_non_existant_source(dest):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.unstow(['source'], dest)
 
 
 def test_unstow_with_non_existant_dest(source_a):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.unstow([source_a], 'dest')
 
 
 def test_unstow_with_file_as_source(file_a, dest):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.unstow([file_a], dest)
 
 
 def test_unstow_with_file_as_dest(source_a, file_a):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.unstow([source_a], file_a)
 
 
 def test_unstow_with_file_as_dest_and_source(file_a, file_b):
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         dploy.unstow([file_a], file_b)
 
 
 def test_unstow_with_read_only_dest(source_a, dest):
     dploy.stow([source_a], dest)
     util.read_only(dest)
-    with pytest.raises(SystemExit):
+    with pytest.raises(PermissionError):
         dploy.unstow([source_a], dest)
 
 
@@ -64,7 +64,7 @@ def test_unstow_with_read_only_dest_file(source_a, dest):
 def test_unstow_with_write_only_source(source_a, dest):
     dploy.stow([source_a], dest)
     util.write_only(source_a)
-    with pytest.raises(SystemExit):
+    with pytest.raises(PermissionError):
         dploy.unstow([source_a], dest)
 
 

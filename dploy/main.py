@@ -2,7 +2,6 @@
 The logic and workings behind the stow and unstow sub commands
 """
 
-import sys
 from collections import defaultdict
 import pathlib
 import dploy.command
@@ -20,7 +19,7 @@ class AbstractBaseSubCommand():
                  invalid_dest_message):
         self.command = command
         self.commands = []
-        self.abort = False
+        self.execptions = []
         self.invalid_source_message = invalid_source_message
         self.invalid_dest_message = invalid_dest_message
 
@@ -46,22 +45,20 @@ class AbstractBaseSubCommand():
         todo
         """
         if not source.is_dir():
-            print(self.invalid_source_message.format(command=self.command, file=source))
-            sys.exit(1)
+            raise ValueError(self.invalid_source_message.format(command=self.command, file=source))
 
         elif not dest.is_dir():
-            print(self.invalid_dest_message.format(command=self.command, file=dest))
-            sys.exit(1)
+            raise ValueError(self.invalid_dest_message.format(command=self.command, file=dest))
 
         elif not dploy.util.is_directory_readable(source):
             msg = "dploy {command}: can not {command} from '{file}': Insufficient permissions"
-            print(msg.format(command=self.command, file=source))
-            sys.exit(1)
+            msg = msg.format(command=self.command, file=source)
+            raise PermissionError(msg)
 
         elif not dploy.util.is_directory_writable(dest):
             msg = "dploy {command}: can not {command} to '{file}': Insufficient permissions"
-            print(msg.format(command=self.command, file=dest))
-            sys.exit(1)
+            msg = msg.format(command=self.command, file=dest)
+            raise PermissionError(msg)
 
     def get_directory_contents(self, directory):
         """
@@ -74,8 +71,8 @@ class AbstractBaseSubCommand():
             contents = dploy.util.get_directory_contents(directory)
         except PermissionError:
             msg = "dploy {command}: can not {command} '{file}': Permission denied"
-            print(msg.format(command=self.command, file=directory))
-            self.abort = True
+            msg = msg.format(command=self.command, file=directory)
+            self.execptions.append(PermissionError(msg))
 
         return contents
 
@@ -89,8 +86,9 @@ class AbstractBaseSubCommand():
         """
         todo
         """
-        if self.abort:
-            sys.exit(1)
+        if len(self.execptions) > 0:
+            for execption in self.execptions:
+                raise execption
         else:
             for cmd in self.commands:
                 cmd.execute()
@@ -144,18 +142,18 @@ class AbstractBaseStow(AbstractBaseSubCommand):
                     msg = (
                         "dploy {command}: can not {command} '{file}': Conflicts with existing file"
                     )
-                    print(msg.format(command=self.command, file=dest_path))
-                    self.abort = True
+                    msg = msg.format(command=self.command, file=dest_path)
+                    self.execptions.append(ValueError(msg))
 
             elif dest_path.is_symlink():
                 msg = "dploy {command}: can not {command} '{file}': Conflicts with existing link"
-                print(msg.format(command=self.command, file=dest_path))
-                self.abort = True
+                msg = msg.format(command=self.command, file=dest_path)
+                self.execptions.append(ValueError(msg))
 
             elif not dest_path.parent.exists() and not self.is_unfolding:
                 msg = "dploy {command}: can not {command} '{file}': No such directory"
-                print(msg.format(command=self.command, file=dest_path.parent))
-                self.abort = True
+                msg = msg.format(command=self.command, file=dest_path.parent)
+                self.execptions.append(ValueError(msg))
 
             else:
                 self.are_other(source, dest_path)
@@ -200,20 +198,19 @@ class Link(AbstractBaseSubCommand):
         todo
         """
         if not source.exists():
-            print(self.invalid_source_message.format(command=self.command, file=source))
-            sys.exit(1)
+            raise ValueError(self.invalid_source_message.format(command=self.command, file=source))
 
         elif (not dploy.util.is_file_readable(source) or
               not dploy.util.is_directory_readable(source)):
             msg = "dploy {command}: can not {command} '{file}': Insufficient permissions"
-            print(msg.format(command=self.command, file=source))
-            sys.exit(1)
+            msg = msg.format(command=self.command, file=source)
+            raise PermissionError(msg)
 
         elif (not dploy.util.is_file_writable(dest.parent) or
               not dploy.util.is_directory_writable(dest.parent)):
             msg = "dploy {command}: can not {command} to '{file}': Insufficient permissions"
-            print(msg.format(command=self.command, file=dest))
-            sys.exit(1)
+            msg = msg.format(command=self.command, file=dest)
+            raise PermissionError(msg)
 
     def collect_commands(self, source, dest):
         """
@@ -226,18 +223,18 @@ class Link(AbstractBaseSubCommand):
                                                                       dest))
             else:
                 msg = "dploy {command}: can not {command} '{file}': Conflicts with existing file"
-                print(msg.format(command=self.command, file=dest))
-                self.abort = True
+                msg = msg.format(command=self.command, file=dest)
+                self.execptions.append(ValueError(msg))
 
         elif dest.is_symlink():
             msg = "dploy {command}: can not {command} '{file}': Conflicts with existing link"
-            print(msg.format(command=self.command, file=dest))
-            self.abort = True
+            msg = msg.format(command=self.command, file=dest)
+            self.execptions.append(ValueError(msg))
 
         elif not dest.parent.exists():
             msg = "dploy {command}: can not {command} into '{dest}': No such directory"
-            print(msg.format(command=self.command, dest=dest.parent))
-            self.abort = True
+            msg = msg.format(command=self.command, dest=dest.parent)
+            self.execptions.append(ValueError(msg))
 
         else:
             self.commands.append(dploy.command.SymbolicLink(self.command, source, dest))
@@ -295,8 +292,8 @@ class Stow(AbstractBaseStow):
                     self.is_unfolding = False
             else:
                 msg = "dploy {command}: can not {command} '{source}': Conflicts with another source"
-                print(msg.format(command=self.command, source=self.commands[first_index].source))
-                self.abort = True
+                msg = msg.format(command=self.command, source=self.commands[first_index].source)
+                self.execptions.append(ValueError(msg))
                 return
 
         for _, indicies in dupes:
@@ -317,16 +314,10 @@ class Stow(AbstractBaseStow):
                 dploy.command.SymbolicLinkExists(self.command, source, dest))
 
     def are_directories(self, source, dest):
-        """
-        todo
-        """
         if dest.is_symlink():
             self.unfold(dest.resolve(), dest)
         self.collect_commands(source, dest)
 
     def are_other(self, source, dest):
-        """
-        todo
-        """
         self.commands.append(
             dploy.command.SymbolicLink(self.command, source, dest))

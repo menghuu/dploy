@@ -4,6 +4,7 @@
 The main entry point to the dploy script
 """
 
+import sys
 import argparse
 import dploy
 import dploy.version
@@ -45,13 +46,26 @@ def main():
 
     if args.sub_command != None:
         if args.sub_command == 'stow':
-            dploy.stow(args.source, args.dest)
+            try:
+                dploy.stow(args.source, args.dest)
+            except (ValueError, PermissionError) as error:
+                print(error, file=sys.stderr)
+                sys.exit(1)
+
 
         elif args.sub_command == 'unstow':
-            dploy.unstow(args.source, args.dest)
+            try:
+                dploy.unstow(args.source, args.dest)
+            except (ValueError, PermissionError) as error:
+                print(error, file=sys.stderr)
+                sys.exit(1)
 
         elif args.sub_command == 'link':
-            dploy.link(args.source, args.dest)
+            try:
+                dploy.link(args.source, args.dest)
+            except (ValueError, PermissionError) as error:
+                print(error, file=sys.stderr)
+                sys.exit(1)
 
         else:
             parser.print_help()
