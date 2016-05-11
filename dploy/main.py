@@ -189,7 +189,9 @@ class Link(AbstractBaseSubCommand):
         invalid_source_message = (
             "dploy {command}: can not {command} '{file}': No such file or directory"
         )
-        invalid_dest_message = ""
+        invalid_dest_message = (
+            "dploy {command}: can not {command} into '{file}': directory"
+        )
         super().__init__("link", [source], dest, invalid_source_message,
                          invalid_dest_message)
 
@@ -198,16 +200,21 @@ class Link(AbstractBaseSubCommand):
         todo
         """
         if not source.exists():
-            raise ValueError(self.invalid_source_message.format(command=self.command, file=source))
+            msg = self.invalid_source_message.format(command=self.command, file=source)
+            raise ValueError(msg)
 
-        elif (not dploy.util.is_file_readable(source) or
-              not dploy.util.is_directory_readable(source)):
+        elif not dest.parent.exists():
+            msg = self.invalid_dest_message.format(command=self.command, file=dest.parent)
+            raise ValueError(msg)
+
+        elif (not dploy.util.is_file_readable(source)
+              or not dploy.util.is_directory_readable(source)):
             msg = "dploy {command}: can not {command} '{file}': Insufficient permissions"
             msg = msg.format(command=self.command, file=source)
             raise PermissionError(msg)
 
-        elif (not dploy.util.is_file_writable(dest.parent) or
-              not dploy.util.is_directory_writable(dest.parent)):
+        elif (not dploy.util.is_file_writable(dest.parent)
+              or not dploy.util.is_directory_writable(dest.parent)):
             msg = "dploy {command}: can not {command} to '{file}': Insufficient permissions"
             msg = msg.format(command=self.command, file=dest)
             raise PermissionError(msg)
