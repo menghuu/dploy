@@ -37,7 +37,6 @@ def main():
 
     link_parser = sub_parsers.add_parser('link')
     link_parser.add_argument('source',
-                             nargs='+',
                              help='source file or directory to link')
     link_parser.add_argument('dest',
                              help='destination path to link')
