@@ -44,6 +44,40 @@ class AbstractBaseSubCommand():
         """
         todo
         """
+        pass
+
+    def collect_commands(self, source, dest):
+        """
+        todo
+        """
+        pass
+
+    def execute_commands(self):
+        """
+        todo
+        """
+        if len(self.execptions) > 0:
+            for execption in self.execptions:
+                raise execption
+        else:
+            for cmd in self.commands:
+                cmd.execute()
+
+
+class AbstractBaseStow(AbstractBaseSubCommand):
+    """
+    todo
+    """
+    def __init__(self, command, source, dest):
+        invalid_source_message = "dploy {command}: can not {command} '{file}': No such directory"
+        invalid_dest_message = "dploy {command}: can not {command} into '{file}': No such directory"
+        self.is_unfolding = False
+        super().__init__("unstow", source, dest, invalid_source_message, invalid_dest_message)
+
+    def validate_input(self, source, dest):
+        """
+        todo
+        """
         if not source.is_dir():
             raise ValueError(self.invalid_source_message.format(command=self.command, file=source))
 
@@ -76,34 +110,6 @@ class AbstractBaseSubCommand():
 
         return contents
 
-    def collect_commands(self, source, dest):
-        """
-        todo
-        """
-        pass
-
-    def execute_commands(self):
-        """
-        todo
-        """
-        if len(self.execptions) > 0:
-            for execption in self.execptions:
-                raise execption
-        else:
-            for cmd in self.commands:
-                cmd.execute()
-
-
-class AbstractBaseStow(AbstractBaseSubCommand):
-    """
-    todo
-    """
-    def __init__(self, command, source, dest):
-        invalid_source_message = "dploy {command}: can not {command} '{file}': No such directory"
-        invalid_dest_message = "dploy {command}: can not {command} into '{file}': No such directory"
-        self.is_unfolding = False
-        super().__init__("unstow", source, dest, invalid_source_message, invalid_dest_message)
-
     def are_same_file(self, source, dest):
         """
         what to do if source and dest are the same files
@@ -114,7 +120,6 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         """
         what to do if the source and dest are directories
         """
-
         pass
 
     def are_other(self, source, dest):
