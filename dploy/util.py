@@ -37,9 +37,12 @@ def get_absolute_path(file):
 
 def get_relative_path(path, start_at):
     """
-    NOTE: python 3.4.5 & 3.5.2 support pathlib.Path.path = pathlib.Path.__str__()
+
+    NOTE: python 3.4.5 & 3.5.2 support pathlib.Path.path =
+    pathlib.Path.__str__()
     """
-    return pathlib.Path(os.path.relpath(path.__str__(), start_at.__str__()))
+    relative_path = os.path.relpath(path.__str__(), start_at.__str__())
+    return pathlib.Path(relative_path)
 
 
 def is_file_readable(a_file):
