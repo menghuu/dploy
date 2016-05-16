@@ -26,3 +26,7 @@ test:
 .PHONY: setup-requirements
 setup-requirements:
 	pip install -r requirements.txt
+
+.PHONY: build
+build: clean
+	pyinstaller -n dploy --onefile dploy$(PATHSEP)__main__.py
