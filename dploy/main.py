@@ -72,7 +72,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         invalid_source_message = "dploy {command}: can not {command} '{file}': No such directory"
         invalid_dest_message = "dploy {command}: can not {command} into '{file}': No such directory"
         self.is_unfolding = False
-        super().__init__("unstow", source, dest, invalid_source_message, invalid_dest_message)
+        super().__init__(command, source, dest, invalid_source_message, invalid_dest_message)
 
     def validate_input(self, source, dest):
         """
