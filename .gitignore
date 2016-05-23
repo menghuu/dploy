@@ -1,3 +1,8 @@
+# python files
 __pycache__/
 *.pyc
-.sconsign.dblite
+
+# pyinstaller files
+dist/
+build/
+*.spec
