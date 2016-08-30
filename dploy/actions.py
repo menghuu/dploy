@@ -65,7 +65,7 @@ class SymbolicLink(AbstractBaseAction):
             subcmd=self.subcmd, dest=self.dest, source=self.source)
 
 
-class SymbolicLinkExists(AbstractBaseAction):
+class AlreadyLinked(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
     """
     todo
@@ -81,6 +81,27 @@ class SymbolicLinkExists(AbstractBaseAction):
 
     def __repr__(self):
         return "dploy {subcmd}: already linked {dest} => {source}".format(
+            subcmd=self.subcmd,
+            source=self.source,
+            dest=self.dest)
+
+
+class AlreadyUnlinked(AbstractBaseAction):
+    # pylint: disable=too-few-public-methods
+    """
+    todo
+    """
+    def __init__(self, subcmd, source, dest):
+        super().__init__()
+        self.source = source
+        self.dest = dest
+        self.subcmd = subcmd
+
+    def _logic(self):
+        pass
+
+    def __repr__(self):
+        return "dploy {subcmd}: already unlinked {dest} => {source}".format(
             subcmd=self.subcmd,
             source=self.source,
             dest=self.dest)

@@ -195,7 +195,9 @@ class UnStow(AbstractBaseStow):
             self.collect_actions(source, dest)
 
     def are_other(self, source, dest):
-        pass
+        self.actions.append(dploy.actions.AlreadyUnlinked(self.subcmd,
+                                                          source,
+                                                          dest))
 
 
 class Link(AbstractBaseSubCommand):
@@ -245,9 +247,9 @@ class Link(AbstractBaseSubCommand):
 
         if dest.exists():
             if dploy.utils.is_same_file(dest, source):
-                self.actions.append(dploy.actions.SymbolicLinkExists(self.subcmd,
-                                                                     source,
-                                                                     dest))
+                self.actions.append(dploy.actions.AlreadyLinked(self.subcmd,
+                                                                source,
+                                                                dest))
             else:
                 msg = "dploy {subcmd}: can not {subcmd} '{file}': Conflicts with existing file"
                 msg = msg.format(subcmd=self.subcmd, file=dest)
@@ -338,7 +340,7 @@ class Stow(AbstractBaseStow):
                 dploy.actions.SymbolicLink(self.subcmd, source, dest))
         else:
             self.actions.append(
-                dploy.actions.SymbolicLinkExists(self.subcmd, source, dest))
+                dploy.actions.AlreadyLinked(self.subcmd, source, dest))
 
     def are_directories(self, source, dest):
         if dest.is_symlink():
