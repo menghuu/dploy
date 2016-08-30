@@ -4,7 +4,7 @@ The logic and workings behind the stow and unstow sub commands
 
 from collections import defaultdict
 import pathlib
-import dploy.command
+import dploy.actions
 import dploy.util
 
 
@@ -18,7 +18,7 @@ class AbstractBaseSubCommand():
     def __init__(self, subcmd, sources, dest, invalid_source_message,
                  invalid_dest_message):
         self.subcmd = subcmd
-        self.commands = []
+        self.actions = []
         self.execptions = []
         self.invalid_source_message = invalid_source_message
         self.invalid_dest_message = invalid_dest_message
@@ -29,12 +29,12 @@ class AbstractBaseSubCommand():
             source_absolute = dploy.util.get_absolute_path(source_input)
             dest_absolute = dploy.util.get_absolute_path(dest_input)
             self.validate_input(source_input, dest_input)
-            self.collect_commands(source_absolute, dest_absolute)
+            self.collect_actions(source_absolute, dest_absolute)
 
-        self.check_for_conflicting_commands()
-        self.execute_commands()
+        self.check_for_conflicting_actions()
+        self.execute_actions()
 
-    def check_for_conflicting_commands(self):
+    def check_for_conflicting_actions(self):
         """
         todo
         """
@@ -46,13 +46,13 @@ class AbstractBaseSubCommand():
         """
         pass
 
-    def collect_commands(self, source, dest):
+    def collect_actions(self, source, dest):
         """
         todo
         """
         pass
 
-    def execute_commands(self):
+    def execute_actions(self):
         """
         todo
         """
@@ -60,7 +60,7 @@ class AbstractBaseSubCommand():
             for execption in self.execptions:
                 raise execption
         else:
-            for cmd in self.commands:
+            for cmd in self.actions:
                 cmd.execute()
 
 
@@ -128,7 +128,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         """
         pass
 
-    def collect_commands(self, source, dest):
+    def collect_actions(self, source, dest):
         """
         todo
         """
@@ -176,11 +176,11 @@ class UnStow(AbstractBaseStow):
         """
         what to do if source and dest are the same files
         """
-        self.commands.append(dploy.command.UnLink(self.subcmd, dest))
+        self.actions.append(dploy.actions.UnLink(self.subcmd, dest))
 
     def are_directories(self, source, dest):
         if not dest.is_symlink():
-            self.collect_commands(source, dest)
+            self.collect_actions(source, dest)
 
     def are_other(self, source, dest):
         pass
@@ -226,16 +226,16 @@ class Link(AbstractBaseSubCommand):
             msg = msg.format(subcmd=self.subcmd, file=dest)
             raise PermissionError(msg)
 
-    def collect_commands(self, source, dest):
+    def collect_actions(self, source, dest):
         """
         todo
         """
 
         if dest.exists():
             if dploy.util.is_same_file(dest, source):
-                self.commands.append(dploy.command.SymbolicLinkExists(self.subcmd,
-                                                                      source,
-                                                                      dest))
+                self.actions.append(dploy.actions.SymbolicLinkExists(self.subcmd,
+                                                                     source,
+                                                                     dest))
             else:
                 msg = "dploy {subcmd}: can not {subcmd} '{file}': Conflicts with existing file"
                 msg = msg.format(subcmd=self.subcmd, file=dest)
@@ -252,7 +252,7 @@ class Link(AbstractBaseSubCommand):
             self.execptions.append(ValueError(msg))
 
         else:
-            self.commands.append(dploy.command.SymbolicLink(self.subcmd, source, dest))
+            self.actions.append(dploy.actions.SymbolicLink(self.subcmd, source, dest))
 
 
 class Stow(AbstractBaseStow):
@@ -267,9 +267,9 @@ class Stow(AbstractBaseStow):
         todo
         """
         self.is_unfolding = True
-        self.commands.append(dploy.command.UnLink(self.subcmd, dest))
-        self.commands.append(dploy.command.MakeDirectory(self.subcmd, dest))
-        self.collect_commands(source, dest)
+        self.actions.append(dploy.actions.UnLink(self.subcmd, dest))
+        self.actions.append(dploy.actions.MakeDirectory(self.subcmd, dest))
+        self.collect_actions(source, dest)
         self.is_unfolding = False
 
     def list_duplicates(self):
@@ -277,15 +277,15 @@ class Stow(AbstractBaseStow):
         todo
         """
         tally = defaultdict(list)
-        for i, item in enumerate(self.commands):
-            if isinstance(item, dploy.command.SymbolicLink):
+        for i, item in enumerate(self.actions):
+            if isinstance(item, dploy.actions.SymbolicLink):
                 tally[item.dest].append(i)
         return ((key, locs) for key, locs in tally.items()
                 if len(locs) > 1)
 
-    def check_for_conflicting_commands(self):
+    def check_for_conflicting_actions(self):
         """
-        check for symbolic link commands that would cause conflicting symbolic
+        check for symbolic link actions that would cause conflicting symbolic
         links to the same destination.
         """
         dupes = []
@@ -297,42 +297,42 @@ class Stow(AbstractBaseStow):
 
         for _, indicies in dupes:
             first_index = indicies[0]
-            if self.commands[first_index].source.is_dir():
-                self.unfold(self.commands[first_index].source,
-                            self.commands[first_index].dest)
+            if self.actions[first_index].source.is_dir():
+                self.unfold(self.actions[first_index].source,
+                            self.actions[first_index].dest)
                 for index in indicies[1:]:
                     self.is_unfolding = True
-                    self.collect_commands(self.commands[index].source,
-                                          self.commands[index].dest)
+                    self.collect_actions(self.actions[index].source,
+                                         self.actions[index].dest)
                     self.is_unfolding = False
             else:
                 msg = "dploy {subcmd}: can not {subcmd} '{source}': Conflicts with another source"
-                msg = msg.format(subcmd=self.subcmd, source=self.commands[first_index].source)
+                msg = msg.format(subcmd=self.subcmd, source=self.actions[first_index].source)
                 self.execptions.append(ValueError(msg))
                 return
 
         for _, indicies in dupes:
             for index in reversed(indicies[1:]):
-                del self.commands[index]
+                del self.actions[index]
 
-        self.check_for_conflicting_commands()
+        self.check_for_conflicting_actions()
 
     def are_same_file(self, source, dest):
         """
         what to do if source and dest are the same files
         """
         if self.is_unfolding:
-            self.commands.append(
-                dploy.command.SymbolicLink(self.subcmd, source, dest))
+            self.actions.append(
+                dploy.actions.SymbolicLink(self.subcmd, source, dest))
         else:
-            self.commands.append(
-                dploy.command.SymbolicLinkExists(self.subcmd, source, dest))
+            self.actions.append(
+                dploy.actions.SymbolicLinkExists(self.subcmd, source, dest))
 
     def are_directories(self, source, dest):
         if dest.is_symlink():
             self.unfold(dest.resolve(), dest)
-        self.collect_commands(source, dest)
+        self.collect_actions(source, dest)
 
     def are_other(self, source, dest):
-        self.commands.append(
-            dploy.command.SymbolicLink(self.subcmd, source, dest))
+        self.actions.append(
+            dploy.actions.SymbolicLink(self.subcmd, source, dest))

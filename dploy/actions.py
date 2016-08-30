@@ -5,7 +5,7 @@ todo
 import dploy.util
 
 
-class AbstractBaseCommand():
+class AbstractBaseAction():
     # pylint: disable=too-few-public-methods
     """
     todo
@@ -23,7 +23,7 @@ class AbstractBaseCommand():
         self._logic()
 
 
-class SymbolicLink(AbstractBaseCommand):
+class SymbolicLink(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
     """
     todo
@@ -66,7 +66,7 @@ class SymbolicLink(AbstractBaseCommand):
             subcmd=self.subcmd, dest=self.dest, source=self.source)
 
 
-class SymbolicLinkExists(AbstractBaseCommand):
+class SymbolicLinkExists(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
     """
     todo
@@ -84,7 +84,7 @@ class SymbolicLinkExists(AbstractBaseCommand):
                          dest=self.dest))
 
 
-class UnLink(AbstractBaseCommand):
+class UnLink(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
     """
     todo
@@ -102,7 +102,7 @@ class UnLink(AbstractBaseCommand):
         self.target.unlink()
 
 
-class MakeDirectory(AbstractBaseCommand):
+class MakeDirectory(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
     """
     todo
