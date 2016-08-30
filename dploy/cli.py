@@ -17,6 +17,11 @@ def create_parser():
                         action='version',
                         version='%(prog)s {version}'.format(version=dploy.version.__version__))
 
+    parser.add_argument('--quiet',
+                        dest='is_quiet',
+                        action='store_true',
+                        help='suppress normal output excluding error messages')
+
     sub_parsers = parser.add_subparsers(dest="sub_command")
 
     stow_parser = sub_parsers.add_parser('stow')
@@ -45,6 +50,7 @@ def run(arguments=None):
     """
     interpret the parser arguments and execute the corresponding commands
     """
+
     parser = create_parser()
 
     if arguments is None:
@@ -55,7 +61,7 @@ def run(arguments=None):
 
     if args.sub_command == 'stow':
         try:
-            dploy.main.Stow(args.source, args.dest, is_silent=False)
+            dploy.main.Stow(args.source, args.dest, is_silent=args.is_quiet)
         except (ValueError, PermissionError) as error:
             print(error, file=sys.stderr)
             sys.exit(1)
@@ -63,14 +69,14 @@ def run(arguments=None):
 
     elif args.sub_command == 'unstow':
         try:
-            dploy.main.UnStow(args.source, args.dest, is_silent=False)
+            dploy.main.UnStow(args.source, args.dest, is_silent=args.is_quiet)
         except (ValueError, PermissionError) as error:
             print(error, file=sys.stderr)
             sys.exit(1)
 
     elif args.sub_command == 'link':
         try:
-            dploy.main.Link(args.source, args.dest, is_silent=False)
+            dploy.main.Link(args.source, args.dest, is_silent=args.is_quiet)
         except (ValueError, PermissionError) as error:
             print(error, file=sys.stderr)
             sys.exit(1)
