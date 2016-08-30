@@ -58,7 +58,6 @@ class SymbolicLink(AbstractBaseAction):
         return self._source_relative
 
     def _logic(self):
-        print(self)
         self.dest.symlink_to(self.source_relative)
 
     def __repr__(self):
@@ -78,10 +77,13 @@ class SymbolicLinkExists(AbstractBaseAction):
         self.subcmd = subcmd
 
     def _logic(self):
-        msg = "dploy {subcmd}: already linked {dest} => {source}"
-        print(msg.format(subcmd=self.subcmd,
-                         source=self.source,
-                         dest=self.dest))
+        pass
+
+    def __repr__(self):
+        return "dploy {subcmd}: already linked {dest} => {source}".format(
+            subcmd=self.subcmd,
+            source=self.source,
+            dest=self.dest)
 
 
 class UnLink(AbstractBaseAction):
@@ -95,12 +97,13 @@ class UnLink(AbstractBaseAction):
         self.subcmd = subcmd
 
     def _logic(self):
-        msg = "dploy {subcmd}: unlink {target} => {source}"
-        print(msg.format(subcmd=self.subcmd,
-                         target=self.target,
-                         source=self.target.resolve()))
         self.target.unlink()
 
+    def __repr__(self):
+        return "dploy {subcmd}: unlink {target} => {source}".format(
+            subcmd=self.subcmd,
+            target=self.target,
+            source=self.target.resolve())
 
 class MakeDirectory(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
@@ -113,6 +116,9 @@ class MakeDirectory(AbstractBaseAction):
         self.subcmd = subcmd
 
     def _logic(self):
-        msg = "dploy {subcmd}: make directory {target}"
-        print(msg.format(target=self.target, subcmd=self.subcmd))
         self.target.mkdir()
+
+    def __repr__(self):
+        return "dploy {subcmd}: make directory {target}".format(
+            target=self.target,
+            subcmd=self.subcmd)

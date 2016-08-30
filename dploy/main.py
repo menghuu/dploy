@@ -13,15 +13,20 @@ class AbstractBaseSubCommand():
     An abstract class to unify shared functionality in stow commands
     """
 
-    # TODO
     # pylint: disable=too-many-arguments
-    def __init__(self, subcmd, sources, dest, invalid_source_message,
-                 invalid_dest_message):
+    def __init__(self,
+                 subcmd,
+                 sources,
+                 dest,
+                 invalid_source_message,
+                 invalid_dest_message,
+                 is_silent=True):
         self.subcmd = subcmd
         self.actions = []
         self.execptions = []
         self.invalid_source_message = invalid_source_message
         self.invalid_dest_message = invalid_dest_message
+        self.is_silent = is_silent
 
         for source in sources:
             source_input = pathlib.Path(source)
@@ -60,19 +65,26 @@ class AbstractBaseSubCommand():
             for execption in self.execptions:
                 raise execption
         else:
-            for cmd in self.actions:
-                cmd.execute()
+            for action in self.actions:
+                if not self.is_silent:
+                    print(action)
+                action.execute()
 
 
 class AbstractBaseStow(AbstractBaseSubCommand):
     """
     todo
     """
-    def __init__(self, subcmd, source, dest):
+    def __init__(self, subcmd, source, dest, is_silent=True):
         invalid_source_message = "dploy {subcmd}: can not {subcmd} '{file}': No such directory"
         invalid_dest_message = "dploy {subcmd}: can not {subcmd} into '{file}': No such directory"
         self.is_unfolding = False
-        super().__init__(subcmd, source, dest, invalid_source_message, invalid_dest_message)
+        super().__init__(subcmd,
+                         source,
+                         dest,
+                         invalid_source_message,
+                         invalid_dest_message,
+                         is_silent)
 
     def validate_input(self, source, dest):
         """
@@ -168,8 +180,8 @@ class UnStow(AbstractBaseStow):
     """
     todo
     """
-    def __init__(self, source, dest):
-        super().__init__("unstow", source, dest)
+    def __init__(self, source, dest, is_silent=True):
+        super().__init__("unstow", source, dest, is_silent)
 
 
     def are_same_file(self, source, dest):
@@ -190,7 +202,7 @@ class Link(AbstractBaseSubCommand):
     """
     todo
     """
-    def __init__(self, source, dest):
+    def __init__(self, source, dest, is_silent=True):
         invalid_source_message = (
             "dploy {subcmd}: can not {subcmd} '{file}': No such file or directory"
         )
@@ -198,7 +210,7 @@ class Link(AbstractBaseSubCommand):
             "dploy {subcmd}: can not {subcmd} into '{file}': directory"
         )
         super().__init__("link", [source], dest, invalid_source_message,
-                         invalid_dest_message)
+                         invalid_dest_message, is_silent)
 
     def validate_input(self, source, dest):
         """
@@ -259,8 +271,8 @@ class Stow(AbstractBaseStow):
     """
     todo
     """
-    def __init__(self, source, dest):
-        super().__init__("stow", source, dest)
+    def __init__(self, source, dest, is_silent=True):
+        super().__init__("stow", source, dest, is_silent)
 
     def unfold(self, source, dest):
         """

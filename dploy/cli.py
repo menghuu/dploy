@@ -55,7 +55,7 @@ def run(arguments=None):
 
     if args.sub_command == 'stow':
         try:
-            dploy.main.Stow(args.source, args.dest)
+            dploy.main.Stow(args.source, args.dest, is_silent=False)
         except (ValueError, PermissionError) as error:
             print(error, file=sys.stderr)
             sys.exit(1)
@@ -63,14 +63,14 @@ def run(arguments=None):
 
     elif args.sub_command == 'unstow':
         try:
-            dploy.main.UnStow(args.source, args.dest)
+            dploy.main.UnStow(args.source, args.dest, is_silent=False)
         except (ValueError, PermissionError) as error:
             print(error, file=sys.stderr)
             sys.exit(1)
 
     elif args.sub_command == 'link':
         try:
-            dploy.main.Link(args.source, args.dest)
+            dploy.main.Link(args.source, args.dest, is_silent=False)
         except (ValueError, PermissionError) as error:
             print(error, file=sys.stderr)
             sys.exit(1)
