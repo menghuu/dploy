@@ -4,7 +4,7 @@ The command line interface
 
 import sys
 import argparse
-import dploy
+import dploy.main
 import dploy.version
 
 
@@ -55,7 +55,7 @@ def run(arguments=None):
 
     if args.sub_command == 'stow':
         try:
-            dploy.stow(args.source, args.dest)
+            dploy.main.Stow(args.source, args.dest)
         except (ValueError, PermissionError) as error:
             print(error, file=sys.stderr)
             sys.exit(1)
@@ -63,14 +63,14 @@ def run(arguments=None):
 
     elif args.sub_command == 'unstow':
         try:
-            dploy.unstow(args.source, args.dest)
+            dploy.main.UnStow(args.source, args.dest)
         except (ValueError, PermissionError) as error:
             print(error, file=sys.stderr)
             sys.exit(1)
 
     elif args.sub_command == 'link':
         try:
-            dploy.link(args.source, args.dest)
+            dploy.main.Link(args.source, args.dest)
         except (ValueError, PermissionError) as error:
             print(error, file=sys.stderr)
             sys.exit(1)
