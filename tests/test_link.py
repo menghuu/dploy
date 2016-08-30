@@ -9,7 +9,7 @@ import os
 import pytest
 import dploy
 import dploy.cli
-import util
+import utils
 
 
 def test_link_directory(source_a, dest):
@@ -39,13 +39,13 @@ def test_link_with_non_existant_dest(source_a):
 
 
 def test_link_with_read_only_dest(file_a, dest):
-    util.read_only(dest)
+    utils.read_only(dest)
     with pytest.raises(PermissionError):
         dploy.link(file_a, os.path.join(dest, 'file_a_link'))
 
 
 def test_link_with_write_only_source(file_a, dest):
-    util.write_only(file_a)
+    utils.write_only(file_a)
     with pytest.raises(PermissionError):
         dploy.link(file_a, os.path.join(dest, 'file_a_link'))
 

@@ -5,7 +5,7 @@ The logic and workings behind the stow and unstow sub commands
 from collections import defaultdict
 import pathlib
 import dploy.actions
-import dploy.util
+import dploy.utils
 
 
 class AbstractBaseSubCommand():
@@ -26,8 +26,8 @@ class AbstractBaseSubCommand():
         for source in sources:
             source_input = pathlib.Path(source)
             dest_input = pathlib.Path(dest)
-            source_absolute = dploy.util.get_absolute_path(source_input)
-            dest_absolute = dploy.util.get_absolute_path(dest_input)
+            source_absolute = dploy.utils.get_absolute_path(source_input)
+            dest_absolute = dploy.utils.get_absolute_path(dest_input)
             self.validate_input(source_input, dest_input)
             self.collect_actions(source_absolute, dest_absolute)
 
@@ -84,12 +84,12 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         elif not dest.is_dir():
             raise ValueError(self.invalid_dest_message.format(subcmd=self.subcmd, file=dest))
 
-        elif not dploy.util.is_directory_readable(source):
+        elif not dploy.utils.is_directory_readable(source):
             msg = "dploy {subcmd}: can not {subcmd} from '{file}': Insufficient permissions"
             msg = msg.format(subcmd=self.subcmd, file=source)
             raise PermissionError(msg)
 
-        elif not dploy.util.is_directory_writable(dest):
+        elif not dploy.utils.is_directory_writable(dest):
             msg = "dploy {subcmd}: can not {subcmd} to '{file}': Insufficient permissions"
             msg = msg.format(subcmd=self.subcmd, file=dest)
             raise PermissionError(msg)
@@ -102,7 +102,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         contents = []
 
         try:
-            contents = dploy.util.get_directory_contents(directory)
+            contents = dploy.utils.get_directory_contents(directory)
         except PermissionError:
             msg = "dploy {subcmd}: can not {subcmd} '{file}': Permission denied"
             msg = msg.format(subcmd=self.subcmd, file=directory)
@@ -138,7 +138,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             dest_path = dest / pathlib.Path(source.name)
 
             if dest_path.exists():
-                if dploy.util.is_same_file(dest_path, source):
+                if dploy.utils.is_same_file(dest_path, source):
                     self.are_same_file(source, dest_path)
 
                 elif dest_path.is_dir() and source.is_dir:
@@ -214,14 +214,14 @@ class Link(AbstractBaseSubCommand):
                                                    file=dest.parent)
             raise ValueError(msg)
 
-        elif (not dploy.util.is_file_readable(source)
-              or not dploy.util.is_directory_readable(source)):
+        elif (not dploy.utils.is_file_readable(source)
+              or not dploy.utils.is_directory_readable(source)):
             msg = "dploy {subcmd}: can not {subcmd} '{file}': Insufficient permissions"
             msg = msg.format(subcmd=self.subcmd, file=source)
             raise PermissionError(msg)
 
-        elif (not dploy.util.is_file_writable(dest.parent)
-              or not dploy.util.is_directory_writable(dest.parent)):
+        elif (not dploy.utils.is_file_writable(dest.parent)
+              or not dploy.utils.is_directory_writable(dest.parent)):
             msg = "dploy {subcmd}: can not {subcmd} to '{file}': Insufficient permissions"
             msg = msg.format(subcmd=self.subcmd, file=dest)
             raise PermissionError(msg)
@@ -232,7 +232,7 @@ class Link(AbstractBaseSubCommand):
         """
 
         if dest.exists():
-            if dploy.util.is_same_file(dest, source):
+            if dploy.utils.is_same_file(dest, source):
                 self.actions.append(dploy.actions.SymbolicLinkExists(self.subcmd,
                                                                      source,
                                                                      dest))

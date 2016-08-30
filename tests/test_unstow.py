@@ -8,7 +8,7 @@ Tests for the stow stub command
 import os
 import pytest
 import dploy
-import util
+import utils
 
 
 def test_unstow_with_basic_senario(source_a, dest):
@@ -50,31 +50,31 @@ def test_unstow_with_file_as_dest_and_source(file_a, file_b):
 
 def test_unstow_with_read_only_dest(source_a, dest):
     dploy.stow([source_a], dest)
-    util.read_only(dest)
+    utils.read_only(dest)
     with pytest.raises(PermissionError):
         dploy.unstow([source_a], dest)
 
 
 def test_unstow_with_read_only_dest_file(source_a, dest):
     dploy.stow([source_a], dest)
-    util.read_only(os.path.join(dest, 'aaa'))
+    utils.read_only(os.path.join(dest, 'aaa'))
     dploy.unstow([source_a], dest)
 
 
 def test_unstow_with_write_only_source(source_a, dest):
     dploy.stow([source_a], dest)
-    util.write_only(source_a)
+    utils.write_only(source_a)
     with pytest.raises(PermissionError):
         dploy.unstow([source_a], dest)
 
 
 def test_unstow_with_write_only_source_file(source_a, dest):
     dploy.stow([source_a], dest)
-    util.write_only(os.path.join(source_a, 'aaa', 'aaa'))
+    utils.write_only(os.path.join(source_a, 'aaa', 'aaa'))
     dploy.unstow([source_a], dest)
 
 
 def test_unstow_with_write_only_dest_file(source_a, dest):
     dploy.stow([source_a], dest)
-    util.write_only(os.path.join(dest, 'aaa'))
+    utils.write_only(os.path.join(dest, 'aaa'))
     dploy.unstow([source_a], dest)

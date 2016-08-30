@@ -3,7 +3,7 @@ todo
 """
 
 import pytest
-import util
+import utils
 
 
 @pytest.fixture()
@@ -30,7 +30,7 @@ def source_a(tmpdir):
             ],
         },
     ]
-    util.create_tree(tree)
+    utils.create_tree(tree)
     return name
 
 
@@ -58,7 +58,7 @@ def source_b(tmpdir):
             ],
         },
     ]
-    util.create_tree(tree)
+    utils.create_tree(tree)
     return name
 
 
@@ -86,7 +86,7 @@ def source_c(tmpdir):
             ],
         },
     ]
-    util.create_tree(tree)
+    utils.create_tree(tree)
     return name
 
 
@@ -96,7 +96,7 @@ def dest(tmpdir):
     todo
     """
     name = str(tmpdir.join('dest'))
-    util.create_directory(name)
+    utils.create_directory(name)
     return name
 
 
@@ -106,7 +106,7 @@ def file_a(tmpdir):
     todo
     """
     name = str(tmpdir.join('file_a'))
-    util.create_file(name)
+    utils.create_file(name)
     return name
 
 
@@ -116,5 +116,5 @@ def file_b(tmpdir):
     todo
     """
     name = str(tmpdir.join('file_b'))
-    util.create_file(name)
+    utils.create_file(name)
     return name
