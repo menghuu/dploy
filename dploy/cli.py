@@ -22,7 +22,7 @@ def create_parser():
                         action='store_true',
                         help='suppress normal output excluding error messages')
 
-    sub_parsers = parser.add_subparsers(dest="sub_command")
+    sub_parsers = parser.add_subparsers(dest="subcmd")
 
     stow_parser = sub_parsers.add_parser('stow')
     stow_parser.add_argument('source',
@@ -51,6 +51,12 @@ def run(arguments=None):
     interpret the parser arguments and execute the corresponding commands
     """
 
+    subcmd_map = {
+        'stow': dploy.main.Stow,
+        'unstow': dploy.main.UnStow,
+        'link': dploy.main.Link,
+    }
+
     try:
         parser = create_parser()
 
@@ -59,30 +65,13 @@ def run(arguments=None):
         else:
             args = parser.parse_args(arguments)
 
-
-        if args.sub_command == 'stow':
-            try:
-                dploy.main.Stow(args.source, args.dest, is_silent=args.is_quiet)
-            except (ValueError, PermissionError) as error:
-                print(error, file=sys.stderr)
-                sys.exit(1)
-
-
-        elif args.sub_command == 'unstow':
-            try:
-                dploy.main.UnStow(args.source, args.dest, is_silent=args.is_quiet)
-            except (ValueError, PermissionError) as error:
-                print(error, file=sys.stderr)
-                sys.exit(1)
-
-        elif args.sub_command == 'link':
-            try:
-                dploy.main.Link(args.source, args.dest, is_silent=args.is_quiet)
-            except (ValueError, PermissionError) as error:
-                print(error, file=sys.stderr)
-                sys.exit(1)
-
-        else:
+        try:
+            subcmd = subcmd_map[args.subcmd]
+            subcmd(args.source, args.dest, is_silent=args.is_quiet)
+        except (ValueError, PermissionError) as error:
+            print(error, file=sys.stderr)
+            sys.exit(1)
+        except KeyError:
             parser.print_help()
 
     except (KeyboardInterrupt) as error:
