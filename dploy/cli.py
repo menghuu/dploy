@@ -51,35 +51,40 @@ def run(arguments=None):
     interpret the parser arguments and execute the corresponding commands
     """
 
-    parser = create_parser()
+    try:
+        parser = create_parser()
 
-    if arguments is None:
-        args = parser.parse_args()
-    else:
-        args = parser.parse_args(arguments)
-
-
-    if args.sub_command == 'stow':
-        try:
-            dploy.main.Stow(args.source, args.dest, is_silent=args.is_quiet)
-        except (ValueError, PermissionError) as error:
-            print(error, file=sys.stderr)
-            sys.exit(1)
+        if arguments is None:
+            args = parser.parse_args()
+        else:
+            args = parser.parse_args(arguments)
 
 
-    elif args.sub_command == 'unstow':
-        try:
-            dploy.main.UnStow(args.source, args.dest, is_silent=args.is_quiet)
-        except (ValueError, PermissionError) as error:
-            print(error, file=sys.stderr)
-            sys.exit(1)
+        if args.sub_command == 'stow':
+            try:
+                dploy.main.Stow(args.source, args.dest, is_silent=args.is_quiet)
+            except (ValueError, PermissionError) as error:
+                print(error, file=sys.stderr)
+                sys.exit(1)
 
-    elif args.sub_command == 'link':
-        try:
-            dploy.main.Link(args.source, args.dest, is_silent=args.is_quiet)
-        except (ValueError, PermissionError) as error:
-            print(error, file=sys.stderr)
-            sys.exit(1)
 
-    else:
-        parser.print_help()
+        elif args.sub_command == 'unstow':
+            try:
+                dploy.main.UnStow(args.source, args.dest, is_silent=args.is_quiet)
+            except (ValueError, PermissionError) as error:
+                print(error, file=sys.stderr)
+                sys.exit(1)
+
+        elif args.sub_command == 'link':
+            try:
+                dploy.main.Link(args.source, args.dest, is_silent=args.is_quiet)
+            except (ValueError, PermissionError) as error:
+                print(error, file=sys.stderr)
+                sys.exit(1)
+
+        else:
+            parser.print_help()
+
+    except (KeyboardInterrupt) as error:
+        print(error, file=sys.stderr)
+        sys.exit(130)
