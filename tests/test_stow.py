@@ -128,3 +128,7 @@ def test_stow_with_write_only_source_file(source_a, source_c, dest):
     utils.write_only(os.path.join(source_a, 'aaa'))
     with pytest.raises(PermissionError):
         dploy.stow([source_a, source_c], dest)
+
+def test_stow_with_same_directory_used_as_source_and_dest(source_a):
+    with pytest.raises(ValueError):
+        dploy.stow([source_a], source_a)

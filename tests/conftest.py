@@ -70,7 +70,7 @@ def source_c(tmpdir):
     name = str(tmpdir.join('source_c'))
     tree = [
         {
-            name : [
+            name: [
                 {
                     'aaa': [
                         'aaa',
@@ -85,6 +85,23 @@ def source_c(tmpdir):
                 },
             ],
         },
+    ]
+    utils.create_tree(tree)
+    return name
+
+@pytest.fixture()
+def source_only_files(tmpdir):
+    """
+    todo
+    """
+    name = str(tmpdir.join('source_only_files'))
+    tree = [
+        {
+            name: [
+                'aaa',
+                'aaa',
+            ]
+        }
     ]
     utils.create_tree(tree)
     return name
