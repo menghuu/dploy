@@ -13,14 +13,19 @@ def create_parser():
     create the CLI argument parser
     """
     parser = argparse.ArgumentParser(prog='dploy')
+
     parser.add_argument('--version',
                         action='version',
                         version='%(prog)s {version}'.format(version=dploy.version.__version__))
-
     parser.add_argument('--quiet',
                         dest='is_quiet',
                         action='store_true',
                         help='suppress normal output excluding error messages')
+    parser.add_argument('--dry-run',
+                        dest='is_dry_run',
+                        action='store_true',
+                        help='show what would be done without doing it')
+
 
     sub_parsers = parser.add_subparsers(dest="subcmd")
 
@@ -67,7 +72,10 @@ def run(arguments=None):
 
         try:
             subcmd = subcmd_map[args.subcmd]
-            subcmd(args.source, args.dest, is_silent=args.is_quiet)
+            subcmd(args.source,
+                   args.dest,
+                   is_silent=args.is_quiet,
+                   is_dry_run=args.is_dry_run)
         except (ValueError, PermissionError) as error:
             print(error, file=sys.stderr)
             sys.exit(1)
