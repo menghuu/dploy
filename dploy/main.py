@@ -160,7 +160,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
                         self.are_same_file(source, dest_path)
                     else:
                         # pylint: disable=line-too-long
-                        msg = "dploy {subcmd}: can not {subcmd} '{file}': Arguments source and dest are the same"
+                        msg = "dploy {subcmd}: can not {subcmd} '{file}': A source argument is the same as the dest argument"
                         msg = msg.format(subcmd=self.subcmd, file=dest_path)
                         self.execptions.append(ValueError(msg))
 
