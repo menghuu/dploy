@@ -151,14 +151,18 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
             if dest_path.exists():
                 if dploy.utils.is_same_file(dest_path, source):
-                    self.are_same_file(source, dest_path)
+                    if dest_path.is_symlink() or self.is_unfolding:
+                        self.are_same_file(source, dest_path)
+                    else:
+                        # pylint: disable=line-too-long
+                        msg = "dploy {subcmd}: can not {subcmd} '{file}': Arguments source and dest are the same"
+                        msg = msg.format(subcmd=self.subcmd, file=dest_path)
+                        self.execptions.append(ValueError(msg))
 
                 elif dest_path.is_dir() and source.is_dir:
                     self.are_directories(source, dest_path)
                 else:
-                    msg = (
-                        "dploy {subcmd}: can not {subcmd} '{file}': Conflicts with existing file"
-                    )
+                    msg = "dploy {subcmd}: can not {subcmd} '{file}': Conflicts with existing file"
                     msg = msg.format(subcmd=self.subcmd, file=dest_path)
                     self.execptions.append(ValueError(msg))
 
@@ -205,12 +209,9 @@ class Link(AbstractBaseSubCommand):
     todo
     """
     def __init__(self, source, dest, is_silent=True):
-        invalid_source_message = (
-            "dploy {subcmd}: can not {subcmd} '{file}': No such file or directory"
-        )
-        invalid_dest_message = (
-            "dploy {subcmd}: can not {subcmd} into '{file}': directory"
-        )
+        # pylint: disable=line-too-long
+        invalid_source_message = "dploy {subcmd}: can not {subcmd} '{file}': No such file or directory"
+        invalid_dest_message = "dploy {subcmd}: can not {subcmd} into '{file}': directory"
         super().__init__("link", [source], dest, invalid_source_message,
                          invalid_dest_message, is_silent)
 
