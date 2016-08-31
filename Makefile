@@ -1,4 +1,4 @@
-default: lint test
+default: test lint
 
 # use a platform in depended path separator
 ifdef ComSpec
