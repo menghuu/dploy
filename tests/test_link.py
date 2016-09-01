@@ -12,12 +12,12 @@ import dploy.cli
 import utils
 
 
-def test_link_directory(source_a, dest):
+def test_link_with_directory_as_source(source_a, dest):
     dploy.link(source_a, os.path.join(dest, 'source_a_link'))
     assert os.path.islink(os.path.join(dest, 'source_a_link'))
 
 
-def test_link_file(file_a, dest):
+def test_link_with_file_as_source(file_a, dest):
     dploy.link(file_a, os.path.join(dest, 'file_a'))
     assert os.path.islink(os.path.join(dest, 'file_a'))
 
