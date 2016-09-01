@@ -16,12 +16,6 @@ def test_link_directory(source_a, dest):
     dploy.link(source_a, os.path.join(dest, 'source_a_link'))
     assert os.path.islink(os.path.join(dest, 'source_a_link'))
 
-def test_link_directory_cli(source_a, dest):
-    args = ['link', source_a, os.path.join(dest, 'source_a_link')]
-    dploy.cli.run(args)
-    assert os.path.islink(os.path.join(dest, 'source_a_link'))
-
-    assert os.path.islink(os.path.join(dest, 'source_a_link'))
 
 def test_link_file(file_a, dest):
     dploy.link(file_a, os.path.join(dest, 'file_a'))

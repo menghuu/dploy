@@ -11,6 +11,10 @@ import dploy
 import utils
 
 
+def test_stow_with_simple_senario(source_only_files, dest):
+    dploy.stow([source_only_files], dest)
+    assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_only_files', 'aaa')
+
 def test_stow_with_basic_senario(source_a, dest):
     dploy.stow([source_a], dest)
     assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_a', 'aaa')
