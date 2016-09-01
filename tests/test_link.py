@@ -24,8 +24,8 @@ def test_link_directory_cli(source_a, dest):
     assert os.path.islink(os.path.join(dest, 'source_a_link'))
 
 def test_link_file(file_a, dest):
-    dploy.link(file_a, os.path.join(dest, 'source_a_link'))
-    assert os.path.islink(os.path.join(dest, 'source_a_link'))
+    dploy.link(file_a, os.path.join(dest, 'file_a'))
+    assert os.path.islink(os.path.join(dest, 'file_a'))
 
 
 def test_link_with_non_existant_source(dest):
