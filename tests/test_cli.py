@@ -19,6 +19,18 @@ def test_cli_output_with_stow_with_simple_senario(source_only_files, dest, capsy
     s = os.path.join(source_only_files, 'aaa')
     assert out == "dploy stow: link {dest} => {source}\n".format(source=s, dest=d)
 
+def test_cli_unstow_with_basic_senario(source_a, dest, capsys):
+    args_stow = ['stow', source_a, dest]
+    dploy.cli.run(args_stow)
+    assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_a', 'aaa')
+    args_unstow = ['unstow', source_a, dest]
+    dploy.cli.run(args_unstow)
+    assert not os.path.exists(os.path.join(dest, 'aaa'))
+    out, _ = capsys.readouterr()
+    s = os.path.join(source_a, 'aaa')
+    d = os.path.join(dest, 'aaa')
+    assert out == ("dploy stow: link {dest} => {source}\n"
+                   "dploy unstow: unlink {dest} => {source}\n".format(source=s, dest=d))
 
 def test_cli_output_with_link_directory(source_a, dest, capsys):
     args = ['link', source_a, os.path.join(dest, 'source_a_link')]
