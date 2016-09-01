@@ -10,7 +10,7 @@ import re
 import pytest
 import dploy.cli
 
-def test_cli_output_with_stow_with_simple_senario(source_only_files, dest, capsys):
+def test_cli_with_stow_with_simple_senario(source_only_files, dest, capsys):
     args = ['stow', source_only_files, dest]
     dploy.cli.run(args)
     assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_only_files', 'aaa')
@@ -32,7 +32,8 @@ def test_cli_unstow_with_basic_senario(source_a, dest, capsys):
     assert out == ("dploy stow: link {dest} => {source}\n"
                    "dploy unstow: unlink {dest} => {source}\n".format(source=s, dest=d))
 
-def test_cli_output_with_link_directory(source_a, dest, capsys):
+
+def test_cli_with_link_directory(source_a, dest, capsys):
     args = ['link', source_a, os.path.join(dest, 'source_a_link')]
     dploy.cli.run(args)
     assert os.path.islink(os.path.join(dest, 'source_a_link'))
@@ -43,7 +44,7 @@ def test_cli_output_with_link_directory(source_a, dest, capsys):
     assert output == expected_output
 
 
-def test_cli_dry_run_with_stow_with_simple_senario(source_only_files, dest, capsys):
+def test_cli_with_dry_run_option_with_stow_with_simple_senario(source_only_files, dest, capsys):
     args = ['--dry-run', 'stow', source_only_files, dest]
     dploy.cli.run(args)
     assert not os.path.exists(os.path.join(dest, 'aaa'))
@@ -52,8 +53,7 @@ def test_cli_dry_run_with_stow_with_simple_senario(source_only_files, dest, caps
     s = os.path.join(source_only_files, 'aaa')
     assert out == "dploy stow: link {dest} => {source}\n".format(source=s, dest=d)
 
-
-def test_cli_quiet_with_stow_with_simple_senario(source_only_files, dest, capsys):
+def test_cli_with_quiet_option_with_stow_with_simple_senario(source_only_files, dest, capsys):
     args = ['--quiet', 'stow', source_only_files, dest]
     dploy.cli.run(args)
     assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_only_files', 'aaa')
@@ -61,7 +61,7 @@ def test_cli_quiet_with_stow_with_simple_senario(source_only_files, dest, capsys
     assert out == ""
 
 
-def test_cli_version_printing(capsys):
+def test_cli_with_version_option(capsys):
     args = ['--version']
     with pytest.raises(SystemExit):
         dploy.cli.run(args)
