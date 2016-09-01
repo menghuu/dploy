@@ -17,7 +17,7 @@ clean:
 
 .PHONY: lint
 lint:
-	pylint --output-format=parseable dploy setup.py tests$(PATHSEP)*.py
+	python3 -m pylint --output-format=parseable dploy setup.py tests$(PATHSEP)*.py
 
 .PHONY: test
 test:
