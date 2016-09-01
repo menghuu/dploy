@@ -46,8 +46,7 @@ def test_cli_output_with_link_directory(source_a, dest, capsys):
 def test_cli_dry_run_with_stow_with_simple_senario(source_only_files, dest, capsys):
     args = ['--dry-run', 'stow', source_only_files, dest]
     dploy.cli.run(args)
-    with pytest.raises(FileNotFoundError):
-        os.readlink(os.path.join(dest, 'aaa'))
+    assert not os.path.exists(os.path.join(dest, 'aaa'))
     out, _ = capsys.readouterr()
     d = os.path.join(dest, 'aaa')
     s = os.path.join(source_only_files, 'aaa')
