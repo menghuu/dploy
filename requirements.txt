@@ -4,3 +4,4 @@ pytest
 virtualenv
 setuptools
 pyinstaller
+invoke

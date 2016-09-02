@@ -6,17 +6,20 @@ python:
   - "3.5"
   - "3.6"
   - "nightly"
+  - "pypy3"
 
 matrix:
   allow_failures:
     - os: osx # Python 3 not supported in Travis OSX environment
     - python: "3.6" # not supported
     - python: "nightly"
+    - python: "pypy3"
 
 os:
   - linux
   - osx
 
-install: make setup
+install:
+  - pip install --requirement requirements.txt
 
-script: make
+script: inv
