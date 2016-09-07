@@ -8,7 +8,6 @@ Tests for the link sub command
 import os
 import pytest
 import dploy
-import dploy.cli
 import utils
 
 

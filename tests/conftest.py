@@ -89,6 +89,7 @@ def source_c(tmpdir):
     utils.create_tree(tree)
     return name
 
+
 @pytest.fixture()
 def source_only_files(tmpdir):
     """

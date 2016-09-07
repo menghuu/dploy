@@ -16,6 +16,7 @@ def test_unstow_with_basic_senario(source_a, dest):
     dploy.unstow([source_a], dest)
     assert not os.path.exists(os.path.join(dest, 'aaa'))
 
+
 def test_unstow_with_existing_broken_link(source_a, dest):
     os.symlink('non_existant_source', os.path.join(dest, 'aaa'))
 
@@ -79,9 +80,11 @@ def test_unstow_with_write_only_dest_file(source_a, dest):
     utils.write_only(os.path.join(dest, 'aaa'))
     dploy.unstow([source_a], dest)
 
+
 def test_unstow_with_same_directory_used_as_source_and_dest(source_a):
     with pytest.raises(ValueError):
         dploy.unstow([source_a], source_a)
+
 
 def test_unstow_with_same_simple_directory_used_as_source_and_dest(source_only_files):
     with pytest.raises(ValueError):

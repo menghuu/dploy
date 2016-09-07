@@ -19,6 +19,7 @@ def test_cli_with_stow_with_simple_senario(source_only_files, dest, capsys):
     s = os.path.join(source_only_files, 'aaa')
     assert out == "dploy stow: link {dest} => {source}\n".format(source=s, dest=d)
 
+
 def test_cli_unstow_with_basic_senario(source_a, dest, capsys):
     args_stow = ['stow', source_a, dest]
     dploy.cli.run(args_stow)
@@ -52,6 +53,7 @@ def test_cli_with_dry_run_option_with_stow_with_simple_senario(source_only_files
     d = os.path.join(dest, 'aaa')
     s = os.path.join(source_only_files, 'aaa')
     assert out == "dploy stow: link {dest} => {source}\n".format(source=s, dest=d)
+
 
 def test_cli_with_quiet_option_with_stow_with_simple_senario(source_only_files, dest, capsys):
     args = ['--quiet', 'stow', source_only_files, dest]

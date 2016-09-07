@@ -15,6 +15,7 @@ def test_stow_with_simple_senario(source_only_files, dest):
     dploy.stow([source_only_files], dest)
     assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_only_files', 'aaa')
 
+
 def test_stow_with_basic_senario(source_a, dest):
     dploy.stow([source_a], dest)
     assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_a', 'aaa')
@@ -132,6 +133,7 @@ def test_stow_with_write_only_source_file(source_a, source_c, dest):
     utils.write_only(os.path.join(source_a, 'aaa'))
     with pytest.raises(PermissionError):
         dploy.stow([source_a, source_c], dest)
+
 
 def test_stow_with_same_directory_used_as_source_and_dest(source_a):
     with pytest.raises(ValueError):
