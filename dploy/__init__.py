@@ -6,7 +6,7 @@ Windows as well as *nix
 
 import sys
 assert sys.version_info >= (3, 3), "Requires Python 3.3 or Greater"
-import dploy.main
+import dploy.main as main
 
 
 def stow(sources, dest):
@@ -14,7 +14,7 @@ def stow(sources, dest):
     sub command stow
     """
 
-    dploy.main.Stow(sources, dest) # pylint: disable=protected-access
+    main.Stow(sources, dest) # pylint: disable=protected-access
 
 
 def unstow(sources, dest):
@@ -22,11 +22,11 @@ def unstow(sources, dest):
     sub command unstow
     """
 
-    dploy.main.UnStow(sources, dest) # pylint: disable=protected-access
+    main.UnStow(sources, dest) # pylint: disable=protected-access
 
 
 def link(source, dest):
     """
     sub command link
     """
-    dploy.main.Link(source, dest) # pylint: disable=protected-access
+    main.Link(source, dest) # pylint: disable=protected-access

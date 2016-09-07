@@ -2,7 +2,7 @@
 todo
 """
 
-import dploy.utils
+import dploy.utils as utils
 
 
 class AbstractBaseAction():
@@ -31,8 +31,7 @@ class SymbolicLink(AbstractBaseAction):
     def __init__(self, subcmd, source, dest):
         super().__init__()
         self._source = source
-        self._source_relative = dploy.utils.get_relative_path(source,
-                                                              dest.parent)
+        self._source_relative = utils.get_relative_path(source, dest.parent)
         self.subcmd = subcmd
         self._dest = dest
 

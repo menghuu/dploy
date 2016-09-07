@@ -4,8 +4,8 @@ The logic and workings behind the stow and unstow sub commands
 
 from collections import defaultdict
 import pathlib
-import dploy.actions
-import dploy.utils
+import dploy.actions as actions
+import dploy.utils as utils
 import dploy.exceptions as exceptions
 
 
@@ -25,8 +25,8 @@ class AbstractBaseSubCommand():
         for source in sources:
             source_input = pathlib.Path(source)
             dest_input = pathlib.Path(dest)
-            source_absolute = dploy.utils.get_absolute_path(source_input)
-            dest_absolute = dploy.utils.get_absolute_path(dest_input)
+            source_absolute = utils.get_absolute_path(source_input)
+            dest_absolute = utils.get_absolute_path(dest_input)
             self.validate_input(source_input, dest_input)
             self.collect_actions(source_absolute, dest_absolute)
 
@@ -65,6 +65,7 @@ class AbstractBaseSubCommand():
                 if not self.is_dry_run:
                     action.execute()
 
+
 class AbstractBaseStow(AbstractBaseSubCommand):
     """
     todo
@@ -84,10 +85,10 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         elif not dest.is_dir():
             raise exceptions.no_such_directory_to_subcmd_into(self.subcmd, dest)
 
-        elif not dploy.utils.is_directory_readable(source):
+        elif not utils.is_directory_readable(source):
             raise exceptions.insufficient_permissions_to_subcmd_from(self.subcmd, source)
 
-        elif not dploy.utils.is_directory_writable(dest):
+        elif not utils.is_directory_writable(dest):
             raise exceptions.insufficient_permissions_to_subcmd_to(self.subcmd, dest)
 
     def get_directory_contents(self, directory):
@@ -98,7 +99,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         contents = []
 
         try:
-            contents = dploy.utils.get_directory_contents(directory)
+            contents = utils.get_directory_contents(directory)
         except PermissionError:
             self.execptions.append(exceptions.permission_denied(self.subcmd, directory))
 
@@ -132,7 +133,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             dest_path = dest / pathlib.Path(source.name)
 
             if dest_path.exists():
-                if dploy.utils.is_same_file(dest_path, source):
+                if utils.is_same_file(dest_path, source):
                     if dest_path.is_symlink() or self.is_unfolding:
                         self.are_same_file(source, dest_path)
                     else:
@@ -168,16 +169,14 @@ class UnStow(AbstractBaseStow):
         """
         what to do if source and dest are the same files
         """
-        self.actions.append(dploy.actions.UnLink(self.subcmd, dest))
+        self.actions.append(actions.UnLink(self.subcmd, dest))
 
     def are_directories(self, source, dest):
         if not dest.is_symlink():
             self.collect_actions(source, dest)
 
     def are_other(self, source, dest):
-        self.actions.append(dploy.actions.AlreadyUnlinked(self.subcmd,
-                                                          source,
-                                                          dest))
+        self.actions.append(actions.AlreadyUnlinked(self.subcmd, source, dest))
 
 
 class Link(AbstractBaseSubCommand):
@@ -197,12 +196,12 @@ class Link(AbstractBaseSubCommand):
         elif not dest.parent.exists():
             raise exceptions.no_such_directory(self.subcmd, dest.parent)
 
-        elif (not dploy.utils.is_file_readable(source)
-              or not dploy.utils.is_directory_readable(source)):
+        elif (not utils.is_file_readable(source)
+              or not utils.is_directory_readable(source)):
             raise exceptions.insufficient_permissions(self.subcmd, source)
 
-        elif (not dploy.utils.is_file_writable(dest.parent)
-              or not dploy.utils.is_directory_writable(dest.parent)):
+        elif (not utils.is_file_writable(dest.parent)
+              or not utils.is_directory_writable(dest.parent)):
             raise  exceptions.insufficient_permissions_to_subcmd_to(self.subcmd, dest)
 
     def collect_actions(self, source, dest):
@@ -211,10 +210,10 @@ class Link(AbstractBaseSubCommand):
         """
 
         if dest.exists():
-            if dploy.utils.is_same_file(dest, source):
-                self.actions.append(dploy.actions.AlreadyLinked(self.subcmd,
-                                                                source,
-                                                                dest))
+            if utils.is_same_file(dest, source):
+                self.actions.append(actions.AlreadyLinked(self.subcmd,
+                                                          source,
+                                                          dest))
             else:
                 self.execptions.append(exceptions.conflicts_with_existing_file(self.subcmd, dest))
 
@@ -226,7 +225,7 @@ class Link(AbstractBaseSubCommand):
                 exceptions.no_such_directory_to_subcmd_into(self.subcmd, dest.parent))
 
         else:
-            self.actions.append(dploy.actions.SymbolicLink(self.subcmd, source, dest))
+            self.actions.append(actions.SymbolicLink(self.subcmd, source, dest))
 
 
 class Stow(AbstractBaseStow):
@@ -241,8 +240,8 @@ class Stow(AbstractBaseStow):
         todo
         """
         self.is_unfolding = True
-        self.actions.append(dploy.actions.UnLink(self.subcmd, dest))
-        self.actions.append(dploy.actions.MakeDirectory(self.subcmd, dest))
+        self.actions.append(actions.UnLink(self.subcmd, dest))
+        self.actions.append(actions.MakeDirectory(self.subcmd, dest))
         self.collect_actions(source, dest)
         self.is_unfolding = False
 
@@ -252,7 +251,7 @@ class Stow(AbstractBaseStow):
         """
         tally = defaultdict(list)
         for i, item in enumerate(self.actions):
-            if isinstance(item, dploy.actions.SymbolicLink):
+            if isinstance(item, actions.SymbolicLink):
                 tally[item.dest].append(i)
         return ((key, locs) for key, locs in tally.items()
                 if len(locs) > 1)
@@ -297,10 +296,10 @@ class Stow(AbstractBaseStow):
         """
         if self.is_unfolding:
             self.actions.append(
-                dploy.actions.SymbolicLink(self.subcmd, source, dest))
+                actions.SymbolicLink(self.subcmd, source, dest))
         else:
             self.actions.append(
-                dploy.actions.AlreadyLinked(self.subcmd, source, dest))
+                actions.AlreadyLinked(self.subcmd, source, dest))
 
     def are_directories(self, source, dest):
         if dest.is_symlink():
@@ -309,4 +308,4 @@ class Stow(AbstractBaseStow):
 
     def are_other(self, source, dest):
         self.actions.append(
-            dploy.actions.SymbolicLink(self.subcmd, source, dest))
+            actions.SymbolicLink(self.subcmd, source, dest))

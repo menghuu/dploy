@@ -4,8 +4,8 @@ The command line interface
 
 import sys
 import argparse
-import dploy.main
-import dploy.version
+import dploy.main as main
+import dploy.version as version
 
 
 def create_parser():
@@ -16,7 +16,7 @@ def create_parser():
 
     parser.add_argument('--version',
                         action='version',
-                        version='%(prog)s {version}'.format(version=dploy.version.__version__))
+                        version='%(prog)s {version}'.format(version=version.__version__))
     parser.add_argument('--quiet',
                         dest='is_quiet',
                         action='store_true',
@@ -57,9 +57,9 @@ def run(arguments=None):
     """
 
     subcmd_map = {
-        'stow': dploy.main.Stow,
-        'unstow': dploy.main.UnStow,
-        'link': dploy.main.Link,
+        'stow': main.Stow,
+        'unstow': main.UnStow,
+        'link': main.Link,
     }
 
     try:
