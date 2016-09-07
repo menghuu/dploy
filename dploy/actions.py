@@ -142,3 +142,20 @@ class MakeDirectory(AbstractBaseAction):
         return "dploy {subcmd}: make directory {target}".format(
             target=self.target,
             subcmd=self.subcmd)
+
+class RemoveDirectory(AbstractBaseAction):
+    # pylint: disable=too-few-public-methods
+    """
+    Action to remove a directory
+    """
+    def __init__(self, subcmd, target):
+        super().__init__()
+        self.target = target
+        self.subcmd = subcmd
+
+    def _logic(self):
+        self.target.rmdir()
+
+    def __repr__(self):
+        msg = "dploy {subcmd}: remove directory {target}"
+        return msg.format(target=self.target, subcmd=self.subcmd)
