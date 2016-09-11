@@ -61,6 +61,33 @@ def source_b(tmpdir):
     utils.create_tree(tree)
     return name
 
+@pytest.fixture()
+def source_d(tmpdir):
+    """
+    todo
+    """
+    name = str(tmpdir.join('source_d'))
+    tree = [
+        {
+            name : [
+                {
+                    'aaa': [
+                        'ggg',
+                        'hhh',
+                        {
+                            'iii': [
+                                'aaa',
+                                'bbb',
+                            ],
+                        },
+                    ],
+                },
+            ],
+        },
+    ]
+    utils.create_tree(tree)
+    return name
+
 
 @pytest.fixture()
 def source_c(tmpdir):

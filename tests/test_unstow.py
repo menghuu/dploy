@@ -89,3 +89,21 @@ def test_unstow_with_same_directory_used_as_source_and_dest(source_a):
 def test_unstow_with_same_simple_directory_used_as_source_and_dest(source_only_files):
     with pytest.raises(ValueError):
         dploy.unstow([source_only_files], source_only_files)
+
+
+def test_unstow_folding_basic(source_a, source_b, dest):
+    dploy.stow([source_a, source_b], dest)
+    dploy.unstow([source_b], dest)
+    assert os.path.islink(os.path.join(dest, 'aaa'))
+
+
+def test_unstow_folding_with_multiple_sources(source_a, source_b, source_d, dest):
+    dploy.stow([source_a, source_b, source_d], dest)
+    dploy.unstow([source_b, source_d], dest)
+    assert os.path.islink(os.path.join(dest, 'aaa'))
+
+
+def test_unstow_folding_with_multiple_stowed_sources(source_a, source_b, source_d, dest):
+    dploy.stow([source_a, source_b, source_d], dest)
+    dploy.unstow([source_b], dest)
+    assert not os.path.islink(os.path.join(dest, 'aaa'))
