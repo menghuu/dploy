@@ -1,7 +1,10 @@
-pathlib
-pylint
-pytest
-virtualenv
-setuptools
-pyinstaller
-invoke
+pathlib>=1.0.1 # only required for python versions <3.4
+# devlopment
+invoke==0.13.0
+virtualenv>=15.0.3
+pylint>=1.5.5
+# testing
+pytest>=2.9.1
+# deployment
+setuptools>=23.1.0
+PyInstaller==3.2
