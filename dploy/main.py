@@ -3,6 +3,7 @@ The logic and workings behind the stow and unstow sub commands
 """
 
 from collections import defaultdict
+from collections import Counter
 import pathlib
 import dploy.actions as actions
 import dploy.utils as utils
@@ -30,10 +31,10 @@ class AbstractBaseSubCommand():
             self.validate_input(source_input, dest_input)
             self.collect_actions(source_absolute, dest_absolute)
 
-        self.check_for_conflicting_actions()
+        self.check_for_other_actions()
         self.execute_actions()
 
-    def check_for_conflicting_actions(self):
+    def check_for_other_actions(self):
         """
         todo
         """
@@ -178,6 +179,48 @@ class UnStow(AbstractBaseStow):
     def are_other(self, source, dest):
         self.actions.append(actions.AlreadyUnlinked(self.subcmd, source, dest))
 
+    def check_for_other_actions(self):
+        self.collect_folding_actions()
+
+    def collect_folding_actions(self):
+        """
+        find canidates for folding i.e. when replacing a directories containing
+        links with a single symlink to the directory itself would work instead
+        """
+
+        unlink_actions = (
+            [a for a in self.actions if isinstance(a, actions.UnLink)])
+        unlink_actions_targets = [a.target for a in unlink_actions]
+        unlink_actions_targets_parents = [a.target.parent for a in unlink_actions]
+
+        for parent in unlink_actions_targets_parents:
+            items = utils.get_directory_contents(parent)
+            other_links = []
+            source_parent = None
+
+            for item in items:
+                if item in unlink_actions_targets:
+                    pass
+                elif item.is_symlink():
+                    source_parent = item.resolve().parent
+                    other_links.append(item.resolve().parent)
+
+            other_links_counter = Counter(other_links)
+            if len(other_links_counter.keys()) == 1:
+                self.fold(source_parent, parent)
+
+
+    def fold(self, source, dest):
+        """
+        add the required actions for folding
+        """
+        rmdir_actions_targets = (
+            [a.target for a in self.actions if isinstance(a, actions.RemoveDirectory)])
+
+        if  dest not in rmdir_actions_targets:
+            self.actions.append(actions.RemoveDirectory(self.subcmd, dest))
+            self.actions.append(actions.SymbolicLink(self.subcmd, source, dest))
+
 
 class Link(AbstractBaseSubCommand):
     """
@@ -288,6 +331,9 @@ class Stow(AbstractBaseStow):
             for index in reversed(indicies[1:]):
                 del self.actions[index]
 
+        self.check_for_conflicting_actions()
+
+    def check_for_other_actions(self):
         self.check_for_conflicting_actions()
 
     def are_same_file(self, source, dest):
