@@ -14,7 +14,7 @@ def setup(ctx):
     """
     Install python requirements
     """
-    ctx.run('pip install -r requirements.txt')
+    ctx.run('python3 -m pip install -r requirements.txt')
 
 @task
 def clean(ctx):
