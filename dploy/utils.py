@@ -4,6 +4,7 @@ todo
 
 import os
 import pathlib
+import shutil
 
 def get_directory_contents(directory):
     """
@@ -15,6 +16,14 @@ def get_directory_contents(directory):
         contents.append(child)
 
     return contents
+
+
+def rmtree(tree):
+    """
+    a wrapper around shutil.rmtree to recursively delete a directory specified
+    by a pathlib.Path object
+    """
+    shutil.rmtree(tree.__str__())
 
 
 def is_same_file(file1, file2):
