@@ -172,8 +172,7 @@ class UnStow(AbstractBaseStow):
         self.actions.append(actions.UnLink(self.subcmd, dest))
 
     def are_directories(self, source, dest):
-        if not dest.is_symlink():
-            self.collect_actions(source, dest)
+        self.collect_actions(source, dest)
 
     def are_other(self, source, dest):
         self.actions.append(actions.AlreadyUnlinked(self.subcmd, source, dest))
