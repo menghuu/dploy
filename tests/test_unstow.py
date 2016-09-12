@@ -29,6 +29,7 @@ def test_unstow_with_existing_broken_link_in_source(source_a, dest):
     dploy.stow([source_a], dest)
     os.symlink(os.path.join(source_a, 'non_existant_source'),
                os.path.join(dest, 'aaa', 'non_existant_source'))
+    dploy.unstow([source_a], dest)
 
 
 def test_unstow_with_non_existant_source(dest):
