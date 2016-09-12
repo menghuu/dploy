@@ -165,7 +165,6 @@ class UnStow(AbstractBaseStow):
     def __init__(self, source, dest, is_silent=True, is_dry_run=False):
         super().__init__("unstow", source, dest, is_silent, is_dry_run)
 
-
     def are_same_file(self, source, dest):
         """
         what to do if source and dest are the same files
@@ -199,7 +198,7 @@ class UnStow(AbstractBaseStow):
             source_parent = None
 
             for item in items:
-                if item in unlink_actions_targets:
+                if item in unlink_actions_targets or not item.exists():
                     pass
                 elif item.is_symlink():
                     source_parent = item.resolve().parent
@@ -208,7 +207,6 @@ class UnStow(AbstractBaseStow):
             other_links_counter = Counter(other_links)
             if len(other_links_counter.keys()) == 1:
                 self.fold(source_parent, parent)
-
 
     def fold(self, source, dest):
         """
