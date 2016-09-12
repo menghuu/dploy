@@ -154,7 +154,7 @@ class RemoveDirectory(AbstractBaseAction):
         self.subcmd = subcmd
 
     def _logic(self):
-        utils.rmtree(self.target)
+        self.target.rmdir()
 
     def __repr__(self):
         msg = "dploy {subcmd}: remove directory {target}"

@@ -196,16 +196,20 @@ class UnStow(AbstractBaseStow):
             items = utils.get_directory_contents(parent)
             other_links = []
             source_parent = None
+            is_valid = True
 
             for item in items:
-                if item in unlink_actions_targets or not item.exists():
+                if item in unlink_actions_targets:
                     pass
-                elif item.is_symlink():
+                elif item.exists() and item.is_symlink():
                     source_parent = item.resolve().parent
                     other_links.append(item.resolve().parent)
+                else:
+                    is_valid = False
+                    break
 
             other_links_counter = Counter(other_links)
-            if len(other_links_counter.keys()) == 1:
+            if len(other_links_counter.keys()) == 1 and is_valid:
                 self.fold(source_parent, parent)
 
     def fold(self, source, dest):
@@ -216,6 +220,7 @@ class UnStow(AbstractBaseStow):
             [a.target for a in self.actions if isinstance(a, actions.RemoveDirectory)])
 
         if  dest not in rmdir_actions_targets:
+            self.collect_actions(source, dest)
             self.actions.append(actions.RemoveDirectory(self.subcmd, dest))
             self.actions.append(actions.SymbolicLink(self.subcmd, source, dest))
 

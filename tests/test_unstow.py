@@ -115,3 +115,12 @@ def test_unstow_folding_with_multiple_stowed_sources(source_a, source_b, source_
     dploy.stow([source_a, source_b, source_d], dest)
     dploy.unstow([source_b], dest)
     assert not os.path.islink(os.path.join(dest, 'aaa'))
+
+
+def test_unstow_folding_with_existing_file_in_dest(source_a, source_b, dest):
+    os.mkdir(os.path.join(dest, 'aaa'))
+    a_file = os.path.join(dest, 'aaa', 'a_file')
+    utils.create_file(a_file)
+    dploy.stow([source_a, source_b], dest)
+    dploy.unstow([source_a], dest)
+    assert os.path.exists(a_file)
