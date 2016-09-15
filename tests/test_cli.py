@@ -24,14 +24,21 @@ def test_cli_unstow_with_basic_senario(source_a, dest, capsys):
     args_stow = ['stow', source_a, dest]
     dploy.cli.run(args_stow)
     assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_a', 'aaa')
+
     args_unstow = ['unstow', source_a, dest]
     dploy.cli.run(args_unstow)
     assert not os.path.exists(os.path.join(dest, 'aaa'))
+
     out, _ = capsys.readouterr()
-    s = os.path.join(source_a, 'aaa')
-    d = os.path.join(dest, 'aaa')
-    assert out == ("dploy stow: link {dest} => {source}\n"
-                   "dploy unstow: unlink {dest} => {source}\n".format(source=s, dest=d))
+    src_dir = os.path.join(source_a, 'aaa')
+    dest_dir = os.path.join(dest, 'aaa')
+    expected_output = (
+        "dploy stow: link {dest_dir} => {src_dir}\n"
+        "dploy unstow: unlink {dest_dir} => {src_dir}\n"
+        "dploy unstow: remove directory {dest}\n".format(src_dir=src_dir,
+                                                         dest_dir=dest_dir,
+                                                         dest=dest))
+    assert out == (expected_output)
 
 
 def test_cli_with_link_directory(source_a, dest, capsys):

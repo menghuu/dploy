@@ -189,7 +189,7 @@ class UnStow(AbstractBaseStow):
         unlink_actions = (
             [a for a in self.actions if isinstance(a, actions.UnLink)])
         unlink_actions_targets = [a.target for a in unlink_actions]
-        unlink_actions_targets_parents = [a.target.parent for a in unlink_actions]
+        unlink_actions_targets_parents = set([a.target.parent for a in unlink_actions])
 
         for parent in unlink_actions_targets_parents:
             items = utils.get_directory_contents(parent)
@@ -210,18 +210,16 @@ class UnStow(AbstractBaseStow):
             other_links_counter = Counter(other_links)
             if len(other_links_counter.keys()) == 1 and is_valid:
                 self.fold(source_parent, parent)
+            if len(other_links_counter.keys()) == 0 and is_valid:
+                self.actions.append(actions.RemoveDirectory(self.subcmd, parent))
 
     def fold(self, source, dest):
         """
         add the required actions for folding
         """
-        rmdir_actions_targets = (
-            [a.target for a in self.actions if isinstance(a, actions.RemoveDirectory)])
-
-        if  dest not in rmdir_actions_targets:
-            self.collect_actions(source, dest)
-            self.actions.append(actions.RemoveDirectory(self.subcmd, dest))
-            self.actions.append(actions.SymbolicLink(self.subcmd, source, dest))
+        self.collect_actions(source, dest)
+        self.actions.append(actions.RemoveDirectory(self.subcmd, dest))
+        self.actions.append(actions.SymbolicLink(self.subcmd, source, dest))
 
 
 class Link(AbstractBaseSubCommand):
