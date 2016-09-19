@@ -22,12 +22,12 @@ def test_link_with_file_as_source(file_a, dest):
 
 
 def test_link_with_non_existant_source(dest):
-    with pytest.raises(ValueError):
+    with pytest.raises(FileNotFoundError):
         dploy.link('source_a', os.path.join(dest, 'source_a_link'))
 
 
 def test_link_with_non_existant_dest(source_a):
-    with pytest.raises(ValueError):
+    with pytest.raises(FileNotFoundError):
         dploy.link(source_a, os.path.join('dest', 'source_a_link'))
 
 

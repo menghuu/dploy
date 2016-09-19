@@ -33,27 +33,27 @@ def test_unstow_with_existing_broken_link_in_source(source_a, dest):
 
 
 def test_unstow_with_non_existant_source(dest):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotADirectoryError):
         dploy.unstow(['source'], dest)
 
 
 def test_unstow_with_non_existant_dest(source_a):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotADirectoryError):
         dploy.unstow([source_a], 'dest')
 
 
 def test_unstow_with_file_as_source(file_a, dest):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotADirectoryError):
         dploy.unstow([file_a], dest)
 
 
 def test_unstow_with_file_as_dest(source_a, file_a):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotADirectoryError):
         dploy.unstow([source_a], file_a)
 
 
 def test_unstow_with_file_as_dest_and_source(file_a, file_b):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotADirectoryError):
         dploy.unstow([file_a], file_b)
 
 

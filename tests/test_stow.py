@@ -93,27 +93,27 @@ def test_stow_with_source_conflicts(source_a, source_c, dest):
 
 
 def test_stow_with_non_existant_source(dest):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotADirectoryError):
         dploy.stow(['source'], dest)
 
 
 def test_stow_with_non_existant_dest(source_a):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotADirectoryError):
         dploy.stow([source_a], 'dest')
 
 
 def test_stow_with_file_as_source(file_a, dest):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotADirectoryError):
         dploy.stow([file_a], dest)
 
 
 def test_stow_with_file_as_dest(source_a, file_a):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotADirectoryError):
         dploy.stow([source_a], file_a)
 
 
 def test_stow_with_file_as_dest_and_source(file_a, file_b):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotADirectoryError):
         dploy.stow([file_a], file_b)
 
 

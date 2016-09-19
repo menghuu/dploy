@@ -76,8 +76,7 @@ def run(arguments=None):
                    args.dest,
                    is_silent=args.is_quiet,
                    is_dry_run=args.is_dry_run)
-        except (ValueError, PermissionError) as error:
-            print(error, file=sys.stderr)
+        except (ValueError, PermissionError, FileNotFoundError, NotADirectoryError):
             sys.exit(1)
         except KeyError:
             parser.print_help()

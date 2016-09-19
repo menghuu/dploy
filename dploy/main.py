@@ -5,6 +5,7 @@ The logic and workings behind the stow and unstow sub commands
 from collections import defaultdict
 from collections import Counter
 import pathlib
+import sys
 import dploy.actions as actions
 import dploy.utils as utils
 import dploy.exceptions as exceptions
@@ -28,8 +29,8 @@ class AbstractBaseSubCommand():
             dest_input = pathlib.Path(dest)
             source_absolute = utils.get_absolute_path(source_input)
             dest_absolute = utils.get_absolute_path(dest_input)
-            self.validate_input(source_input, dest_input)
-            self.collect_actions(source_absolute, dest_absolute)
+            if self.validate_input(source_input, dest_input):
+                self.collect_actions(source_absolute, dest_absolute)
 
         self.check_for_other_actions()
         self.execute_actions()
@@ -57,8 +58,10 @@ class AbstractBaseSubCommand():
         todo
         """
         if len(self.execptions) > 0:
-            for execption in self.execptions:
-                raise execption
+            if not self.is_silent:
+                for exception in self.execptions:
+                    print(exception, file=sys.stderr)
+            raise self.execptions[0]
         else:
             for action in self.actions:
                 if not self.is_silent:
@@ -81,21 +84,30 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         todo
         """
         if not source.is_dir():
-            raise exceptions.no_such_directory(self.subcmd, source)
+            self.execptions.append(exceptions.no_such_directory(self.subcmd, source))
+            return False
 
         elif not dest.is_dir():
-            raise exceptions.no_such_directory_to_subcmd_into(self.subcmd, dest)
+            self.execptions.append(exceptions.no_such_directory_to_subcmd_into(self.subcmd, dest))
+            return False
 
         elif not utils.is_directory_readable(source):
-            raise exceptions.insufficient_permissions_to_subcmd_from(self.subcmd, source)
+            self.execptions.append(
+                exceptions.insufficient_permissions_to_subcmd_from(self.subcmd, source))
+            return False
 
         elif not utils.is_directory_writable(dest):
-            raise exceptions.insufficient_permissions_to_subcmd_to(self.subcmd, dest)
+            self.execptions.append(
+                exceptions.insufficient_permissions_to_subcmd_to(self.subcmd, dest))
+            return False
+
+        else:
+            return True
+
 
     def get_directory_contents(self, directory):
         """
-        get the contents of a directory while handling permission errors that
-        may occur
+        get the contents of a directory while handling errors that may occur
         """
         contents = []
 
@@ -103,6 +115,10 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             contents = utils.get_directory_contents(directory)
         except PermissionError:
             self.execptions.append(exceptions.permission_denied(self.subcmd, directory))
+        except FileNotFoundError:
+            self.execptions.append(exceptions.no_such_file_or_directory(self.subcmd, directory))
+        except NotADirectoryError:
+            self.execptions.append(exceptions.no_such_directory(self.subcmd, directory))
 
         return contents
 
@@ -234,18 +250,26 @@ class Link(AbstractBaseSubCommand):
         todo
         """
         if not source.exists():
-            raise exceptions.no_such_file_or_directory(self.subcmd, source)
+            self.execptions.append(exceptions.no_such_file_or_directory(self.subcmd, source))
+            return False
 
         elif not dest.parent.exists():
-            raise exceptions.no_such_directory(self.subcmd, dest.parent)
+            self.execptions.append(exceptions.no_such_file_or_directory(self.subcmd, dest.parent))
+            return False
 
         elif (not utils.is_file_readable(source)
               or not utils.is_directory_readable(source)):
-            raise exceptions.insufficient_permissions(self.subcmd, source)
+            self.execptions.append(exceptions.insufficient_permissions(self.subcmd, source))
+            return False
 
         elif (not utils.is_file_writable(dest.parent)
               or not utils.is_directory_writable(dest.parent)):
-            raise  exceptions.insufficient_permissions_to_subcmd_to(self.subcmd, dest)
+            self.execptions.append(
+                exceptions.insufficient_permissions_to_subcmd_to(self.subcmd, dest))
+            return False
+
+        else:
+            return True
 
     def collect_actions(self, source, dest):
         """

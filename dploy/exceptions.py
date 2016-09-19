@@ -34,13 +34,12 @@ def insufficient_permissions(subcmd, file):
 
 def no_such_directory(subcmd, file):
     msg = ERROR_HEAD + "'{file}': No such directory"
-    return ValueError(msg.format(subcmd=subcmd, file=file))
+    return NotADirectoryError(msg.format(subcmd=subcmd, file=file))
 
 
 def permission_denied(subcmd, file):
     msg = ERROR_HEAD + "'{file}': Permission denied"
     return PermissionError(msg.format(subcmd=subcmd, file=file))
-
 
 # pylint: disable=invalid-name
 def insufficient_permissions_to_subcmd_from(subcmd, file):
@@ -48,11 +47,10 @@ def insufficient_permissions_to_subcmd_from(subcmd, file):
     return PermissionError(msg.format(subcmd=subcmd, file=file))
 
 
-
 # pylint: disable=invalid-name
 def no_such_directory_to_subcmd_into(subcmd, file):
     msg = ERROR_HEAD + "into '{file}': No such directory"
-    return ValueError(msg.format(subcmd=subcmd, file=file))
+    return NotADirectoryError(msg.format(subcmd=subcmd, file=file))
 
 
 # pylint: disable=invalid-name
@@ -63,4 +61,4 @@ def insufficient_permissions_to_subcmd_to(subcmd, file):
 
 def no_such_file_or_directory(subcmd, file):
     msg = ERROR_HEAD + "'{file}': No such file or directory"
-    return ValueError(msg.format(subcmd=subcmd, file=file))
+    return FileNotFoundError(msg.format(subcmd=subcmd, file=file))
