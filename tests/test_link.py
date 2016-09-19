@@ -45,5 +45,6 @@ def test_link_with_write_only_source(file_a, dest):
 
 def test_link_with_conflicting_broken_link_at_dest(file_a, dest):
     os.symlink('non_existant_source', os.path.join(dest, 'file_a_link'))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as e:
         dploy.link(file_a, os.path.join(dest, 'file_a_link'))
+    assert utils.is_subcmd_error_message('link', e)

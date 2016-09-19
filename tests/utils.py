@@ -78,3 +78,10 @@ def read_only(path):
     """
     mode = os.stat(path)[stat.ST_MODE]
     os.chmod(path, mode & ~stat.S_IWUSR & ~stat.S_IWGRP & ~stat.S_IWOTH)
+
+
+def is_subcmd_error_message(subcmd, exception):
+    """
+    change users permissions to a path to read only
+    """
+    return "dploy {subcmd}:".format(subcmd=subcmd) in str(exception.value)
