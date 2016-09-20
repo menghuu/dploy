@@ -30,38 +30,17 @@ class SymbolicLink(AbstractBaseAction):
     """
     def __init__(self, subcmd, source, dest):
         super().__init__()
-        self._source = source
-        self._source_relative = utils.get_relative_path(source, dest.parent)
+        self.source = source
+        self.source_relative = utils.get_relative_path(source, dest.parent)
         self.subcmd = subcmd
-        self._dest = dest
-
-    @property
-    def dest(self):
-        """
-        todo
-        """
-        return self._dest
-
-    @property
-    def source(self):
-        """
-        todo
-        """
-        return self._source
-
-    @property
-    def source_relative(self):
-        """
-        todo
-        """
-        return self._source_relative
+        self.dest = dest
 
     def _logic(self):
         self.dest.symlink_to(self.source_relative)
 
     def __repr__(self):
         return "dploy {subcmd}: link {dest} => {source}".format(
-            subcmd=self.subcmd, dest=self.dest, source=self.source)
+            subcmd=self.subcmd, dest=self.dest, source=self.source_relative)
 
 
 class AlreadyLinked(AbstractBaseAction):
@@ -72,6 +51,7 @@ class AlreadyLinked(AbstractBaseAction):
     def __init__(self, subcmd, source, dest):
         super().__init__()
         self.source = source
+        self.source_relative = utils.get_relative_path(source, dest.parent)
         self.dest = dest
         self.subcmd = subcmd
 
@@ -81,7 +61,7 @@ class AlreadyLinked(AbstractBaseAction):
     def __repr__(self):
         return "dploy {subcmd}: already linked {dest} => {source}".format(
             subcmd=self.subcmd,
-            source=self.source,
+            source=self.source_relative,
             dest=self.dest)
 
 
@@ -93,6 +73,7 @@ class AlreadyUnlinked(AbstractBaseAction):
     def __init__(self, subcmd, source, dest):
         super().__init__()
         self.source = source
+        self.source_relative = utils.get_relative_path(source, dest.parent)
         self.dest = dest
         self.subcmd = subcmd
 
@@ -102,7 +83,7 @@ class AlreadyUnlinked(AbstractBaseAction):
     def __repr__(self):
         return "dploy {subcmd}: already unlinked {dest} => {source}".format(
             subcmd=self.subcmd,
-            source=self.source,
+            source=self.source_relative,
             dest=self.dest)
 
 
@@ -120,10 +101,11 @@ class UnLink(AbstractBaseAction):
         self.target.unlink()
 
     def __repr__(self):
+        source_relative = utils.get_relative_path(self.target.resolve(), self.target.parent)
         return "dploy {subcmd}: unlink {target} => {source}".format(
             subcmd=self.subcmd,
             target=self.target,
-            source=self.target.resolve())
+            source=source_relative)
 
 class MakeDirectory(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
