@@ -65,7 +65,7 @@ def test_unstow_with_file_as_dest_and_source(file_a, file_b):
 
 def test_unstow_with_read_only_dest(source_a, dest):
     dploy.stow([source_a], dest)
-    utils.read_only(dest)
+    utils.remove_write_permission(dest)
     with pytest.raises(PermissionError) as e:
         dploy.unstow([source_a], dest)
     assert utils.is_subcmd_error_message('unstow', e)
@@ -73,13 +73,13 @@ def test_unstow_with_read_only_dest(source_a, dest):
 
 def test_unstow_with_read_only_dest_file(source_a, dest):
     dploy.stow([source_a], dest)
-    utils.read_only(os.path.join(dest, 'aaa'))
+    utils.remove_write_permission(os.path.join(dest, 'aaa'))
     dploy.unstow([source_a], dest)
 
 
 def test_unstow_with_write_only_source(source_a, dest):
     dploy.stow([source_a], dest)
-    utils.write_only(source_a)
+    utils.remove_read_permission(source_a)
     with pytest.raises(PermissionError) as e:
         dploy.unstow([source_a], dest)
     assert utils.is_subcmd_error_message('unstow', e)
@@ -103,13 +103,13 @@ def test_unstow_with_dest_dir_with_no_executue_permissions(source_a, source_b, d
 
 def test_unstow_with_write_only_source_file(source_a, dest):
     dploy.stow([source_a], dest)
-    utils.write_only(os.path.join(source_a, 'aaa', 'aaa'))
+    utils.remove_read_permission(os.path.join(source_a, 'aaa', 'aaa'))
     dploy.unstow([source_a], dest)
 
 
 def test_unstow_with_write_only_dest_file(source_a, dest):
     dploy.stow([source_a], dest)
-    utils.write_only(os.path.join(dest, 'aaa'))
+    utils.remove_read_permission(os.path.join(dest, 'aaa'))
     dploy.unstow([source_a], dest)
 
 

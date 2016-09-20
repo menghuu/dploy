@@ -32,13 +32,13 @@ def test_link_with_non_existant_dest(source_a):
 
 
 def test_link_with_read_only_dest(file_a, dest):
-    utils.read_only(dest)
+    utils.remove_write_permission(dest)
     with pytest.raises(PermissionError):
         dploy.link(file_a, os.path.join(dest, 'file_a_link'))
 
 
 def test_link_with_write_only_source(file_a, dest):
-    utils.write_only(file_a)
+    utils.remove_read_permission(file_a)
     with pytest.raises(PermissionError):
         dploy.link(file_a, os.path.join(dest, 'file_a_link'))
 

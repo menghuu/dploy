@@ -14,6 +14,7 @@ def remove_tree(tree):
     os.chmod(tree, 0o777)
     shutil.rmtree(tree)
 
+
 def remove_file(file_name):
     """
     todo
@@ -21,17 +22,20 @@ def remove_file(file_name):
     os.chmod(file_name, 0o777)
     os.remove(file_name)
 
+
 def create_file(file_name):
     """
     todo
     """
     return open(file_name, 'w').close()
 
+
 def create_directory(directory_name):
     """
     todo
     """
     os.makedirs(directory_name)
+
 
 class ChangeDirectory:
     # pylint: disable=too-few-public-methods
@@ -47,6 +51,7 @@ class ChangeDirectory:
 
     def __exit__(self, etype, value, traceback):
         os.chdir(self.saved_path)
+
 
 def create_tree(tree):
     """
@@ -64,8 +69,7 @@ def create_tree(tree):
                     create_tree(file_objs)
 
 
-# TODO rename remove_read_permission
-def write_only(path):
+def remove_read_permission(path):
     """
     change users permissions to a path to write only
     """
@@ -73,8 +77,7 @@ def write_only(path):
     os.chmod(path, mode & ~stat.S_IRUSR & ~stat.S_IRGRP & ~stat.S_IROTH)
 
 
-# TODO rename remove_write_permission
-def read_only(path):
+def remove_write_permission(path):
     """
     change users permissions to a path to read only
     """

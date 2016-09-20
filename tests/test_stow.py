@@ -126,14 +126,14 @@ def test_stow_with_file_as_dest_and_source(file_a, file_b):
 
 
 def test_stow_with_read_only_dest(source_a, dest):
-    utils.read_only(dest)
+    utils.remove_write_permission(dest)
     with pytest.raises(PermissionError) as e:
         dploy.stow([source_a], dest)
     assert utils.is_subcmd_error_message('stow', e)
 
 
 def test_stow_with_write_only_source(source_a, source_c, dest):
-    utils.write_only(source_a)
+    utils.remove_read_permission(source_a)
     with pytest.raises(PermissionError) as e:
         dploy.stow([source_a, source_c], dest)
     assert utils.is_subcmd_error_message('stow', e)
@@ -154,7 +154,7 @@ def test_stow_with_source_dir_with_no_executue_permissions(source_a, source_c, d
 
 
 def test_stow_with_write_only_source_file(source_a, source_c, dest):
-    utils.write_only(os.path.join(source_a, 'aaa'))
+    utils.remove_read_permission(os.path.join(source_a, 'aaa'))
     with pytest.raises(PermissionError) as e:
         dploy.stow([source_a, source_c], dest)
     assert utils.is_subcmd_error_message('stow', e)
