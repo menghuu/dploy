@@ -181,6 +181,10 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         pass
 
     def is_valid_collection_input(self, source, dest):
+        """
+        Helper to validate the source and dest parameters passed to
+        collect_actions()
+        """
         result = True
         if not self.valid_source(source):
             result = False
@@ -190,10 +194,10 @@ class AbstractBaseStow(AbstractBaseSubCommand):
                 result = False
         return result
 
-    def collect_actions_for_existing_dest(self, source, dest):
+    def collect_actions_existing_dest(self, source, dest):
         """
-        Collect required actions to perform a stow command when the destination
-        exists
+        collect_actions() helper to collect required actions to perform a stow
+        command when the destination exists
         """
         if utils.is_same_file(dest, source):
             if dest.is_symlink() or self.is_unfolding:
@@ -221,7 +225,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
             if dest_path.exists():
-                self.collect_actions_for_existing_dest(source, dest_path)
+                self.collect_actions_existing_dest(source, dest_path)
             elif dest_path.is_symlink():
                 self.execptions.append(
                     exceptions.conflicts_with_existing_link(self.subcmd, dest_path))
@@ -369,54 +373,58 @@ class Stow(AbstractBaseStow):
         self.collect_actions(source, dest)
         self.is_unfolding = False
 
-    # TODO refactor to use collections.Counter
-    def list_duplicates(self):
+    def get_duplicate_actions(self):
         """
-        todo
+        return a tuple containing tuples with the following structure
+        (link destination, [indices of duplicates])
         """
         tally = defaultdict(list)
-        for i, item in enumerate(self.actions):
-            if isinstance(item, actions.SymbolicLink):
-                tally[item.dest].append(i)
-        return ((key, locs) for key, locs in tally.items()
-                if len(locs) > 1)
+        for index, action in enumerate(self.actions):
+            if isinstance(action, actions.SymbolicLink):
+                tally[action.dest].append(index)
+        return [indices for _, indices in tally.items() if len(indices) > 1]
 
-    def check_for_conflicting_actions(self):
+    def handle_duplicate_actions(self):
         """
         check for symbolic link actions that would cause conflicting symbolic
-        links to the same destination.
+        links to the same destination. Also check for actions that conflict but
+        are candidates for unfolding instead.
         """
-        dupes = []
-        for dup in self.list_duplicates():
-            dupes.append(dup)
+        has_conflicts = False
+        dupes = self.get_duplicate_actions()
 
         if len(dupes) == 0:
             return
 
-        for _, indicies in dupes:
-            first_index = indicies[0]
-            if self.actions[first_index].source.is_dir():
-                self.unfold(self.actions[first_index].source,
-                            self.actions[first_index].dest)
-                for index in indicies[1:]:
+        for indices in dupes:
+            first_action = self.actions[indices[0]]
+            remaining_actions = [self.actions[i] for i in indices[1:]]
+
+            if first_action.source.is_dir():
+                self.unfold(first_action.source, first_action.dest)
+
+                for action in remaining_actions:
                     self.is_unfolding = True
-                    self.collect_actions(self.actions[index].source,
-                                         self.actions[index].dest)
+                    self.collect_actions(action.source, action.dest)
                     self.is_unfolding = False
             else:
+                # TODO say what else this link conflicts with
                 self.execptions.append(
-                    exceptions.conflicts_with_another_source(
-                        self.subcmd, self.actions[first_index].source))
-                return
+                    exceptions.conflicts_with_another_source(self.subcmd, first_action.source))
+                has_conflicts = True
 
-        for _, indicies in dupes:
-            for index in reversed(indicies[1:]):
+        if has_conflicts:
+            return
+
+        # remove duplicates
+        for indices in dupes:
+            for index in reversed(indices[1:]):
                 del self.actions[index]
 
-        self.check_for_conflicting_actions()
+        self.handle_duplicate_actions()
 
     def check_for_other_actions(self):
-        self.check_for_conflicting_actions()
+        self.handle_duplicate_actions()
 
     def are_same_file(self, source, dest):
         """
