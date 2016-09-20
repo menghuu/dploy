@@ -29,7 +29,7 @@ class AbstractBaseSubCommand():
             dest_input = pathlib.Path(dest)
             source_absolute = utils.get_absolute_path(source_input)
             dest_absolute = utils.get_absolute_path(dest_input)
-            if self.validate_input(source_input, dest_input):
+            if self.is_valid_input(source_input, dest_input):
                 self.collect_actions(source_absolute, dest_absolute)
 
         self.check_for_other_actions()
@@ -41,7 +41,7 @@ class AbstractBaseSubCommand():
         """
         pass
 
-    def validate_input(self, source, dest):
+    def is_valid_input(self, source, dest):
         """
         todo
         """
@@ -80,23 +80,23 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         self.is_unfolding = False
         super().__init__(subcmd, source, dest, is_silent, is_dry_run)
 
-    def validate_input(self, source, dest):
+    def is_valid_input(self, source, dest):
         """
-        validate the initial input to a stow command
+        valid the initial input to a stow command
         """
         result = True
 
-        if not self.validate_source(source):
+        if not self.valid_source(source):
             result = False
 
-        if not self.validate_dest(dest):
+        if not self.valid_dest(dest):
             result = False
 
         return result
 
-    def validate_dest(self, dest):
+    def valid_dest(self, dest):
         """
-        validate dest arguments to for stowing
+        valid dest arguments to for stowing
         """
         result = True
 
@@ -122,9 +122,9 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         return result
 
 
-    def validate_source(self, source):
+    def valid_source(self, source):
         """
-        validate source arguments to for stowing
+        valid source arguments to for stowing
         """
         result = True
 
@@ -180,51 +180,60 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         """
         pass
 
+    def is_valid_collection_input(self, source, dest):
+        result = True
+        if not self.valid_source(source):
+            result = False
+
+        if dest.exists():
+            if not self.valid_dest(dest):
+                result = False
+        return result
+
+    def collect_actions_for_existing_dest(self, source, dest):
+        """
+        Collect required actions to perform a stow command when the destination
+        exists
+        """
+        if utils.is_same_file(dest, source):
+            if dest.is_symlink() or self.is_unfolding:
+                self.are_same_file(source, dest)
+            else:
+                self.execptions.append(
+                    exceptions.source_is_same_as_dest(self.subcmd, dest))
+
+        elif dest.is_dir() and source.is_dir:
+            self.are_directories(source, dest)
+        else:
+            self.execptions.append(
+                exceptions.conflicts_with_existing_file(self.subcmd, dest))
+
     def collect_actions(self, source, dest):
         """
         collect required actions to perform a stow command
         """
 
-        if not self.validate_source(source):
+        if not self.is_valid_collection_input(source, dest):
             return
-
-        if dest.exists():
-            if not self.validate_dest(dest):
-                return
 
         sources = self.get_directory_contents(source)
 
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
-
             if dest_path.exists():
-                if utils.is_same_file(dest_path, source):
-                    if dest_path.is_symlink() or self.is_unfolding:
-                        self.are_same_file(source, dest_path)
-                    else:
-                        self.execptions.append(
-                            exceptions.source_is_same_as_dest(self.subcmd, dest_path))
-
-                elif dest_path.is_dir() and source.is_dir:
-                    self.are_directories(source, dest_path)
-                else:
-                    self.execptions.append(
-                        exceptions.conflicts_with_existing_file(self.subcmd, dest_path))
-
+                self.collect_actions_for_existing_dest(source, dest_path)
             elif dest_path.is_symlink():
                 self.execptions.append(
                     exceptions.conflicts_with_existing_link(self.subcmd, dest_path))
-
             elif not dest_path.parent.exists() and not self.is_unfolding:
                 self.execptions.append(exceptions.no_such_directory(self.subcmd, dest_path.parent))
-
             else:
                 self.are_other(source, dest_path)
 
 
 class UnStow(AbstractBaseStow):
     """
-    todo
+    Concrete class implementation of the unstow sub command
     """
     def __init__(self, source, dest, is_silent=True, is_dry_run=False):
         super().__init__("unstow", source, dest, is_silent, is_dry_run)
@@ -288,12 +297,12 @@ class UnStow(AbstractBaseStow):
 
 class Link(AbstractBaseSubCommand):
     """
-    todo
+    Concrete class implementation of the link sub command
     """
     def __init__(self, source, dest, is_silent=True, is_dry_run=False):
         super().__init__("link", [source], dest, is_silent, is_dry_run)
 
-    def validate_input(self, source, dest):
+    def is_valid_input(self, source, dest):
         """
         todo
         """
@@ -345,7 +354,7 @@ class Link(AbstractBaseSubCommand):
 
 class Stow(AbstractBaseStow):
     """
-    todo
+    Concrete class implementation of the stow sub command
     """
     def __init__(self, source, dest, is_silent=True, is_dry_run=False):
         super().__init__("stow", source, dest, is_silent, is_dry_run)
