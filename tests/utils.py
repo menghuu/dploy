@@ -64,6 +64,7 @@ def create_tree(tree):
                     create_tree(file_objs)
 
 
+# TODO rename remove_read_permission
 def write_only(path):
     """
     change users permissions to a path to write only
@@ -72,12 +73,21 @@ def write_only(path):
     os.chmod(path, mode & ~stat.S_IRUSR & ~stat.S_IRGRP & ~stat.S_IROTH)
 
 
+# TODO rename remove_write_permission
 def read_only(path):
     """
     change users permissions to a path to read only
     """
     mode = os.stat(path)[stat.ST_MODE]
     os.chmod(path, mode & ~stat.S_IWUSR & ~stat.S_IWGRP & ~stat.S_IWOTH)
+
+
+def remove_execute_permission(path):
+    """
+    change users permissions to a path to read only
+    """
+    mode = os.stat(path)[stat.ST_MODE]
+    os.chmod(path, mode & ~stat.S_IXUSR & ~stat.S_IXGRP & ~stat.S_IXOTH)
 
 
 def is_subcmd_error_message(subcmd, exception):

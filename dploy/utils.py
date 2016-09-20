@@ -80,3 +80,10 @@ def is_directory_writable(directory):
     check if a directory is writable
     """
     return os.access(directory.__str__(), os.W_OK)
+
+
+def is_directory_executable(directory):
+    """
+    check if a directory is executable
+    """
+    return os.access(directory.__str__(), os.X_OK)

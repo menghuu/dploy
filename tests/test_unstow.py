@@ -85,6 +85,22 @@ def test_unstow_with_write_only_source(source_a, dest):
     assert utils.is_subcmd_error_message('unstow', e)
 
 
+def test_unstow_with_dest_with_no_executue_permissions(source_a, dest):
+    dploy.stow([source_a], dest)
+    utils.remove_execute_permission(dest)
+    with pytest.raises(PermissionError) as e:
+        dploy.unstow([source_a], dest)
+    assert utils.is_subcmd_error_message('unstow', e)
+
+
+def test_unstow_with_dest_dir_with_no_executue_permissions(source_a, source_b, dest):
+    dploy.stow([source_a, source_b], dest)
+    utils.remove_execute_permission(os.path.join(dest, 'aaa'))
+    with pytest.raises(PermissionError) as e:
+        dploy.unstow([source_a, source_b], dest)
+    assert utils.is_subcmd_error_message('unstow', e)
+
+
 def test_unstow_with_write_only_source_file(source_a, dest):
     dploy.stow([source_a], dest)
     utils.write_only(os.path.join(source_a, 'aaa', 'aaa'))

@@ -72,7 +72,8 @@ class AbstractBaseSubCommand():
 
 class AbstractBaseStow(AbstractBaseSubCommand):
     """
-    todo
+    Abstract Base class that contains the shared logic for all of the stow
+    commands
     """
     # pylint: disable=too-many-arguments
     def __init__(self, subcmd, source, dest, is_silent, is_dry_run):
@@ -81,28 +82,67 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
     def validate_input(self, source, dest):
         """
-        todo
+        validate the initial input to a stow command
         """
-        if not source.is_dir():
-            self.execptions.append(exceptions.no_such_directory(self.subcmd, source))
-            return False
+        result = True
 
-        elif not dest.is_dir():
+        if not self.validate_source(source):
+            result = False
+
+        if not self.validate_dest(dest):
+            result = False
+
+        return result
+
+    def validate_dest(self, dest):
+        """
+        validate dest arguments to for stowing
+        """
+        result = True
+
+        if not dest.is_dir():
             self.execptions.append(exceptions.no_such_directory_to_subcmd_into(self.subcmd, dest))
-            return False
+            result = False
 
-        elif not utils.is_directory_readable(source):
-            self.execptions.append(
-                exceptions.insufficient_permissions_to_subcmd_from(self.subcmd, source))
-            return False
-
-        elif not utils.is_directory_writable(dest):
+        if not utils.is_directory_writable(dest):
             self.execptions.append(
                 exceptions.insufficient_permissions_to_subcmd_to(self.subcmd, dest))
-            return False
+            result = False
 
-        else:
-            return True
+        if not utils.is_directory_readable(dest):
+            self.execptions.append(
+                exceptions.insufficient_permissions_to_subcmd_to(self.subcmd, dest))
+            result = False
+
+        if not utils.is_directory_executable(dest):
+            self.execptions.append(
+                exceptions.insufficient_permissions_to_subcmd_to(self.subcmd, dest))
+            result = False
+
+        return result
+
+
+    def validate_source(self, source):
+        """
+        validate source arguments to for stowing
+        """
+        result = True
+
+        if not source.is_dir():
+            self.execptions.append(exceptions.no_such_directory(self.subcmd, source))
+            result = False
+
+        if not utils.is_directory_readable(source):
+            self.execptions.append(
+                exceptions.insufficient_permissions(self.subcmd, source))
+            result = False
+
+        if not utils.is_directory_executable(source):
+            self.execptions.append(
+                exceptions.insufficient_permissions(self.subcmd, source))
+            result = False
+
+        return result
 
 
     def get_directory_contents(self, directory):
@@ -142,8 +182,16 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
     def collect_actions(self, source, dest):
         """
-        todo
+        collect required actions to perform a stow command
         """
+
+        if not self.validate_source(source):
+            return
+
+        if dest.exists():
+            if not self.validate_dest(dest):
+                return
+
         sources = self.get_directory_contents(source)
 
         for source in sources:
@@ -312,6 +360,7 @@ class Stow(AbstractBaseStow):
         self.collect_actions(source, dest)
         self.is_unfolding = False
 
+    # TODO refactor to use collections.Counter
     def list_duplicates(self):
         """
         todo
