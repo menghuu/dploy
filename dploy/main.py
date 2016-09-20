@@ -24,13 +24,12 @@ class AbstractBaseSubCommand():
         self.is_silent = is_silent
         self.is_dry_run = is_dry_run
 
+        dest_input = pathlib.Path(dest)
+
         for source in sources:
             source_input = pathlib.Path(source)
-            dest_input = pathlib.Path(dest)
-            source_absolute = utils.get_absolute_path(source_input)
-            dest_absolute = utils.get_absolute_path(dest_input)
             if self.is_valid_input(source_input, dest_input):
-                self.collect_actions(source_absolute, dest_absolute)
+                self.collect_actions(source_input, dest_input)
 
         self.check_for_other_actions()
         self.execute_actions()
