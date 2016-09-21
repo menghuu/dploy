@@ -407,9 +407,9 @@ class Stow(AbstractBaseStow):
                     self.collect_actions(action.source, action.dest)
                     self.is_unfolding = False
             else:
-                # TODO say what else this link conflicts with
+                duplicate_action_sources = [str(self.actions[i].source) for i in indices]
                 self.execptions.append(
-                    exceptions.conflicts_with_another_source(self.subcmd, first_action.source))
+                    exceptions.conflicts_with_another_source(self.subcmd, duplicate_action_sources))
                 has_conflicts = True
 
         if has_conflicts:

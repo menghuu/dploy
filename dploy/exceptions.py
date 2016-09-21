@@ -12,9 +12,10 @@ def source_is_same_as_dest(subcmd, file):
     return ValueError(msg.format(subcmd=subcmd, file=file))
 
 
-def conflicts_with_another_source(subcmd, file):
-    msg = ERROR_HEAD + "'{file}': Conflicts with another source"
-    return ValueError(msg.format(subcmd=subcmd, file=file))
+def conflicts_with_another_source(subcmd, files):
+    files_list = '\n    '  + '\n    '.join(files)
+    msg = ERROR_HEAD + "the following: Conflicts with other source {files}"
+    return ValueError(msg.format(subcmd=subcmd, files=files_list))
 
 
 def conflicts_with_existing_file(subcmd, file):
