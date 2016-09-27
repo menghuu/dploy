@@ -23,7 +23,7 @@ def rmtree(tree):
     a wrapper around shutil.rmtree to recursively delete a directory specified
     by a pathlib.Path object
     """
-    shutil.rmtree(tree.__str__())
+    shutil.rmtree(str(tree))
 
 
 def is_same_file(file1, file2):
@@ -40,7 +40,7 @@ def get_absolute_path(file):
     """
     todo
     """
-    absolute_path = os.path.abspath(os.path.expanduser(file.__str__()))
+    absolute_path = os.path.abspath(os.path.expanduser(str(file)))
     return pathlib.Path(absolute_path)
 
 
@@ -48,9 +48,9 @@ def get_relative_path(path, start_at):
     """
 
     NOTE: python 3.4.5 & 3.5.2 support pathlib.Path.path =
-    pathlib.Path.__str__()
+    str(pathlib.Path)
     """
-    relative_path = os.path.relpath(path.__str__(), start_at.__str__())
+    relative_path = os.path.relpath(str(path), str(start_at))
     return pathlib.Path(relative_path)
 
 
@@ -58,32 +58,32 @@ def is_file_readable(a_file):
     """
     check if a file is readable
     """
-    return os.access(a_file.__str__(), os.R_OK)
+    return os.access(str(a_file), os.R_OK)
 
 
 def is_file_writable(a_file):
     """
     check if a file is writable
     """
-    return os.access(a_file.__str__(), os.W_OK)
+    return os.access(str(a_file), os.W_OK)
 
 
 def is_directory_readable(directory):
     """
     check if a directory is readable
     """
-    return os.access(directory.__str__(), os.R_OK)
+    return os.access(str(directory), os.R_OK)
 
 
 def is_directory_writable(directory):
     """
     check if a directory is writable
     """
-    return os.access(directory.__str__(), os.W_OK)
+    return os.access(str(directory), os.W_OK)
 
 
 def is_directory_executable(directory):
     """
     check if a directory is executable
     """
-    return os.access(directory.__str__(), os.X_OK)
+    return os.access(str(directory), os.X_OK)
