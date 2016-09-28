@@ -160,6 +160,14 @@ def test_stow_with_write_only_source_file(source_a, source_c, dest):
     assert utils.is_subcmd_error_message('stow', e)
 
 
+def test_stow_unfolding_with_first_sources_execute_permission_removed(source_a, source_b, dest):
+    dploy.stow([source_a], dest)
+    utils.remove_execute_permission(source_a)
+    with pytest.raises(PermissionError) as e:
+        dploy.stow([source_b], dest)
+    assert utils.is_subcmd_error_message('stow', e)
+
+
 def test_stow_with_same_directory_used_as_source_and_dest(source_a):
     with pytest.raises(ValueError) as e:
         dploy.stow([source_a], source_a)

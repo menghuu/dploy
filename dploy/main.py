@@ -223,7 +223,15 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
         for source in sources:
             dest_path = dest / pathlib.Path(source.name)
-            if dest_path.exists():
+
+            does_dest_path_exist = False
+            try:
+                does_dest_path_exist = dest_path.exists()
+            except PermissionError:
+                self.execptions.append(exceptions.permission_denied(self.subcmd, dest_path))
+                return
+
+            if does_dest_path_exist:
                 self.collect_actions_existing_dest(source, dest_path)
             elif dest_path.is_symlink():
                 self.execptions.append(
@@ -258,7 +266,7 @@ class UnStow(AbstractBaseStow):
 
     def collect_folding_actions(self):
         """
-        find canidates for folding i.e. when replacing a directories containing
+        find candidates for folding i.e. when replacing a directories containing
         links with a single symlink to the directory itself would work instead
         """
 
