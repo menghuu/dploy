@@ -27,52 +27,6 @@ def test_stow_with_the_same_tree_twice(source_a, dest):
     assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_a', 'aaa')
 
 
-def test_stow_unfolding_with_two_invocations(source_a, source_b, dest):
-    dploy.stow([source_a], dest)
-    assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_a', 'aaa')
-
-    assert os.path.isfile(os.path.join(dest, 'aaa', 'aaa'))
-    assert os.path.isfile(os.path.join(dest, 'aaa', 'bbb'))
-    assert os.path.isdir(os.path.join(dest, 'aaa', 'ccc'))
-
-    dploy.stow([source_b], dest)
-    assert os.path.isdir(os.path.join(dest, 'aaa'))
-
-    assert (os.readlink(os.path.join(dest, 'aaa', 'aaa')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'aaa'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'bbb')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'bbb'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'ccc')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'ccc'))
-
-    assert (os.readlink(os.path.join(dest, 'aaa', 'ddd')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'ddd'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'eee')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'eee'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'fff')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'fff'))
-
-
-def test_stow_unfolding_with_mutliple_sources(source_a, source_b, dest):
-    dploy.stow([source_a, source_b], dest)
-
-    assert os.path.isdir(os.path.join(dest, 'aaa'))
-
-    assert (os.readlink(os.path.join(dest, 'aaa', 'aaa')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'aaa'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'bbb')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'bbb'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'ccc')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'ccc'))
-
-    assert (os.readlink(os.path.join(dest, 'aaa', 'ddd')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'ddd'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'eee')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'eee'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'fff')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'fff'))
-
-
 def test_stow_with_existing_file_conflicts(source_a, source_c, dest):
     dploy.stow([source_a], dest)
 
@@ -125,6 +79,12 @@ def test_stow_with_file_as_dest_and_source(file_a, file_b):
     assert utils.is_subcmd_error_message('stow', e)
 
 
+def test_stow_with_same_directory_used_as_source_and_dest(source_a):
+    with pytest.raises(ValueError) as e:
+        dploy.stow([source_a], source_a)
+    assert utils.is_subcmd_error_message('stow', e)
+
+
 def test_stow_with_read_only_dest(source_a, dest):
     utils.remove_write_permission(dest)
     with pytest.raises(PermissionError) as e:
@@ -160,15 +120,55 @@ def test_stow_with_write_only_source_file(source_a, source_c, dest):
     assert utils.is_subcmd_error_message('stow', e)
 
 
+def test_stow_unfolding_with_two_invocations(source_a, source_b, dest):
+    dploy.stow([source_a], dest)
+    assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_a', 'aaa')
+
+    assert os.path.isfile(os.path.join(dest, 'aaa', 'aaa'))
+    assert os.path.isfile(os.path.join(dest, 'aaa', 'bbb'))
+    assert os.path.isdir(os.path.join(dest, 'aaa', 'ccc'))
+
+    dploy.stow([source_b], dest)
+    assert os.path.isdir(os.path.join(dest, 'aaa'))
+
+    assert (os.readlink(os.path.join(dest, 'aaa', 'aaa')) ==
+            os.path.join('..', '..', 'source_a', 'aaa', 'aaa'))
+    assert (os.readlink(os.path.join(dest, 'aaa', 'bbb')) ==
+            os.path.join('..', '..', 'source_a', 'aaa', 'bbb'))
+    assert (os.readlink(os.path.join(dest, 'aaa', 'ccc')) ==
+            os.path.join('..', '..', 'source_a', 'aaa', 'ccc'))
+
+    assert (os.readlink(os.path.join(dest, 'aaa', 'ddd')) ==
+            os.path.join('..', '..', 'source_b', 'aaa', 'ddd'))
+    assert (os.readlink(os.path.join(dest, 'aaa', 'eee')) ==
+            os.path.join('..', '..', 'source_b', 'aaa', 'eee'))
+    assert (os.readlink(os.path.join(dest, 'aaa', 'fff')) ==
+            os.path.join('..', '..', 'source_b', 'aaa', 'fff'))
+
+
+def test_stow_unfolding_with_mutliple_sources(source_a, source_b, dest):
+    dploy.stow([source_a, source_b], dest)
+
+    assert os.path.isdir(os.path.join(dest, 'aaa'))
+
+    assert (os.readlink(os.path.join(dest, 'aaa', 'aaa')) ==
+            os.path.join('..', '..', 'source_a', 'aaa', 'aaa'))
+    assert (os.readlink(os.path.join(dest, 'aaa', 'bbb')) ==
+            os.path.join('..', '..', 'source_a', 'aaa', 'bbb'))
+    assert (os.readlink(os.path.join(dest, 'aaa', 'ccc')) ==
+            os.path.join('..', '..', 'source_a', 'aaa', 'ccc'))
+
+    assert (os.readlink(os.path.join(dest, 'aaa', 'ddd')) ==
+            os.path.join('..', '..', 'source_b', 'aaa', 'ddd'))
+    assert (os.readlink(os.path.join(dest, 'aaa', 'eee')) ==
+            os.path.join('..', '..', 'source_b', 'aaa', 'eee'))
+    assert (os.readlink(os.path.join(dest, 'aaa', 'fff')) ==
+            os.path.join('..', '..', 'source_b', 'aaa', 'fff'))
+
+
 def test_stow_unfolding_with_first_sources_execute_permission_removed(source_a, source_b, dest):
     dploy.stow([source_a], dest)
     utils.remove_execute_permission(source_a)
     with pytest.raises(PermissionError) as e:
         dploy.stow([source_b], dest)
-    assert utils.is_subcmd_error_message('stow', e)
-
-
-def test_stow_with_same_directory_used_as_source_and_dest(source_a):
-    with pytest.raises(ValueError) as e:
-        dploy.stow([source_a], source_a)
     assert utils.is_subcmd_error_message('stow', e)

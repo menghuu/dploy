@@ -17,7 +17,7 @@ def test_unstow_with_basic_senario(source_a, dest):
     assert not os.path.exists(os.path.join(dest, 'aaa'))
 
 
-def test_unstow_with_existing_broken_link(source_a, dest):
+def test_unstow_with_a_broken_link_dest(source_a, dest):
     os.symlink('non_existant_source', os.path.join(dest, 'aaa'))
 
     with pytest.raises(ValueError) as e:
@@ -25,7 +25,7 @@ def test_unstow_with_existing_broken_link(source_a, dest):
     assert utils.is_subcmd_error_message('unstow', e)
 
 
-def test_unstow_with_existing_broken_link_in_source(source_a, dest):
+def test_unstow_with_broken_link_in_dest(source_a, dest):
     os.mkdir(os.path.join(dest, 'aaa'))
     dploy.stow([source_a], dest)
     os.symlink(os.path.join(source_a, 'non_existant_source'),
@@ -57,7 +57,7 @@ def test_unstow_with_file_as_dest(source_a, file_a):
     assert utils.is_subcmd_error_message('unstow', e)
 
 
-def test_unstow_with_file_as_dest_and_source(file_a, file_b):
+def test_unstow_with_file_as_source_and_dest(file_a, file_b):
     with pytest.raises(NotADirectoryError) as e:
         dploy.unstow([file_a], file_b)
     assert utils.is_subcmd_error_message('unstow', e)
