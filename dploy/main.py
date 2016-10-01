@@ -20,7 +20,7 @@ class AbstractBaseSubCommand():
     def __init__(self, subcmd, sources, dest, is_silent, is_dry_run):
         self.subcmd = subcmd
         self.actions = []
-        self.execptions = []
+        self.exceptions = []
         self.is_silent = is_silent
         self.is_dry_run = is_dry_run
 
@@ -56,11 +56,11 @@ class AbstractBaseSubCommand():
         """
         todo
         """
-        if len(self.execptions) > 0:
+        if len(self.exceptions) > 0:
             if not self.is_silent:
-                for exception in self.execptions:
+                for exception in self.exceptions:
                     print(exception, file=sys.stderr)
-            raise self.execptions[0]
+            raise self.exceptions[0]
         else:
             for action in self.actions:
                 if not self.is_silent:
@@ -72,7 +72,7 @@ class AbstractBaseSubCommand():
         """
         Add an exception to our collection of exceptions
         """
-        self.execptions.append(exception.exception)
+        self.exceptions.append(exception.exception)
 
 
 class AbstractBaseStow(AbstractBaseSubCommand):
