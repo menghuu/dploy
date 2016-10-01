@@ -1,6 +1,6 @@
 [MESSAGES CONTROL]
 
-disable=locally-disabled
+disable=locally-disabled, duplicate-code
 
 [REPORTS]
 
