@@ -8,7 +8,7 @@ import pathlib
 import sys
 import dploy.actions as actions
 import dploy.utils as utils
-import dploy.exceptions as exceptions
+import dploy.errors as errors
 
 
 class AbstractBaseSubCommand():
@@ -70,7 +70,7 @@ class AbstractBaseSubCommand():
 
     def add_exception(self, exception):
         """
-        Add an exception to our collection of exceptions
+        Add an exception to to be handled later
         """
         self.exceptions.append(exception.exception)
 
@@ -106,22 +106,22 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         result = True
 
         if not dest.is_dir():
-            self.add_exception(exceptions.NoSuchDirectoryToSubcmdInto(self.subcmd, dest))
+            self.add_exception(errors.NoSuchDirectoryToSubcmdInto(self.subcmd, dest))
             result = False
 
         if not utils.is_directory_writable(dest):
             self.add_exception(
-                exceptions.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
             result = False
 
         if not utils.is_directory_readable(dest):
             self.add_exception(
-                exceptions.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
             result = False
 
         if not utils.is_directory_executable(dest):
             self.add_exception(
-                exceptions.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
             result = False
 
         return result
@@ -134,17 +134,17 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         result = True
 
         if not source.is_dir():
-            self.add_exception(exceptions.NoSuchDirectory(self.subcmd, source))
+            self.add_exception(errors.NoSuchDirectory(self.subcmd, source))
             result = False
 
         if not utils.is_directory_readable(source):
             self.add_exception(
-                exceptions.InsufficientPermissions(self.subcmd, source))
+                errors.InsufficientPermissions(self.subcmd, source))
             result = False
 
         if not utils.is_directory_executable(source):
             self.add_exception(
-                exceptions.InsufficientPermissions(self.subcmd, source))
+                errors.InsufficientPermissions(self.subcmd, source))
             result = False
 
         return result
@@ -158,11 +158,11 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         try:
             contents = utils.get_directory_contents(directory)
         except PermissionError:
-            self.add_exception(exceptions.PermissionDenied(self.subcmd, directory))
+            self.add_exception(errors.PermissionDenied(self.subcmd, directory))
         except FileNotFoundError:
-            self.add_exception(exceptions.NoSuchFileOrDirectory(self.subcmd, directory))
+            self.add_exception(errors.NoSuchFileOrDirectory(self.subcmd, directory))
         except NotADirectoryError:
-            self.add_exception(exceptions.NoSuchDirectory(self.subcmd, directory))
+            self.add_exception(errors.NoSuchDirectory(self.subcmd, directory))
 
         return contents
 
@@ -208,13 +208,13 @@ class AbstractBaseStow(AbstractBaseSubCommand):
                 self.are_same_file(source, dest)
             else:
                 self.add_exception(
-                    exceptions.SourceIsSameAsDest(self.subcmd, dest))
+                    errors.SourceIsSameAsDest(self.subcmd, dest))
 
         elif dest.is_dir() and source.is_dir:
             self.are_directories(source, dest)
         else:
             self.add_exception(
-                exceptions.ConflictsWithExistingFile(self.subcmd, source, dest))
+                errors.ConflictsWithExistingFile(self.subcmd, source, dest))
 
     def collect_actions(self, source, dest):
         """
@@ -233,16 +233,16 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             try:
                 does_dest_path_exist = dest_path.exists()
             except PermissionError:
-                self.add_exception(exceptions.PermissionDenied(self.subcmd, dest_path))
+                self.add_exception(errors.PermissionDenied(self.subcmd, dest_path))
                 return
 
             if does_dest_path_exist:
                 self.collect_actions_existing_dest(source, dest_path)
             elif dest_path.is_symlink():
                 self.add_exception(
-                    exceptions.ConflictsWithExistingLink(self.subcmd, source, dest_path))
+                    errors.ConflictsWithExistingLink(self.subcmd, source, dest_path))
             elif not dest_path.parent.exists() and not self.is_unfolding:
-                self.add_exception(exceptions.NoSuchDirectory(self.subcmd, dest_path.parent))
+                self.add_exception(errors.NoSuchDirectory(self.subcmd, dest_path.parent))
             else:
                 self.are_other(source, dest_path)
 
@@ -294,7 +294,7 @@ class UnStow(AbstractBaseStow):
                     try:
                         does_item_exist = item.exists()
                     except PermissionError:
-                        self.add_exception(exceptions.PermissionDenied(self.subcmd, item))
+                        self.add_exception(errors.PermissionDenied(self.subcmd, item))
                         return
 
                     if does_item_exist and item.is_symlink():
@@ -331,22 +331,22 @@ class Link(AbstractBaseSubCommand):
         todo
         """
         if not source.exists():
-            self.add_exception(exceptions.NoSuchFileOrDirectory(self.subcmd, source))
+            self.add_exception(errors.NoSuchFileOrDirectory(self.subcmd, source))
             return False
 
         elif not dest.parent.exists():
-            self.add_exception(exceptions.NoSuchFileOrDirectory(self.subcmd, dest.parent))
+            self.add_exception(errors.NoSuchFileOrDirectory(self.subcmd, dest.parent))
             return False
 
         elif (not utils.is_file_readable(source)
               or not utils.is_directory_readable(source)):
-            self.add_exception(exceptions.InsufficientPermissions(self.subcmd, source))
+            self.add_exception(errors.InsufficientPermissions(self.subcmd, source))
             return False
 
         elif (not utils.is_file_writable(dest.parent)
               or not utils.is_directory_writable(dest.parent)):
             self.add_exception(
-                exceptions.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
             return False
 
         else:
@@ -364,14 +364,14 @@ class Link(AbstractBaseSubCommand):
                                                           dest))
             else:
                 self.add_exception(
-                    exceptions.ConflictsWithExistingFile(self.subcmd, source, dest))
+                    errors.ConflictsWithExistingFile(self.subcmd, source, dest))
         elif dest.is_symlink():
             self.add_exception(
-                exceptions.ConflictsWithExistingLink(self.subcmd, source, dest))
+                errors.ConflictsWithExistingLink(self.subcmd, source, dest))
 
         elif not dest.parent.exists():
             self.add_exception(
-                exceptions.NoSuchDirectoryToSubcmdInto(self.subcmd, dest.parent))
+                errors.NoSuchDirectoryToSubcmdInto(self.subcmd, dest.parent))
 
         else:
             self.actions.append(actions.SymbolicLink(self.subcmd, source, dest))
@@ -431,7 +431,7 @@ class Stow(AbstractBaseStow):
             else:
                 duplicate_action_sources = [str(self.actions[i].source) for i in indices]
                 self.add_exception(
-                    exceptions.ConflictsWithAnotherSource(self.subcmd, duplicate_action_sources))
+                    errors.ConflictsWithAnotherSource(self.subcmd, duplicate_action_sources))
                 has_conflicts = True
 
         if has_conflicts:
