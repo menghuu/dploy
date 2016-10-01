@@ -9,8 +9,10 @@ Tests for the stow stub command
 import os
 import pytest
 import dploy
+import dploy.errors as errors
 import utils
 
+SUBCMD = 'unstow'
 
 def test_unstow_with_basic_senario(source_a, dest):
     dploy.stow([source_a], dest)
@@ -19,11 +21,14 @@ def test_unstow_with_basic_senario(source_a, dest):
 
 
 def test_unstow_with_a_broken_link_dest(source_a, dest):
+    conflicting_link = os.path.join(dest, 'aaa')
+    source_file = os.path.join(source_a, 'aaa')
     os.symlink('non_existant_source', os.path.join(dest, 'aaa'))
-
     with pytest.raises(ValueError) as e:
         dploy.unstow([source_a], dest)
-    assert utils.is_subcmd_error_message('unstow', e)
+    assert (errors.ConflictsWithExistingLink(subcmd=SUBCMD,
+                                             source=source_file,
+                                             dest=conflicting_link).msg in str(e.value))
 
 
 def test_unstow_with_broken_link_in_dest(source_a, dest):
@@ -35,33 +40,36 @@ def test_unstow_with_broken_link_in_dest(source_a, dest):
 
 
 def test_unstow_with_non_existant_source(dest):
+    source = 'source'
     with pytest.raises(NotADirectoryError) as e:
-        dploy.unstow(['source'], dest)
-    assert utils.is_subcmd_error_message('unstow', e)
+        dploy.unstow([source], dest)
+    assert errors.NoSuchDirectory(subcmd=SUBCMD, file=source).msg in str(e.value)
 
 
 def test_unstow_with_non_existant_dest(source_a):
+    dest = 'dest'
     with pytest.raises(NotADirectoryError) as e:
-        dploy.unstow([source_a], 'dest')
-    assert utils.is_subcmd_error_message('unstow', e)
+        dploy.unstow([source_a], dest)
+    assert errors.NoSuchDirectoryToSubcmdInto(subcmd=SUBCMD, file=dest).msg in str(e.value)
 
 
 def test_unstow_with_file_as_source(file_a, dest):
     with pytest.raises(NotADirectoryError) as e:
         dploy.unstow([file_a], dest)
-    assert utils.is_subcmd_error_message('unstow', e)
+    assert errors.NoSuchDirectory(subcmd=SUBCMD, file=file_a).msg in str(e.value)
 
 
 def test_unstow_with_file_as_dest(source_a, file_a):
     with pytest.raises(NotADirectoryError) as e:
         dploy.unstow([source_a], file_a)
-    assert utils.is_subcmd_error_message('unstow', e)
+    assert errors.NoSuchDirectoryToSubcmdInto(subcmd=SUBCMD, file=file_a).msg in str(e.value)
 
 
 def test_unstow_with_file_as_source_and_dest(file_a, file_b):
     with pytest.raises(NotADirectoryError) as e:
         dploy.unstow([file_a], file_b)
-    assert utils.is_subcmd_error_message('unstow', e)
+    assert (errors.NoSuchDirectory(subcmd=SUBCMD,
+                                   file=file_a).msg in str(e.value))
 
 
 def test_unstow_with_read_only_dest(source_a, dest):
@@ -69,7 +77,7 @@ def test_unstow_with_read_only_dest(source_a, dest):
     utils.remove_write_permission(dest)
     with pytest.raises(PermissionError) as e:
         dploy.unstow([source_a], dest)
-    assert utils.is_subcmd_error_message('unstow', e)
+    assert errors.InsufficientPermissionsToSubcmdTo(subcmd=SUBCMD, file=dest).msg in str(e.value)
 
 
 def test_unstow_with_read_only_dest_file(source_a, dest):
@@ -83,7 +91,8 @@ def test_unstow_with_write_only_source(source_a, dest):
     utils.remove_read_permission(source_a)
     with pytest.raises(PermissionError) as e:
         dploy.unstow([source_a], dest)
-    assert utils.is_subcmd_error_message('unstow', e)
+    assert (errors.InsufficientPermissions(subcmd=SUBCMD, file=source_a).msg
+            in str(e.value))
 
 
 def test_unstow_with_dest_with_no_executue_permissions(source_a, dest):
@@ -91,15 +100,17 @@ def test_unstow_with_dest_with_no_executue_permissions(source_a, dest):
     utils.remove_execute_permission(dest)
     with pytest.raises(PermissionError) as e:
         dploy.unstow([source_a], dest)
-    assert utils.is_subcmd_error_message('unstow', e)
+    assert (errors.InsufficientPermissionsToSubcmdTo(subcmd=SUBCMD, file=dest).msg
+            in str(e.value))
 
 
 def test_unstow_with_dest_dir_with_no_executue_permissions(source_a, source_b, dest):
+    dest_dir = os.path.join(dest, 'aaa')
     dploy.stow([source_a, source_b], dest)
     utils.remove_execute_permission(os.path.join(dest, 'aaa'))
     with pytest.raises(PermissionError) as e:
         dploy.unstow([source_a, source_b], dest)
-    assert utils.is_subcmd_error_message('unstow', e)
+    assert errors.InsufficientPermissionsToSubcmdTo(subcmd=SUBCMD, file=dest_dir).msg in str(e.value)
 
 
 def test_unstow_with_write_only_source_file(source_a, dest):
@@ -123,7 +134,7 @@ def test_unstow_with_same_directory_used_as_source_and_dest(source_a):
 def test_unstow_with_same_simple_directory_used_as_source_and_dest(source_only_files):
     with pytest.raises(ValueError) as e:
         dploy.unstow([source_only_files], source_only_files)
-    assert utils.is_subcmd_error_message('unstow', e)
+    assert errors.SourceIsSameAsDest(subcmd=SUBCMD, file=source_only_files).msg in str(e.value)
 
 
 def test_unstow_folding_basic(source_a, source_b, dest):
@@ -164,4 +175,6 @@ def test_unstow_folding_with_multiple_sources_with_execute_permission_unset(sour
     utils.remove_execute_permission(source_b)
     with pytest.raises(PermissionError) as e:
         dploy.unstow([source_a], dest)
-    assert utils.is_subcmd_error_message('unstow', e)
+    dest_dir = os.path.join(dest, 'aaa', 'ddd')
+    assert errors.PermissionDenied(subcmd=SUBCMD, file=dest_dir).msg in str(e.value)
+
