@@ -278,6 +278,7 @@ class UnStow(AbstractBaseStow):
         unlink_actions = (
             [a for a in self.actions if isinstance(a, actions.UnLink)])
         unlink_actions_targets = [a.target for a in unlink_actions]
+        # FIXME set causes non-deterministic output
         unlink_actions_targets_parents = set([a.target.parent for a in unlink_actions])
 
         for parent in unlink_actions_targets_parents:
@@ -399,6 +400,7 @@ class Stow(AbstractBaseStow):
         return a tuple containing tuples with the following structure
         (link destination, [indices of duplicates])
         """
+        # FIXME defaultdict causes non-deterministic output
         tally = defaultdict(list)
         for index, action in enumerate(self.actions):
             if isinstance(action, actions.SymbolicLink):
