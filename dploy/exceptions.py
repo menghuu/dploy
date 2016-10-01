@@ -18,14 +18,14 @@ def conflicts_with_another_source(subcmd, files):
     return ValueError(msg.format(subcmd=subcmd, files=files_list))
 
 
-def conflicts_with_existing_file(subcmd, file):
-    msg = ERROR_HEAD + "'{file}': Conflicts with existing file"
-    return ValueError(msg.format(subcmd=subcmd, file=file))
+def conflicts_with_existing_file(subcmd, source, dest):
+    msg = ERROR_HEAD + "'{source}': Conflicts with existing '{dest}'"
+    return ValueError(msg.format(subcmd=subcmd, source=source, dest=dest))
 
 
-def conflicts_with_existing_link(subcmd, file):
-    msg = ERROR_HEAD + "'{file}': Conflicts with existing link"
-    return ValueError(msg.format(subcmd=subcmd, file=file))
+def conflicts_with_existing_link(subcmd, source, dest):
+    msg = ERROR_HEAD + "'{source}': Conflicts with existing link '{dest}'"
+    return ValueError(msg.format(subcmd=subcmd, source=source, dest=dest))
 
 
 def insufficient_permissions(subcmd, file):

@@ -208,7 +208,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             self.are_directories(source, dest)
         else:
             self.execptions.append(
-                exceptions.conflicts_with_existing_file(self.subcmd, dest))
+                exceptions.conflicts_with_existing_file(self.subcmd, source, dest))
 
     def collect_actions(self, source, dest):
         """
@@ -234,7 +234,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
                 self.collect_actions_existing_dest(source, dest_path)
             elif dest_path.is_symlink():
                 self.execptions.append(
-                    exceptions.conflicts_with_existing_link(self.subcmd, dest_path))
+                    exceptions.conflicts_with_existing_link(self.subcmd, source, dest_path))
             elif not dest_path.parent.exists() and not self.is_unfolding:
                 self.execptions.append(exceptions.no_such_directory(self.subcmd, dest_path.parent))
             else:
@@ -357,10 +357,11 @@ class Link(AbstractBaseSubCommand):
                                                           source,
                                                           dest))
             else:
-                self.execptions.append(exceptions.conflicts_with_existing_file(self.subcmd, dest))
-
+                self.execptions.append(
+                    exceptions.conflicts_with_existing_file(self.subcmd, source, dest))
         elif dest.is_symlink():
-            self.execptions.append(exceptions.conflicts_with_existing_link(self.subcmd, dest))
+            self.execptions.append(
+                exceptions.conflicts_with_existing_link(self.subcmd, source, dest))
 
         elif not dest.parent.exists():
             self.execptions.append(
