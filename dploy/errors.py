@@ -23,13 +23,13 @@ class ConflictsWithAnotherSource():
 
 class ConflictsWithExistingFile():
     def __init__(self, subcmd, source, dest):
-        self.msg = ERROR_HEAD + "'{source}': Conflicts with existing '{dest}'"
+        self.msg = ERROR_HEAD + "'{source}': Conflicts with existing file '{dest}'"
         self.exception = ValueError(self.msg.format(subcmd=subcmd, source=source, dest=dest))
 
 
 class ConflictsWithExistingLink():
     def __init__(self, subcmd, source, dest):
-        self.msg = ERROR_HEAD + "'{source}': Conflicts with existing link '{dest}'"
+        self.msg = ERROR_HEAD + "'{source}': Conflicts with existing symlink '{dest}'"
         self.exception = ValueError(self.msg.format(subcmd=subcmd, source=source, dest=dest))
 
 
@@ -50,21 +50,18 @@ class PermissionDenied():
         self.msg = ERROR_HEAD + "'{file}': Permission denied"
         self.exception = PermissionError(self.msg.format(subcmd=subcmd, file=file))
 
-# pylint: disable=invalid-name
 class InsufficientPermissionsToSubcmdFrom():
     def __init__(self, subcmd, file):
         self.msg = ERROR_HEAD + "from '{file}': Insufficient permissions"
         self.exception = PermissionError(self.msg.format(subcmd=subcmd, file=file))
 
 
-# pylint: disable=invalid-name
 class NoSuchDirectoryToSubcmdInto():
     def __init__(self, subcmd, file):
         self.msg = ERROR_HEAD + "into '{file}': No such directory"
         self.exception = NotADirectoryError(self.msg.format(subcmd=subcmd, file=file))
 
 
-# pylint: disable=invalid-name
 class InsufficientPermissionsToSubcmdTo():
     def __init__(self, subcmd, file):
         self.msg = ERROR_HEAD + "to '{file}': Insufficient permissions"
