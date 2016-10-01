@@ -4,6 +4,7 @@ Tests for the stow stub command
 # pylint: disable=missing-docstring
 # disable lint errors for function names longer that 30 characters
 # pylint: disable=invalid-name
+# pylint: disable=line-too-long
 
 import os
 import pytest
@@ -156,3 +157,11 @@ def test_unstow_folding_with_existing_file_in_dest(source_a, source_b, dest):
     dploy.stow([source_a, source_b], dest)
     dploy.unstow([source_a], dest)
     assert os.path.exists(a_file)
+
+
+def test_unstow_folding_with_multiple_sources_with_execute_permission_unset(source_a, source_b, dest):
+    dploy.stow([source_a, source_b], dest)
+    utils.remove_execute_permission(source_b)
+    with pytest.raises(PermissionError) as e:
+        dploy.unstow([source_a], dest)
+    assert utils.is_subcmd_error_message('unstow', e)

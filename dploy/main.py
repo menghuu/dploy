@@ -143,7 +143,6 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
         return result
 
-
     def get_directory_contents(self, directory):
         """
         get the contents of a directory while handling errors that may occur
@@ -284,12 +283,20 @@ class UnStow(AbstractBaseStow):
             for item in items:
                 if item in unlink_actions_targets:
                     pass
-                elif item.exists() and item.is_symlink():
-                    source_parent = item.resolve().parent
-                    other_links.append(item.resolve().parent)
                 else:
-                    is_valid = False
-                    break
+                    does_item_exist = False
+                    try:
+                        does_item_exist = item.exists()
+                    except PermissionError:
+                        self.execptions.append(exceptions.permission_denied(self.subcmd, item))
+                        return
+
+                    if does_item_exist and item.is_symlink():
+                        source_parent = item.resolve().parent
+                        other_links.append(item.resolve().parent)
+                    else:
+                        is_valid = False
+                        break
 
             other_links_counter = Counter(other_links)
             if len(other_links_counter.keys()) == 1 and is_valid:
