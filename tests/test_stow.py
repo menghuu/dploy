@@ -41,14 +41,14 @@ def test_stow_with_existing_file_conflicts(source_a, source_c, dest):
 
 
 def test_stow_with_existing_broken_link(source_a, dest):
-    conflicting_file = os.path.join(dest, 'aaa')
-    os.symlink('non_existant_source', conflicting_file)
+    conflicting_link = os.path.join(dest, 'aaa')
+    os.symlink('non_existant_source', conflicting_link)
     with pytest.raises(ValueError) as e:
         dploy.stow([source_a], dest)
     source_file = os.path.join(source_a, 'aaa')
     assert (errors.ConflictsWithExistingLink(subcmd=SUBCMD,
                                              source=source_file,
-                                             dest=conflicting_file).msg in str(e.value))
+                                             dest=conflicting_link).msg in str(e.value))
 
 
 def test_stow_with_source_conflicts(source_a, source_c, dest):

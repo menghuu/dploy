@@ -207,8 +207,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             if dest.is_symlink() or self.is_unfolding:
                 self.are_same_file(source, dest)
             else:
-                self.add_exception(
-                    errors.SourceIsSameAsDest(self.subcmd, dest))
+                self.add_exception(errors.SourceIsSameAsDest(self.subcmd, dest.parent))
 
         elif dest.is_dir() and source.is_dir:
             self.are_directories(source, dest)
