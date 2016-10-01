@@ -2,6 +2,7 @@
 All the exceptions and their messages used by the program
 """
 # pylint: disable=missing-docstring
+# pylint: disable=too-few-public-methods
 
 
 ERROR_HEAD = 'dploy {subcmd}: can not {subcmd} '

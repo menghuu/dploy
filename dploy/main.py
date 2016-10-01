@@ -69,6 +69,9 @@ class AbstractBaseSubCommand():
                     action.execute()
 
     def add_exception(self, exception):
+        """
+        Add an exception to our collection of exceptions
+        """
         self.execptions.append(exception.exception)
 
 
