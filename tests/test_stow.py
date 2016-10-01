@@ -85,6 +85,12 @@ def test_stow_with_same_directory_used_as_source_and_dest(source_a):
     assert utils.is_subcmd_error_message('stow', e)
 
 
+def test_stow_with_same_simple_directory_used_as_source_and_dest(source_only_files):
+    with pytest.raises(ValueError) as e:
+        dploy.stow([source_only_files], source_only_files)
+    assert utils.is_subcmd_error_message('stow', e)
+
+
 def test_stow_with_read_only_dest(source_a, dest):
     utils.remove_write_permission(dest)
     with pytest.raises(PermissionError) as e:
