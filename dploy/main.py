@@ -278,8 +278,8 @@ class UnStow(AbstractBaseStow):
         unlink_actions = (
             [a for a in self.actions if isinstance(a, actions.UnLink)])
         unlink_actions_targets = [a.target for a in unlink_actions]
-        # FIXME set causes non-deterministic output
-        unlink_actions_targets_parents = set([a.target.parent for a in unlink_actions])
+        # sort for deterministic output
+        unlink_actions_targets_parents = sorted(set([a.target.parent for a in unlink_actions]))
 
         for parent in unlink_actions_targets_parents:
             items = utils.get_directory_contents(parent)
@@ -400,12 +400,12 @@ class Stow(AbstractBaseStow):
         return a tuple containing tuples with the following structure
         (link destination, [indices of duplicates])
         """
-        # FIXME defaultdict causes non-deterministic output
         tally = defaultdict(list)
         for index, action in enumerate(self.actions):
             if isinstance(action, actions.SymbolicLink):
                 tally[action.dest].append(index)
-        return [indices for _, indices in tally.items() if len(indices) > 1]
+        # sort for deterministic output
+        return sorted([indices for _, indices in tally.items() if len(indices) > 1])
 
     def handle_duplicate_actions(self):
         """

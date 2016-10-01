@@ -54,10 +54,9 @@ def test_stow_with_existing_broken_link(source_a, dest):
 def test_stow_with_source_conflicts(source_a, source_c, dest):
     with pytest.raises(ValueError) as e:
         dploy.stow([source_a, source_c], dest)
-    # FIXME this is non determenistic and is sometimes 'aaa' not 'bbb' :(
     conflicting_source_files = [
-        os.path.join(source_a, 'aaa', 'bbb'),
-        os.path.join(source_c, 'aaa', 'bbb'),
+        os.path.join(source_a, 'aaa', 'aaa'),
+        os.path.join(source_c, 'aaa', 'aaa'),
     ]
     assert (errors.ConflictsWithAnotherSource(subcmd=SUBCMD,
                                               files=conflicting_source_files).msg in str(e.value))
