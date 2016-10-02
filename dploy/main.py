@@ -139,12 +139,12 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
         if not utils.is_directory_readable(source):
             self.add_exception(
-                errors.InsufficientPermissions(self.subcmd, source))
+                errors.InsufficientPermissionsToSubcmdFrom(self.subcmd, source))
             result = False
 
         if not utils.is_directory_executable(source):
             self.add_exception(
-                errors.InsufficientPermissions(self.subcmd, source))
+                errors.InsufficientPermissionsToSubcmdFrom(self.subcmd, source))
             result = False
 
         return result

@@ -126,7 +126,7 @@ def test_stow_with_write_only_source(source_a, source_c, dest):
     utils.remove_read_permission(source_a)
     with pytest.raises(PermissionError) as e:
         dploy.stow([source_a, source_c], dest)
-    assert (errors.InsufficientPermissions(subcmd=SUBCMD, file=source_a).msg
+    assert (errors.InsufficientPermissionsToSubcmdFrom(subcmd=SUBCMD, file=source_a).msg
             in str(e.value))
 
 
@@ -134,7 +134,7 @@ def test_stow_with_source_with_no_executue_permissions(source_a, source_c, dest)
     utils.remove_execute_permission(source_a)
     with pytest.raises(PermissionError) as e:
         dploy.stow([source_a, source_c], dest)
-    assert (errors.InsufficientPermissions(subcmd=SUBCMD, file=source_a).msg
+    assert (errors.InsufficientPermissionsToSubcmdFrom(subcmd=SUBCMD, file=source_a).msg
             in str(e.value))
 
 
@@ -143,7 +143,7 @@ def test_stow_with_source_dir_with_no_executue_permissions(source_a, source_c, d
     utils.remove_execute_permission(source_dir)
     with pytest.raises(PermissionError) as e:
         dploy.stow([source_a, source_c], dest)
-    assert (errors.InsufficientPermissions(subcmd=SUBCMD, file=source_dir).msg
+    assert (errors.InsufficientPermissionsToSubcmdFrom(subcmd=SUBCMD, file=source_dir).msg
             in str(e.value))
 
 

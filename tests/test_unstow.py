@@ -91,7 +91,7 @@ def test_unstow_with_write_only_source(source_a, dest):
     utils.remove_read_permission(source_a)
     with pytest.raises(PermissionError) as e:
         dploy.unstow([source_a], dest)
-    assert (errors.InsufficientPermissions(subcmd=SUBCMD, file=source_a).msg
+    assert (errors.InsufficientPermissionsToSubcmdFrom(subcmd=SUBCMD, file=source_a).msg
             in str(e.value))
 
 

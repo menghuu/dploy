@@ -58,7 +58,6 @@ class PermissionDenied():
         self.exception = PermissionError(self.msg)
 
 
-# FIXME: this doesn't seem to be used should it be?
 class InsufficientPermissionsToSubcmdFrom():
     def __init__(self, subcmd, file):
         self.msg = ERROR_HEAD + "from '{file}': Insufficient permissions"
