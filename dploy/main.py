@@ -108,21 +108,21 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         if not dest.is_dir():
             self.add_exception(errors.NoSuchDirectoryToSubcmdInto(self.subcmd, dest))
             result = False
+        else:
+            if not utils.is_directory_writable(dest):
+                self.add_exception(
+                    errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                result = False
 
-        if not utils.is_directory_writable(dest):
-            self.add_exception(
-                errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
-            result = False
+            if not utils.is_directory_readable(dest):
+                self.add_exception(
+                    errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                result = False
 
-        if not utils.is_directory_readable(dest):
-            self.add_exception(
-                errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
-            result = False
-
-        if not utils.is_directory_executable(dest):
-            self.add_exception(
-                errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
-            result = False
+            if not utils.is_directory_executable(dest):
+                self.add_exception(
+                    errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                result = False
 
         return result
 
@@ -136,16 +136,16 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         if not source.is_dir():
             self.add_exception(errors.NoSuchDirectory(self.subcmd, source))
             result = False
+        else:
+            if not utils.is_directory_readable(source):
+                self.add_exception(
+                    errors.InsufficientPermissionsToSubcmdFrom(self.subcmd, source))
+                result = False
 
-        if not utils.is_directory_readable(source):
-            self.add_exception(
-                errors.InsufficientPermissionsToSubcmdFrom(self.subcmd, source))
-            result = False
-
-        if not utils.is_directory_executable(source):
-            self.add_exception(
-                errors.InsufficientPermissionsToSubcmdFrom(self.subcmd, source))
-            result = False
+            if not utils.is_directory_executable(source):
+                self.add_exception(
+                    errors.InsufficientPermissionsToSubcmdFrom(self.subcmd, source))
+                result = False
 
         return result
 
