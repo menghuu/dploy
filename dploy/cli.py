@@ -7,6 +7,15 @@ import argparse
 import dploy.main as main
 import dploy.version as version
 
+def add_ignore_argument(parser):
+    """
+    adds the ignore argument to a subcmd parser
+    """
+    parser.add_argument('--ignore',
+                        dest='ignores',
+                        action='append',
+                        default=None,
+                        help='glob pattern used to ignore directories')
 
 def create_parser():
     """
@@ -35,19 +44,22 @@ def create_parser():
                              help='source directory to stow')
     stow_parser.add_argument('dest',
                              help='destination path to stow into')
+    add_ignore_argument(stow_parser)
 
-    stow_parser = sub_parsers.add_parser('unstow')
-    stow_parser.add_argument('source',
-                             nargs='+',
-                             help='source directory to unstow from')
-    stow_parser.add_argument('dest',
-                             help='destination path to unstow')
+    unstow_parser = sub_parsers.add_parser('unstow')
+    unstow_parser.add_argument('source',
+                               nargs='+',
+                               help='source directory to unstow from')
+    unstow_parser.add_argument('dest',
+                               help='destination path to unstow')
+    add_ignore_argument(unstow_parser)
 
     link_parser = sub_parsers.add_parser('link')
     link_parser.add_argument('source',
                              help='source file or directory to link')
     link_parser.add_argument('dest',
                              help='destination path to link')
+    add_ignore_argument(link_parser)
     return parser
 
 
@@ -75,7 +87,8 @@ def run(arguments=None):
             subcmd(args.source,
                    args.dest,
                    is_silent=args.is_quiet,
-                   is_dry_run=args.is_dry_run)
+                   is_dry_run=args.is_dry_run,
+                   ignores=args.ignores)
         except (ValueError, PermissionError, FileNotFoundError, NotADirectoryError):
             sys.exit(1)
         except KeyError:

@@ -17,12 +17,17 @@ class AbstractBaseSubCommand():
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self, subcmd, sources, dest, is_silent, is_dry_run):
+    def __init__(self, subcmd, sources, dest, is_silent, is_dry_run, ignores):
         self.subcmd = subcmd
         self.actions = []
         self.exceptions = []
         self.is_silent = is_silent
         self.is_dry_run = is_dry_run
+        self.ignored = []
+        if ignores is None:
+            self.ignores = []
+        else:
+            self.ignores = ignores
 
         dest_input = pathlib.Path(dest)
 
@@ -81,9 +86,9 @@ class AbstractBaseStow(AbstractBaseSubCommand):
     commands
     """
     # pylint: disable=too-many-arguments
-    def __init__(self, subcmd, source, dest, is_silent, is_dry_run):
+    def __init__(self, subcmd, source, dest, is_silent, is_dry_run, ignores):
         self.is_unfolding = False
-        super().__init__(subcmd, source, dest, is_silent, is_dry_run)
+        super().__init__(subcmd, source, dest, is_silent, is_dry_run, ignores)
 
     def is_valid_input(self, source, dest):
         """
@@ -215,10 +220,35 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             self.add_exception(
                 errors.ConflictsWithExistingFile(self.subcmd, source, dest))
 
+    def is_ignored(self, source):
+        """
+        check if a source should be ignored, based on the ignore patterns in
+        self.ignores
+
+        This checks if the ignore patterns match either the file exactly or
+        its parents
+        """
+        for ignores in self.ignores:
+            try:
+                ignored_files = source.parent.glob(ignores)
+            except ValueError: # unacceptable glob pattern
+                continue
+
+            for file in ignored_files:
+                if utils.is_same_file(file, source) or source in file.parents:
+                    return True
+
+        return False
+
+
     def collect_actions(self, source, dest):
         """
         collect required actions to perform a stow command
         """
+
+        if self.is_ignored(source):
+            self.ignored.append(source)
+            return
 
         if not self.is_valid_collection_input(source, dest):
             return
@@ -226,6 +256,10 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         sources = self.get_directory_contents(source)
 
         for source in sources:
+            if self.is_ignored(source):
+                self.ignored.append(source)
+                continue
+
             dest_path = dest / pathlib.Path(source.name)
 
             does_dest_path_exist = False
@@ -250,8 +284,9 @@ class UnStow(AbstractBaseStow):
     """
     Concrete class implementation of the unstow sub command
     """
-    def __init__(self, source, dest, is_silent=True, is_dry_run=False):
-        super().__init__("unstow", source, dest, is_silent, is_dry_run)
+    # pylint: disable=too-many-arguments
+    def __init__(self, source, dest, is_silent=True, is_dry_run=False, ignores=None):
+        super().__init__("unstow", source, dest, is_silent, is_dry_run, ignores)
 
     def are_same_file(self, source, dest):
         """
@@ -282,7 +317,7 @@ class UnStow(AbstractBaseStow):
 
         for parent in unlink_actions_targets_parents:
             items = utils.get_directory_contents(parent)
-            other_links = []
+            other_links = list(self.ignored)
             source_parent = None
             is_valid = True
 
@@ -306,6 +341,7 @@ class UnStow(AbstractBaseStow):
 
             other_links_counter = Counter(other_links)
             if len(other_links_counter.keys()) == 1 and is_valid:
+                assert source_parent != None
                 self.fold(source_parent, parent)
             if len(other_links_counter.keys()) == 0 and is_valid:
                 self.actions.append(actions.RemoveDirectory(self.subcmd, parent))
@@ -323,8 +359,9 @@ class Link(AbstractBaseSubCommand):
     """
     Concrete class implementation of the link sub command
     """
-    def __init__(self, source, dest, is_silent=True, is_dry_run=False):
-        super().__init__("link", [source], dest, is_silent, is_dry_run)
+    # pylint: disable=too-many-arguments
+    def __init__(self, source, dest, is_silent=True, is_dry_run=False, ignores=None):
+        super().__init__("link", [source], dest, is_silent, is_dry_run, ignores)
 
     def is_valid_input(self, source, dest):
         """
@@ -381,8 +418,9 @@ class Stow(AbstractBaseStow):
     """
     Concrete class implementation of the stow sub command
     """
-    def __init__(self, source, dest, is_silent=True, is_dry_run=False):
-        super().__init__("stow", source, dest, is_silent, is_dry_run)
+    # pylint: disable=too-many-arguments
+    def __init__(self, source, dest, is_silent=True, is_dry_run=False, ignores=None):
+        super().__init__("stow", source, dest, is_silent, is_dry_run, ignores)
 
     def unfold(self, source, dest):
         """
