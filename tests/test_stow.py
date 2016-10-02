@@ -147,14 +147,10 @@ def test_stow_with_source_dir_with_no_executue_permissions(source_a, source_c, d
             in str(e.value))
 
 
-def test_stow_with_write_only_source_file(source_a, source_c, dest):
-    # FIXME this isn't a file
+def test_stow_with_write_only_source_file(source_a, dest):
     source_file = os.path.join(source_a, 'aaa')
     utils.remove_read_permission(source_file)
-    with pytest.raises(PermissionError) as e:
-        dploy.stow([source_a, source_c], dest)
-    assert (errors.InsufficientPermissions(subcmd=SUBCMD, file=source_file).msg
-            in str(e.value))
+    dploy.stow([source_a], dest)
 
 
 def test_stow_unfolding_with_two_invocations(source_a, source_b, dest):
@@ -208,8 +204,14 @@ def test_stow_unfolding_with_first_sources_execute_permission_removed(source_a, 
     utils.remove_execute_permission(source_a)
     with pytest.raises(PermissionError) as e:
         dploy.stow([source_b], dest)
-    # FIXME it seems like the source should be used instead of dest and
-    # InsufficientPermissionsToSubcmdFrom
     dest_dir = os.path.join(dest, 'aaa')
     assert (errors.PermissionDenied(subcmd=SUBCMD, file=dest_dir).msg
+            in str(e.value))
+
+def test_stow_unfolding_with_write_only_source_file(source_a, source_b, dest):
+    source_file = os.path.join(source_a, 'aaa')
+    utils.remove_read_permission(source_file)
+    with pytest.raises(PermissionError) as e:
+        dploy.stow([source_a, source_b], dest)
+    assert (errors.InsufficientPermissionsToSubcmdFrom(subcmd=SUBCMD, file=source_file).msg
             in str(e.value))

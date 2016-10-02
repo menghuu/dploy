@@ -177,4 +177,3 @@ def test_unstow_folding_with_multiple_sources_with_execute_permission_unset(sour
         dploy.unstow([source_a], dest)
     dest_dir = os.path.join(dest, 'aaa', 'ddd')
     assert errors.PermissionDenied(subcmd=SUBCMD, file=dest_dir).msg in str(e.value)
-
