@@ -33,6 +33,10 @@ class AbstractBaseSubCommand():
 
         for source in sources:
             source_input = pathlib.Path(source)
+
+            if self.is_ignored(source_input):
+                self.ignored.append(source)
+                continue
             if self.is_valid_input(source_input, dest_input):
                 self.collect_actions(source_input, dest_input)
 
@@ -78,6 +82,26 @@ class AbstractBaseSubCommand():
         Add an exception to to be handled later
         """
         self.exceptions.append(exception.exception)
+
+    def is_ignored(self, source):
+        """
+        check if a source should be ignored, based on the ignore patterns in
+        self.ignores
+
+        This checks if the ignore patterns match either the file exactly or
+        its parents
+        """
+        for ignores in self.ignores:
+            try:
+                ignored_files = source.parent.glob(ignores)
+            except ValueError: # TODO print this message for unacceptable glob pattern
+                continue
+
+            for file in ignored_files:
+                if utils.is_same_file(file, source) or source in file.parents:
+                    return True
+
+        return False
 
 
 class AbstractBaseStow(AbstractBaseSubCommand):
@@ -130,7 +154,6 @@ class AbstractBaseStow(AbstractBaseSubCommand):
                 result = False
 
         return result
-
 
     def valid_source(self, source):
         """
@@ -219,27 +242,6 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         else:
             self.add_exception(
                 errors.ConflictsWithExistingFile(self.subcmd, source, dest))
-
-    def is_ignored(self, source):
-        """
-        check if a source should be ignored, based on the ignore patterns in
-        self.ignores
-
-        This checks if the ignore patterns match either the file exactly or
-        its parents
-        """
-        for ignores in self.ignores:
-            try:
-                ignored_files = source.parent.glob(ignores)
-            except ValueError: # unacceptable glob pattern
-                continue
-
-            for file in ignored_files:
-                if utils.is_same_file(file, source) or source in file.parents:
-                    return True
-
-        return False
-
 
     def collect_actions(self, source, dest):
         """
