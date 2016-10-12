@@ -15,7 +15,7 @@ def get_directory_contents(directory):
     for child in directory.iterdir():
         contents.append(child)
 
-    return contents
+    return sorted(contents)
 
 
 def rmtree(tree):

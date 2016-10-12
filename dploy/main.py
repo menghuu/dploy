@@ -93,7 +93,7 @@ class AbstractBaseSubCommand():
         """
         for ignores in self.ignores:
             try:
-                ignored_files = source.parent.glob(ignores)
+                ignored_files = sorted(source.parent.glob(ignores))
             except ValueError: # TODO print this message for unacceptable glob pattern
                 continue
 
