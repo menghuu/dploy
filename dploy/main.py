@@ -94,7 +94,7 @@ class AbstractBaseSubCommand():
         for ignores in self.ignores:
             try:
                 ignored_files = sorted(source.parent.glob(ignores))
-            except ValueError: # TODO print this message for unacceptable glob pattern
+            except IndexError: # the glob result was empty
                 continue
 
             for file in ignored_files:
@@ -113,6 +113,13 @@ class AbstractBaseStow(AbstractBaseSubCommand):
     def __init__(self, subcmd, source, dest, is_silent, is_dry_run, ignores):
         self.is_unfolding = False
         super().__init__(subcmd, source, dest, is_silent, is_dry_run, ignores)
+        try:
+            with open('.dploystowignore') as file:
+                ignore_patterns_from_file = file.read().splitlines()
+                self.ignores.extend(ignore_patterns_from_file)
+        except FileNotFoundError:
+            pass
+
 
     def is_valid_input(self, source, dest):
         """
@@ -259,7 +266,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
         for source in sources:
             if self.is_ignored(source):
-                self.ignored.append(source)
+                self.ignored.append(source) # TODO add something to output
                 continue
 
             dest_path = dest / pathlib.Path(source.name)
