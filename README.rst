@@ -1,18 +1,14 @@
 dploy
 =====
-
 Aims to provide the functionality of GNU stow as a cross platform (Windows,
-OSX, Linux) cli script and python module
+OSX, Linux) CLI tool and python module
 
-Usage
------
+Installation
+------------
+``pip install git+https://github.com/arecarn/dploy.git``
+
+CLI Usage
+---------
 ``dploy stow source-directories destination-directory``
 
 ``dploy link source destination``
-
-
-Development
------------
-Testing:
-``make test``
-
