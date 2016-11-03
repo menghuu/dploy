@@ -266,7 +266,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
         for source in sources:
             if self.is_ignored(source):
-                self.ignored.append(source) # TODO add something to output
+                self.ignored.append(source) # should this be printed or logged?
                 continue
 
             dest_path = dest / pathlib.Path(source.name)
