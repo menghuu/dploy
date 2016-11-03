@@ -1,5 +1,6 @@
 """
-todo
+A module that contains utility function mainly used for operations in the
+missing from the pathlib module.
 """
 
 import os
@@ -8,7 +9,7 @@ import shutil
 
 def get_directory_contents(directory):
     """
-    todo
+    return a sorted list of the contents of a directory
     """
     contents = []
 
@@ -28,7 +29,7 @@ def rmtree(tree):
 
 def is_same_file(file1, file2):
     """
-    todo
+    test if two pathlib.Path() objects are the same file
 
     NOTE: python 3.5 supports pathlib.Path.samefile(file)
     NOTE: this can raise exception FileNotFoundError
@@ -38,7 +39,7 @@ def is_same_file(file1, file2):
 
 def get_absolute_path(file):
     """
-    todo
+    get the absolute path of a pathlib.Path() object
     """
     absolute_path = os.path.abspath(os.path.expanduser(str(file)))
     return pathlib.Path(absolute_path)
@@ -46,6 +47,7 @@ def get_absolute_path(file):
 
 def get_relative_path(path, start_at):
     """
+    get the relative path of a pathlib.Path() object
 
     NOTE: python 3.4.5 & 3.5.2 support pathlib.Path.path =
     str(pathlib.Path)
@@ -56,34 +58,34 @@ def get_relative_path(path, start_at):
 
 def is_file_readable(a_file):
     """
-    check if a file is readable
+    check if a pathlib.Path() file is readable
     """
     return os.access(str(a_file), os.R_OK)
 
 
 def is_file_writable(a_file):
     """
-    check if a file is writable
+    check if a pathlib.Path() file is writable
     """
     return os.access(str(a_file), os.W_OK)
 
 
 def is_directory_readable(directory):
     """
-    check if a directory is readable
+    check if a pathlib.Path() directory is readable
     """
     return os.access(str(directory), os.R_OK)
 
 
 def is_directory_writable(directory):
     """
-    check if a directory is writable
+    check if a pathlib.Path() directory is writable
     """
     return os.access(str(directory), os.W_OK)
 
 
 def is_directory_executable(directory):
     """
-    check if a directory is executable
+    check if a pathlib.Path() directory is executable
     """
     return os.access(str(directory), os.X_OK)

@@ -1,5 +1,5 @@
 """
-todo
+Contains utilities used during testing
 """
 
 import os
@@ -9,7 +9,7 @@ import shutil
 
 def remove_tree(tree):
     """
-    todo
+    reset the permission of a file and directory tree and remove it
     """
     os.chmod(tree, 0o777)
     shutil.rmtree(tree)
@@ -17,7 +17,7 @@ def remove_tree(tree):
 
 def remove_file(file_name):
     """
-    todo
+    reset the permission of a file and remove it
     """
     os.chmod(file_name, 0o777)
     os.remove(file_name)
@@ -25,18 +25,19 @@ def remove_file(file_name):
 
 def create_file(file_name):
     """
-    todo
+    create an file
     """
     return open(file_name, 'w').close()
 
 
 def create_directory(directory_name):
     """
-    todo
+    create an directory
     """
     os.makedirs(directory_name)
 
 
+# TODO could remove this since it is unused
 class ChangeDirectory:
     # pylint: disable=too-few-public-methods
     """
@@ -55,7 +56,7 @@ class ChangeDirectory:
 
 def create_tree(tree):
     """
-    todo
+    create an file and directory tree
     """
     for branch in tree:
         if isinstance(branch, str):

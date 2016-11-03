@@ -1,5 +1,6 @@
 """
-todo
+This module contains the actions that are combined to perform dploy's sub
+commands
 """
 
 import dploy.utils as utils
@@ -8,7 +9,7 @@ import dploy.utils as utils
 class AbstractBaseAction():
     # pylint: disable=too-few-public-methods
     """
-    todo
+    An abstract base class that define the interface for actions
     """
     def __init__(self):
         pass
@@ -18,7 +19,7 @@ class AbstractBaseAction():
 
     def execute(self):
         """
-        todo
+        function that executes _logic() of each derived action
         """
         self._logic()
 
@@ -26,7 +27,7 @@ class AbstractBaseAction():
 class SymbolicLink(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
     """
-    todo
+    Action to create a symbolic link relative to the source of the link
     """
     def __init__(self, subcmd, source, dest):
         super().__init__()
@@ -46,7 +47,7 @@ class SymbolicLink(AbstractBaseAction):
 class AlreadyLinked(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
     """
-    todo
+    Action to used to print an already linked message
     """
     def __init__(self, subcmd, source, dest):
         super().__init__()
@@ -68,7 +69,7 @@ class AlreadyLinked(AbstractBaseAction):
 class AlreadyUnlinked(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
     """
-    todo
+    Action to used to print an already unlinked message
     """
     def __init__(self, subcmd, source, dest):
         super().__init__()
@@ -90,7 +91,7 @@ class AlreadyUnlinked(AbstractBaseAction):
 class UnLink(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
     """
-    todo
+    Action to unlink a symbolic link
     """
     def __init__(self, subcmd, target):
         super().__init__()
@@ -113,7 +114,7 @@ class UnLink(AbstractBaseAction):
 class MakeDirectory(AbstractBaseAction):
     # pylint: disable=too-few-public-methods
     """
-    todo
+    Action to create a directory
     """
     def __init__(self, subcmd, target):
         super().__init__()

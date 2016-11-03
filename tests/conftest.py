@@ -1,5 +1,5 @@
 """
-todo
+Contains the fixtures used by the dploy tests
 """
 
 import pytest
@@ -9,7 +9,7 @@ import utils
 @pytest.fixture()
 def source_a(tmpdir):
     """
-    todo
+    a source directory to stow and unstow
     """
     name = str(tmpdir.join('source_a'))
     tree = [
@@ -37,7 +37,7 @@ def source_a(tmpdir):
 @pytest.fixture()
 def source_b(tmpdir):
     """
-    todo
+    a source directory to stow and unstow
     """
     name = str(tmpdir.join('source_b'))
     tree = [
@@ -64,7 +64,7 @@ def source_b(tmpdir):
 @pytest.fixture()
 def source_d(tmpdir):
     """
-    todo
+    a source directory to stow and unstow
     """
     name = str(tmpdir.join('source_d'))
     tree = [
@@ -92,7 +92,7 @@ def source_d(tmpdir):
 @pytest.fixture()
 def source_c(tmpdir):
     """
-    todo
+    a source directory to stow and unstow identical to source_a
     """
     name = str(tmpdir.join('source_c'))
     tree = [
@@ -120,14 +120,14 @@ def source_c(tmpdir):
 @pytest.fixture()
 def source_only_files(tmpdir):
     """
-    todo
+    a source directory to stow and unstow that only contains files
     """
     name = str(tmpdir.join('source_only_files'))
     tree = [
         {
             name: [
                 'aaa',
-                'aaa',
+                'aaa', # TODO this should be named something different
             ]
         }
     ]
@@ -138,7 +138,7 @@ def source_only_files(tmpdir):
 @pytest.fixture()
 def dest(tmpdir):
     """
-    todo
+    a destination directory to stow into or unstow from
     """
     name = str(tmpdir.join('dest'))
     utils.create_directory(name)
@@ -148,7 +148,7 @@ def dest(tmpdir):
 @pytest.fixture()
 def file_a(tmpdir):
     """
-    todo
+    creates a file
     """
     name = str(tmpdir.join('file_a'))
     utils.create_file(name)
@@ -158,7 +158,7 @@ def file_a(tmpdir):
 @pytest.fixture()
 def file_b(tmpdir):
     """
-    todo
+    creates a file
     """
     name = str(tmpdir.join('file_b'))
     utils.create_file(name)

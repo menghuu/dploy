@@ -1,5 +1,5 @@
 """
-The logic and workings behind the stow and unstow sub commands
+The logic and workings behind the stow and unstow sub-commands
 """
 
 from collections import defaultdict
@@ -45,25 +45,28 @@ class AbstractBaseSubCommand():
 
     def check_for_other_actions(self):
         """
-        todo
+        Abstract method for examine the existing action to see if more actions
+        need to be added or if some actions need to be removed.
         """
         pass
 
     def is_valid_input(self, source, dest):
         """
-        todo
+        Abstract method to check if the input to a sub-command is valid
         """
         pass
 
     def collect_actions(self, source, dest):
         """
-        todo
+        Abstract method that collects the actions required to complete a
+        sub-command.
         """
         pass
 
     def execute_actions(self):
         """
-        todo
+        Either executes collected actions by a sub command or raises collected
+        exceptions.
         """
         if len(self.exceptions) > 0:
             if not self.is_silent:
@@ -123,7 +126,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
     def is_valid_input(self, source, dest):
         """
-        valid the initial input to a stow command
+        Check to see if the input is valid
         """
         result = True
 
@@ -137,7 +140,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
     def valid_dest(self, dest):
         """
-        valid dest arguments to for stowing
+        Check if the dest argument is valid
         """
         result = True
 
@@ -164,7 +167,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
     def valid_source(self, source):
         """
-        valid source arguments to for stowing
+        Check if the source argument is valid
         """
         result = True
 
@@ -186,7 +189,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
     def get_directory_contents(self, directory):
         """
-        get the contents of a directory while handling errors that may occur
+        Get the contents of a directory while handling errors that may occur
         """
         contents = []
 
@@ -203,19 +206,22 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
     def are_same_file(self, source, dest):
         """
-        what to do if source and dest are the same files
+        Abstract method that handles the case when the source and dest are the
+        same file when collecting actions
         """
         pass
 
     def are_directories(self, source, dest):
         """
-        what to do if the source and dest are directories
+        Abstract method that handles the case when the source and dest are directories
+        same file when collecting actions
         """
         pass
 
     def are_other(self, source, dest):
         """
-        what to do if no particular condition is true cases are found
+        Abstract method that handles all other cases what to do if no particular
+        condition is true cases are found
         """
         pass
 
@@ -236,7 +242,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
     def collect_actions_existing_dest(self, source, dest):
         """
         collect_actions() helper to collect required actions to perform a stow
-        command when the destination exists
+        command when the destination already exists
         """
         if utils.is_same_file(dest, source):
             if dest.is_symlink() or self.is_unfolding:
@@ -252,7 +258,8 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
     def collect_actions(self, source, dest):
         """
-        collect required actions to perform a stow command
+        Concrete method to collect required actions to perform a stow
+        sub-command
         """
 
         if self.is_ignored(source):
@@ -291,7 +298,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
 class UnStow(AbstractBaseStow):
     """
-    Concrete class implementation of the unstow sub command
+    Concrete class implementation of the unstow sub-command
     """
     # pylint: disable=too-many-arguments
     def __init__(self, source, dest, is_silent=True, is_dry_run=False, ignores=None):
@@ -366,7 +373,7 @@ class UnStow(AbstractBaseStow):
 
 class Link(AbstractBaseSubCommand):
     """
-    Concrete class implementation of the link sub command
+    Concrete class implementation of the link sub-command
     """
     # pylint: disable=too-many-arguments
     def __init__(self, source, dest, is_silent=True, is_dry_run=False, ignores=None):
@@ -374,7 +381,7 @@ class Link(AbstractBaseSubCommand):
 
     def is_valid_input(self, source, dest):
         """
-        todo
+        Check to see if the input is valid
         """
         if not source.exists():
             self.add_exception(errors.NoSuchFileOrDirectory(self.subcmd, source))
@@ -400,7 +407,8 @@ class Link(AbstractBaseSubCommand):
 
     def collect_actions(self, source, dest):
         """
-        todo
+        Concrete method to collect required actions to perform a link
+        sub-command
         """
 
         if dest.exists():
@@ -425,7 +433,7 @@ class Link(AbstractBaseSubCommand):
 
 class Stow(AbstractBaseStow):
     """
-    Concrete class implementation of the stow sub command
+    Concrete class implementation of the stow sub-command
     """
     # pylint: disable=too-many-arguments
     def __init__(self, source, dest, is_silent=True, is_dry_run=False, ignores=None):
@@ -433,7 +441,7 @@ class Stow(AbstractBaseStow):
 
     def unfold(self, source, dest):
         """
-        todo
+        Method unfold a destination directory
         """
         self.is_unfolding = True
         self.actions.append(actions.UnLink(self.subcmd, dest))
