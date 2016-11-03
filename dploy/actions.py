@@ -98,6 +98,9 @@ class UnLink(AbstractBaseAction):
         self.subcmd = subcmd
 
     def _logic(self):
+        if not self.target.is_symlink():
+            #pylint: disable=line-too-long
+            raise RuntimeError('dploy detected and aborted an attempt to unlink a non-symlink this is a bug and should be reported')
         self.target.unlink()
 
     def __repr__(self):
