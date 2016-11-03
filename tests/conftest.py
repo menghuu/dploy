@@ -127,7 +127,6 @@ def source_only_files(tmpdir):
         {
             name: [
                 'aaa',
-                'aaa', # TODO this should be named something different
             ]
         }
     ]

@@ -37,7 +37,6 @@ def create_directory(directory_name):
     os.makedirs(directory_name)
 
 
-# TODO could remove this since it is unused
 class ChangeDirectory:
     # pylint: disable=too-few-public-methods
     """
