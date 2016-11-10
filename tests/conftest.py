@@ -162,3 +162,12 @@ def file_b(tmpdir):
     name = str(tmpdir.join('file_b'))
     utils.create_file(name)
     return name
+
+@pytest.fixture()
+def file_dploystowignore(tmpdir):
+    """
+    creates an empty ignore file file
+    """
+    name = str(tmpdir.join('.dploystowignore'))
+    utils.create_file(name)
+    return name

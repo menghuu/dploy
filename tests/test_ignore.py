@@ -25,3 +25,10 @@ def test_ignore_by_ignoring_everthing_(source_a, source_c, dest):
 def test_ignore_by_ignoring_everthing__(source_a, source_c, dest):
     dploy.stow([source_a, source_c], dest, ignores=['*/aaa'])
     assert not os.path.exists(os.path.join(dest, 'aaa'))
+
+def test_ignore_file_by_ignoring_everthing__(source_a, source_c, file_dploystowignore, dest):
+    ignores = ['*/aaa']
+    with open(file_dploystowignore, 'w') as file:
+        file.write("\n".join(ignores))
+    dploy.stow([source_a, source_c], dest)
+    assert not os.path.exists(os.path.join(dest, 'aaa'))
