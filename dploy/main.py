@@ -29,6 +29,13 @@ class AbstractBaseSubCommand():
         else:
             self.ignores = ignores
 
+        try:
+            with open('.dploystowignore') as file:
+                ignore_patterns_from_file = file.read().splitlines()
+                self.ignores.extend(ignore_patterns_from_file)
+        except FileNotFoundError:
+            pass
+
         dest_input = pathlib.Path(dest)
 
         for source in sources:
@@ -116,12 +123,6 @@ class AbstractBaseStow(AbstractBaseSubCommand):
     def __init__(self, subcmd, source, dest, is_silent, is_dry_run, ignores):
         self.is_unfolding = False
         super().__init__(subcmd, source, dest, is_silent, is_dry_run, ignores)
-        try:
-            with open('.dploystowignore') as file:
-                ignore_patterns_from_file = file.read().splitlines()
-                self.ignores.extend(ignore_patterns_from_file)
-        except FileNotFoundError:
-            pass
 
 
     def is_valid_input(self, source, dest):
