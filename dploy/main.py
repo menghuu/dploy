@@ -24,22 +24,25 @@ class AbstractBaseSubCommand():
         self.is_silent = is_silent
         self.is_dry_run = is_dry_run
         self.ignored = []
-        if ignores is None:
-            self.ignores = []
-        else:
-            self.ignores = ignores
 
-        try:
-            with open('.dploystowignore') as file:
-                ignore_patterns_from_file = file.read().splitlines()
-                self.ignores.extend(ignore_patterns_from_file)
-        except FileNotFoundError:
-            pass
+        if ignores is None:
+            self.ignore_args = []
+        else:
+            self.ignore_args = ignores
+        self.ignores = []
 
         dest_input = pathlib.Path(dest)
 
         for source in sources:
             source_input = pathlib.Path(source)
+
+            try:
+                ignore_file = pathlib.Path('.dploystowignore')
+                with open(str(source_input.parent/ignore_file)) as file:
+                    ignore_patterns_from_file = file.read().splitlines()
+                    self.ignores = ignore_patterns_from_file + self.ignore_args
+            except FileNotFoundError:
+                self.ignores = self.ignore_args
 
             if self.is_ignored(source_input):
                 self.ignored.append(source)
