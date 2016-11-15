@@ -12,7 +12,7 @@ def add_ignore_argument(parser):
     adds the ignore argument to a subcmd parser
     """
     parser.add_argument('--ignore',
-                        dest='ignores',
+                        dest='ignore_patterns',
                         action='append',
                         default=None,
                         help='glob pattern used to ignore directories')
@@ -88,7 +88,7 @@ def run(arguments=None):
                    args.dest,
                    is_silent=args.is_quiet,
                    is_dry_run=args.is_dry_run,
-                   ignores=args.ignores)
+                   ignore_patterns=args.ignore_patterns)
         except (ValueError, PermissionError, FileNotFoundError, NotADirectoryError):
             sys.exit(1)
         except KeyError:

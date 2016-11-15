@@ -156,8 +156,8 @@ def test_unstow_folding_with_multiple_stowed_sources(source_a, source_b, source_
 
 
 def test_unstow_folding_with_multiple_sources_all_unstowed(source_a, source_b, dest):
-    dploy.stow([source_a, source_b], dest)
-    dploy.unstow([source_a, source_b], dest)
+    dploy.stow([source_a, source_b], dest, is_silent=False)
+    dploy.unstow([source_a, source_b], dest, is_silent=False)
     assert not os.path.exists(os.path.join(dest, 'aaa'))
 
 
