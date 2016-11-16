@@ -497,7 +497,11 @@ class Stow(AbstractBaseStow):
             actions.SymbolicLink(self.subcmd, source, dest))
 
 class Ignore():
-    def __init__(self, parent_dir, patterns, file):
+    """
+    Handles ignoring of files via glob patterns either passed in directly in or
+    in a specified ignore file.
+    """
+    def __init__(self, parent_dir, patterns, file): # TODO combine parent_dir and file parameters
         if patterns is None:
             input_patterns = []
         else:
@@ -535,7 +539,13 @@ class Ignore():
         return False
 
     def ignore(self, file):
+        """
+        add a file to be ignored
+        """
         self.ignored_files.append(file)
 
     def get_ignored_files(self):
+        """
+        get a list of the files that have been ignored
+        """
         return self.ignored_files
