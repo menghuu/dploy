@@ -28,9 +28,8 @@ class AbstractBaseSubCommand():
 
         for source in sources:
             source_input = pathlib.Path(source)
-            self.ignore = Ignore(source_input.parent,
-                                 patterns=ignore_patterns,
-                                 file='.dploystowignore')
+            self.ignore = Ignore(ignore_patterns,
+                                 source_input.parent / pathlib.Path('.dploystowignore'))
 
             if self.ignore.should_ignore(source_input):
                 self.ignore.ignore(source_input)
@@ -501,20 +500,24 @@ class Ignore():
     Handles ignoring of files via glob patterns either passed in directly in or
     in a specified ignore file.
     """
-    def __init__(self, parent_dir, patterns, file): # TODO combine parent_dir and file parameters
+    def __init__(self, patterns, file):
         if patterns is None:
             input_patterns = []
         else:
             input_patterns = patterns
-        self.file = pathlib.Path(file)
         self.ignored_files = []
 
-        self.patterns = [str(file)]
+        self.patterns = [str(file.name)] # ignore the ignore file
         self.patterns.extend(input_patterns)
+        self._read_ignore_file_patterns(file)
+
+    def _read_ignore_file_patterns(self, file):
+        """
+        read ignore patterns from a specified file
+        """
         try:
-            file = parent_dir/self.file
-            with open(str(file)) as file:
-                file_patterns = file.read().splitlines()
+            with open(str(file)) as f:
+                file_patterns = f.read().splitlines()
                 self.patterns.extend(file_patterns)
         except FileNotFoundError:
             pass
