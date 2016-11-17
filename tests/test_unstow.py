@@ -148,9 +148,9 @@ def test_unstow_folding_with_multiple_sources(source_a, source_b, source_d, dest
     dploy.unstow([source_b, source_d], dest)
     assert os.path.islink(os.path.join(dest, 'aaa'))
 
-def test_unstow_folding_with_stray_symlink_in_folded_dest_dir(source_a, source_b, source_d, dest):
+def test_unstow_folding_with_stray_symlink_in_unfolded_dest_dir(source_a, source_b, source_d, dest):
     """
-    Given a dest directory with stowed packages that share a folded directory,
+    Given a dest directory with stowed packages that share a unfolded directory,
     that also contains a stray link along with the links created by stowing.
 
     When the stowed packages are unstowed
