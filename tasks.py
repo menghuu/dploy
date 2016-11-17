@@ -9,6 +9,15 @@ from invoke import task
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
 
+def get_files():
+    files = [
+        'dploy',
+        'setup.py',
+        'tasks.py',
+    ]
+    files.extend(glob.glob(os.path.join('tests', '*.py')))
+    files_string = ' '.join(files)
+
 @task
 def setup(ctx):
     """
@@ -28,15 +37,17 @@ def lint(ctx):
     """
     Run pylint on this module
     """
-    files = [
-        'dploy',
-        'setup.py',
-        'tasks.py',
-    ]
-    files.extend(glob.glob(os.path.join('tests', '*.py')))
-    files_string = ' '.join(files)
     cmd = 'python3 -m pylint --output-format=parseable {files}'
-    ctx.run(cmd.format(files=files_string))
+    ctx.run(cmd.format(files=get_files()))
+
+@task
+def metrics(ctx):
+    """
+    Run radon code metrics on this module
+    """
+    metrics = ['cc', 'mi']
+    for metric in metrics:
+        ctx.run(cmd.format(metric=metric, files=get_files()))
 
 @task
 def test(ctx):

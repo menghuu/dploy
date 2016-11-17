@@ -5,6 +5,7 @@ virtualenv>=15.0.3
 pylint>=1.5.5
 # testing
 pytest>=2.9.1
+radon>=1.4.2
 # deployment
 setuptools>=23.1.0
 PyInstaller==3.2
