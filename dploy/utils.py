@@ -36,6 +36,13 @@ def is_same_file(file1, file2):
     """
     return file1.resolve() == file2.resolve()
 
+def is_same_files(files1, files2):
+    """
+    test if two collection of files are equivalent
+    """
+    files1_resolved = [f.resolve() for f in files1]
+    files2_resolved = [f.resolve() for f in files2]
+    return files1_resolved == files2_resolved
 
 def get_absolute_path(file):
     """

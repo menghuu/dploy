@@ -305,6 +305,7 @@ class UnStow(AbstractBaseStow):
 
         for parent in unlink_actions_targets_parents:
             items = utils.get_directory_contents(parent)
+            other_links_parents = []
             other_links = [] #TODO need to account for ignored
             source_parent = None
             is_valid = True
@@ -322,15 +323,18 @@ class UnStow(AbstractBaseStow):
 
                     if does_item_exist and item.is_symlink():
                         source_parent = item.resolve().parent
-                        other_links.append(item.resolve().parent)
+                        other_links_parents.append(item.resolve().parent)
+                        other_links.append(item)
                     else:
                         is_valid = False
                         break
 
-            other_links_counter = Counter(other_links)
+            other_links_counter = Counter(other_links_parents)
             if len(other_links_counter.keys()) == 1 and is_valid:
                 assert source_parent != None
-                self.fold(source_parent, parent)
+                if utils.is_same_files(utils.get_directory_contents(source_parent),
+                                       other_links):
+                    self.fold(source_parent, parent)
             if len(other_links_counter.keys()) == 0 and is_valid:
                 self.actions.append(actions.RemoveDirectory(self.subcmd, parent))
 
