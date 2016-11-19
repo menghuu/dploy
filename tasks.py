@@ -17,6 +17,7 @@ def get_files():
     ]
     files.extend(glob.glob(os.path.join('tests', '*.py')))
     files_string = ' '.join(files)
+    return files_string
 
 @task
 def setup(ctx):
@@ -45,6 +46,7 @@ def metrics(ctx):
     """
     Run radon code metrics on this module
     """
+    cmd = 'radon {metric} --min B {files}'
     metrics = ['cc', 'mi']
     for metric in metrics:
         ctx.run(cmd.format(metric=metric, files=get_files()))
