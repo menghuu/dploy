@@ -306,9 +306,9 @@ class UnStow(AbstractBaseStow):
         for parent in unlink_actions_targets_parents:
             items = utils.get_directory_contents(parent)
             other_links_parents = []
-            other_links = [] #TODO need to account for ignored
+            other_links = []
             source_parent = None
-            is_valid = True
+            is_normal_files_detected = False
 
             for item in items:
                 if item in unlink_actions_targets:
@@ -326,17 +326,20 @@ class UnStow(AbstractBaseStow):
                         other_links_parents.append(item.resolve().parent)
                         other_links.append(item)
                     else:
-                        is_valid = False
+                        is_normal_files_detected = True
                         break
 
-            other_links_counter = Counter(other_links_parents)
-            if len(other_links_counter.keys()) == 1 and is_valid:
-                assert source_parent != None
-                if utils.is_same_files(utils.get_directory_contents(source_parent),
-                                       other_links):
-                    self.fold(source_parent, parent)
-            if len(other_links_counter.keys()) == 0 and is_valid:
-                self.actions.append(actions.RemoveDirectory(self.subcmd, parent))
+            if not is_normal_files_detected:
+                other_links_parent_count = len(Counter(other_links_parents))
+
+                if other_links_parent_count == 1:
+                    assert source_parent != None
+                    if utils.is_same_files(utils.get_directory_contents(source_parent),
+                                           other_links):
+                        self.fold(source_parent, parent)
+
+                elif other_links_parent_count == 0:
+                    self.actions.append(actions.RemoveDirectory(self.subcmd, parent))
 
     def fold(self, source, dest):
         """
