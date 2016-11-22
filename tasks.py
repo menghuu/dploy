@@ -10,6 +10,9 @@ from invoke import task
 # pylint: disable=unused-argument
 
 def get_files():
+    """
+    Get the files to run analysis on
+    """
     files = [
         'dploy',
         'setup.py',
@@ -47,8 +50,8 @@ def metrics(ctx):
     Run radon code metrics on this module
     """
     cmd = 'radon {metric} --min B {files}'
-    metrics = ['cc', 'mi']
-    for metric in metrics:
+    metrics_to_run = ['cc', 'mi']
+    for metric in metrics_to_run:
         ctx.run(cmd.format(metric=metric, files=get_files()))
 
 @task
