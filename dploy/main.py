@@ -291,17 +291,37 @@ class UnStow(AbstractBaseStow):
     def check_for_other_actions(self):
         self.collect_folding_actions()
 
+    def get_unlink_actions(self):
+        """
+        get the current Unlink() actions from the self.actions
+        """
+        return [a for a in self.actions if isinstance(a, actions.UnLink)]
+
+    def get_unlink_actions_target_parents(self):
+        """
+        Get list of the parents for the current Unlink() actions from
+        self.actions
+        """
+        unlink_actions = self.get_unlink_actions()
+        # sort for deterministic output
+        return sorted(set([a.target.parent for a in unlink_actions]))
+
+    def get_unlink_actions_targets(self):
+        """
+        Get list of the targets for the current Unlink() actions from
+        self.actions
+        """
+        unlink_actions = self.get_unlink_actions()
+        return [a.target for a in unlink_actions]
+
     def collect_folding_actions(self):
         """
         find candidates for folding i.e. when a directory contains symlinks to
         files that all share the same parent directory
         """
+        unlink_actions_targets = self.get_unlink_actions_targets()
+        unlink_actions_targets_parents = self.get_unlink_actions_target_parents()
 
-        unlink_actions = (
-            [a for a in self.actions if isinstance(a, actions.UnLink)])
-        unlink_actions_targets = [a.target for a in unlink_actions]
-        # sort for deterministic output
-        unlink_actions_targets_parents = sorted(set([a.target.parent for a in unlink_actions]))
 
         for parent in unlink_actions_targets_parents:
             items = utils.get_directory_contents(parent)
@@ -311,9 +331,7 @@ class UnStow(AbstractBaseStow):
             is_normal_files_detected = False
 
             for item in items:
-                if item in unlink_actions_targets:
-                    pass
-                else:
+                if item not in unlink_actions_targets:
                     does_item_exist = False
                     try:
                         does_item_exist = item.exists()
@@ -523,8 +541,8 @@ class Ignore():
         read ignore patterns from a specified file
         """
         try:
-            with open(str(file)) as f:
-                file_patterns = f.read().splitlines()
+            with open(str(file)) as afile:
+                file_patterns = afile.read().splitlines()
                 self.patterns.extend(file_patterns)
         except FileNotFoundError:
             pass
