@@ -152,52 +152,51 @@ def test_stow_with_write_only_source_file(source_a, dest):
     utils.remove_read_permission(source_file)
     dploy.stow([source_a], dest)
 
+def verify_unfolded_source_a_and_source_b(dest):
+    common_dest_dir = os.path.join(dest, 'aaa')
+    common_source_a_dir = os.path.join('..', '..', 'source_a', 'aaa')
+    common_source_b_dir = os.path.join('..', '..', 'source_b', 'aaa')
+    file_maps = (
+        {
+            'dest': os.path.join(common_dest_dir, 'aaa'),
+            'source': os.path.join(common_source_a_dir, 'aaa')
+        },
+        {
+            'dest': os.path.join(common_dest_dir, 'bbb'),
+            'source': os.path.join(common_source_a_dir, 'bbb')
+        },
+        {
+            'dest': os.path.join(common_dest_dir, 'ccc'),
+            'source': os.path.join(common_source_a_dir, 'ccc')
+        },
+        {
+            'dest': os.path.join(common_dest_dir, 'ddd'),
+            'source': os.path.join(common_source_b_dir, 'ddd')
+        },
+        {
+            'dest': os.path.join(common_dest_dir, 'eee'),
+            'source': os.path.join(common_source_b_dir, 'eee')
+        },
+        {
+            'dest': os.path.join(common_dest_dir, 'fff'),
+            'source': os.path.join(common_source_b_dir, 'fff')
+        }
+    )
+
+    assert os.path.isdir(os.path.join(common_dest_dir))
+
+    for file_map in file_maps:
+        assert os.readlink(file_map['dest']) == file_map['source']
 
 def test_stow_unfolding_with_two_invocations(source_a, source_b, dest):
     dploy.stow([source_a], dest)
     assert os.readlink(os.path.join(dest, 'aaa')) == os.path.join('..', 'source_a', 'aaa')
-
-    assert os.path.isfile(os.path.join(dest, 'aaa', 'aaa'))
-    assert os.path.isfile(os.path.join(dest, 'aaa', 'bbb'))
-    assert os.path.isdir(os.path.join(dest, 'aaa', 'ccc'))
-
     dploy.stow([source_b], dest)
-    assert os.path.isdir(os.path.join(dest, 'aaa'))
-
-    assert (os.readlink(os.path.join(dest, 'aaa', 'aaa')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'aaa'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'bbb')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'bbb'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'ccc')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'ccc'))
-
-    assert (os.readlink(os.path.join(dest, 'aaa', 'ddd')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'ddd'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'eee')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'eee'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'fff')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'fff'))
-
+    verify_unfolded_source_a_and_source_b(dest)
 
 def test_stow_unfolding_with_mutliple_sources(source_a, source_b, dest):
     dploy.stow([source_a, source_b], dest)
-
-    assert os.path.isdir(os.path.join(dest, 'aaa'))
-
-    assert (os.readlink(os.path.join(dest, 'aaa', 'aaa')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'aaa'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'bbb')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'bbb'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'ccc')) ==
-            os.path.join('..', '..', 'source_a', 'aaa', 'ccc'))
-
-    assert (os.readlink(os.path.join(dest, 'aaa', 'ddd')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'ddd'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'eee')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'eee'))
-    assert (os.readlink(os.path.join(dest, 'aaa', 'fff')) ==
-            os.path.join('..', '..', 'source_b', 'aaa', 'fff'))
-
+    verify_unfolded_source_a_and_source_b(dest)
 
 def test_stow_unfolding_with_first_sources_execute_permission_removed(source_a, source_b, dest):
     dploy.stow([source_a], dest)
