@@ -36,6 +36,15 @@ organized by order of importance.
 ### Fixed
 - Fixed issue when unstowing where some stowed packages directories created
   during the stowing process via unfolding would not be deleted.
+- Fix issue unstowing a folded dir with a stray link
+    - This fixed the following scenario: Given a dest directory with stowed
+      packages that share a folded directory, that also contains a stray link
+      along with the links created by stowing. When the stowed packages are
+      unstowed Then the folded directory was re-folded using the parent
+      directory of the single stray link and possibly linking new files that
+      were never intended to be linked there. When what was desired was the
+      directory to just remain with the single stray symlink.
+
 ### Removed
 -
 
