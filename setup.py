@@ -18,7 +18,7 @@ setup(
     # pylint: disable=undefined-variable
     version=__version__,
     download_url='https://github.com/arecarn/dploy/tarball/' + __version__,
-    license='CC0',
+    license='MIT',
     description='',
     long_description=_read_file_for_long_description('README.rst'),
 
