@@ -15,6 +15,13 @@ organized by order of importance.
 
 ### Removed
 
+## [0.1.0] - 2016-12-29
+### Changed
+- Added Dates to Change log releases
+### Fixed
+- Fixed change log formatting
+- Fix PyPi Package so it can be installed
+
 ## [0.0.5] - 2016-12-28
 ### Added
 - Added --ignore argument to stow and unstow commands, to specify patterns file
