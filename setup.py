@@ -1,7 +1,7 @@
+
 """
 describes this package for distribution and installation
 """
-
 
 import os
 from setuptools import setup
@@ -13,14 +13,19 @@ def _read_file_for_long_description(fname):
 # get version string variable __version__
 exec(open('dploy/version.py').read())
 
+DESCRIPTION = """
+Provides functionality similar to GNU Stow as a cross platform CLI tool and
+Python 3 module
+"""
+
 setup(
     name='dploy',
     # pylint: disable=undefined-variable
     version=__version__,
     download_url='https://github.com/arecarn/dploy/tarball/' + __version__,
     license='MIT',
-    description='',
-    long_description=_read_file_for_long_description('README.rst'),
+    description=DESCRIPTION,
+    long_description=_read_file_for_long_description('README.md'),
 
     author='Ryan Carney',
     author_email='arecarn@gmail.com',
