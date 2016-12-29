@@ -8,8 +8,11 @@ organized by order of importance.
 
 ## [Unreleased]
 ### Added
+
 ### Changed
+
 ### Fixed
+
 ### Removed
 
 ## [0.0.5] - 2016-12-28
@@ -26,6 +29,7 @@ organized by order of importance.
   symbolic link
 - Check for source and dest new consideration was taken for sources
   and dests directories that have invalid execute permissions.
+
 ### Changed
 - Check for additional issues with sub commands that are similar to the initial
   checks done on the input of stow and unstow
@@ -39,6 +43,7 @@ organized by order of importance.
   detected issues as possible before aborting
 - Print all conflicts while stowing instead of just the first conflict, and
   print what exactly the conflict is
+
 ### Fixed
 - Fixed issue when unstowing where some stowed packages directories created
   during the stowing process via unfolding would not be deleted.
@@ -65,12 +70,14 @@ organized by order of importance.
 - CLI: Add a --quiet option to suppress normal output
 - CLI: Add handling for canceling the program with CTRL-C
 - CLI: Add a message for case when a source is already unlinked
+
 ### Changed
 - Relicense under MIT
 - Make dploy module usage silent
 - Clarify message when a source argument is the same the dest argument
 - Have the dploy module throw exceptions that the CLI module would handle
   instead of just printing to stdout
+
 ### Fixed
 - CLI: Fix link to take only take one source
 - Fix link source arg so it takes a string not a list
@@ -89,8 +96,10 @@ organized by order of importance.
 ### Added
 - Adds support for python 3.3
 - Add an unstow command to undo stowing
+
 ### Changed
 - Stow command is run in two passes and check for conflicts first before making
   any changes
+
 ### Fixed
 - General bug fixes and improvements.
