@@ -6,7 +6,7 @@ All changes documented here should be written with the goal give the end-user
 (not other developers) a summarized view of the changes since the last release,
 organized by order of importance.
 
-## [Unreleased]
+## [Unreleased] - YYYY-MM-DD
 ### Added
 
 ### Changed
@@ -14,6 +14,10 @@ organized by order of importance.
 ### Fixed
 
 ### Removed
+
+## [0.1.1] - 2016-12-29
+### Fix
+- Added a MANIFEST.in to fix installation via PyPi
 
 ## [0.1.0] - 2016-12-29
 ### Changed
