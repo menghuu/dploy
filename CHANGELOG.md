@@ -12,7 +12,7 @@ organized by order of importance.
 ### Fixed
 ### Removed
 
-## [0.0.5]
+## [0.0.5] - 2016-12-28
 ### Added
 - Added --ignore argument to stow and unstow commands, to specify patterns file
   to ignore.
@@ -54,7 +54,7 @@ organized by order of importance.
   had it's destination directories execute permission unset.
 
 
-## [0.0.4]
+## [0.0.4] - 2016-09-13
 ### Added
 - Add folding of the remaining links that would be around after calling unstow
 - Add Checks for conflicts between multiple sources for stow
@@ -85,7 +85,7 @@ organized by order of importance.
   parameters for both source and dest. It also didn't make sense to try to stow
   a directory into itself, since there will always be conflicts.
 
-## [0.0.3]
+## [0.0.3] - 2016-04-11
 ### Added
 - Adds support for python 3.3
 - Add an unstow command to undo stowing
