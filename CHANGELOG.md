@@ -14,6 +14,10 @@ organized by order of importance.
   effect of the option
 
 ### Fixed
+- Produce a helpful error when stowing or unstowing with duplicate sources.
+  Before stow would fail, when conflicts were found, and unstow would succeed in
+  unstowing a duplicate source the first time, but fail after trying to unstow
+  nothing. By catching the bug before hand the error message is much clearer.
 
 ### Removed
 

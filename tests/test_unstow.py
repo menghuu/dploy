@@ -45,6 +45,12 @@ def test_unstow_with_non_existant_source(dest):
         dploy.unstow([source], dest)
     assert errors.NoSuchDirectory(subcmd=SUBCMD, file=source).msg in str(e.value)
 
+def test_unstow_with_duplicate_source(source_a, dest):
+    dploy.stow([source_a], dest)
+    with pytest.raises(ValueError) as e:
+        dploy.unstow([source_a, source_a], dest)
+    assert errors.DuplicateSource(subcmd=SUBCMD,
+                                  file=source_a).msg in str(e.value)
 
 def test_unstow_with_non_existant_dest(source_a):
     dest = 'dest'

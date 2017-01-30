@@ -26,16 +26,18 @@ class AbstractBaseSubCommand():
 
         dest_input = pathlib.Path(dest)
 
-        for source in sources:
-            source_input = pathlib.Path(source)
-            self.ignore = Ignore(ignore_patterns,
-                                 source_input.parent / pathlib.Path('.dploystowignore'))
 
-            if self.ignore.should_ignore(source_input):
-                self.ignore.ignore(source_input)
-                continue
-            if self.is_valid_input(source_input, dest_input):
-                self.collect_actions(source_input, dest_input)
+        if not self.is_there_duplicate_sources(sources):
+            for source in sources:
+                source_input = pathlib.Path(source)
+                self.ignore = Ignore(ignore_patterns,
+                                     source_input.parent / pathlib.Path('.dploystowignore'))
+
+                if self.ignore.should_ignore(source_input):
+                    self.ignore.ignore(source_input)
+                    continue
+                if self.is_valid_input(source_input, dest_input):
+                    self.collect_actions(source_input, dest_input)
 
         self.check_for_other_actions()
         self.execute_actions()
@@ -59,6 +61,26 @@ class AbstractBaseSubCommand():
         sub-command.
         """
         pass
+
+    def is_there_duplicate_sources(self, sources):
+        """
+        Checks sources to see if there are any duplicates
+        """
+
+        is_there_duplicates = False
+
+        tally = defaultdict(int)
+        for source in sources:
+            tally[source] += 1
+
+        for source, count in tally.items():
+            if count > 1:
+                is_there_duplicates = True
+                self.add_exception(errors.DuplicateSource(self.subcmd, source))
+
+        return is_there_duplicates
+
+
 
     def execute_actions(self):
         """

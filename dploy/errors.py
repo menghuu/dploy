@@ -84,3 +84,9 @@ class NoSuchFileOrDirectory():
         self.msg = ERROR_HEAD + "'{file}': No such file or directory"
         self.msg = self.msg.format(subcmd=subcmd, file=file)
         self.exception = FileNotFoundError(self.msg)
+
+class DuplicateSource():
+    def __init__(self, subcmd, file):
+        self.msg = ERROR_HEAD + "'{file}': Duplicate source argument"
+        self.msg = self.msg.format(subcmd=subcmd, file=file)
+        self.exception = ValueError(self.msg)
