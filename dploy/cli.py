@@ -26,10 +26,10 @@ def create_parser():
     parser.add_argument('--version',
                         action='version',
                         version='%(prog)s {version}'.format(version=version.__version__))
-    parser.add_argument('--quiet',
-                        dest='is_quiet',
+    parser.add_argument('--silent',
+                        dest='is_silent',
                         action='store_true',
-                        help='suppress normal output excluding error messages')
+                        help='suppress all output')
     parser.add_argument('--dry-run',
                         dest='is_dry_run',
                         action='store_true',
@@ -86,7 +86,7 @@ def run(arguments=None):
             subcmd = subcmd_map[args.subcmd]
             subcmd(args.source,
                    args.dest,
-                   is_silent=args.is_quiet,
+                   is_silent=args.is_silent,
                    is_dry_run=args.is_dry_run,
                    ignore_patterns=args.ignore_patterns)
         except (ValueError, PermissionError, FileNotFoundError, NotADirectoryError):

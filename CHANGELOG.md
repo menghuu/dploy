@@ -10,6 +10,8 @@ organized by order of importance.
 ### Added
 
 ### Changed
+- Renamed the CLI --quiet option to --silent because it better reflects the
+  effect of the option
 
 ### Fixed
 
