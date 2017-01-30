@@ -319,7 +319,7 @@ class UnStow(AbstractBaseStow):
         """
         return [a for a in self.actions if isinstance(a, actions.UnLink)]
 
-    def get_unlink_actions_target_parents(self):
+    def get_unlink_target_parents(self):
         """
         Get list of the parents for the current Unlink() actions from
         self.actions
@@ -328,7 +328,7 @@ class UnStow(AbstractBaseStow):
         # sort for deterministic output
         return sorted(set([a.target.parent for a in unlink_actions]))
 
-    def get_unlink_actions_targets(self):
+    def get_unlink_targets(self):
         """
         Get list of the targets for the current Unlink() actions from
         self.actions
@@ -341,11 +341,7 @@ class UnStow(AbstractBaseStow):
         find candidates for folding i.e. when a directory contains symlinks to
         files that all share the same parent directory
         """
-        unlink_actions_targets = self.get_unlink_actions_targets()
-        unlink_actions_targets_parents = self.get_unlink_actions_target_parents()
-
-
-        for parent in unlink_actions_targets_parents:
+        for parent in self.get_unlink_target_parents():
             items = utils.get_directory_contents(parent)
             other_links_parents = []
             other_links = []
@@ -353,7 +349,7 @@ class UnStow(AbstractBaseStow):
             is_normal_files_detected = False
 
             for item in items:
-                if item not in unlink_actions_targets:
+                if item not in self.get_unlink_targets():
                     does_item_exist = False
                     try:
                         does_item_exist = item.exists()
