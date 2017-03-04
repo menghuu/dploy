@@ -4,8 +4,24 @@ All the exceptions and their messages used by the program
 # pylint: disable=missing-docstring
 # pylint: disable=too-few-public-methods
 
+import sys
 
 ERROR_HEAD = 'dploy {subcmd}: can not {subcmd} '
+
+class Errors():
+    def __init__(self, is_silent):
+        self.exceptions = []
+        self.is_silent = is_silent
+
+    def add(self, error):
+        self.exceptions.append(error.exception)
+
+    def handle(self):
+        if len(self.exceptions) > 0:
+            if not self.is_silent:
+                for exception in self.exceptions:
+                    print(exception, file=sys.stderr)
+            raise self.exceptions[0]
 
 
 class SourceIsSameAsDest():
