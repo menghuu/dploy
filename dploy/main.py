@@ -33,8 +33,8 @@ class AbstractBaseSubCommand():
         if not self._is_there_duplicate_sources(sources):
             for source in sources:
                 source_input = pathlib.Path(source)
-                self.ignore = ignore.Ignore(ignore_patterns,
-                                            source_input.parent / pathlib.Path('.dploystowignore'))
+                ignore_file = source_input.parent / pathlib.Path('.dploystowignore')
+                self.ignore = ignore.Ignore(ignore_patterns, ignore_file)
 
                 if self.ignore.should_ignore(source_input):
                     self.ignore.ignore(source_input)
@@ -118,6 +118,20 @@ class AbstractBaseStow(AbstractBaseSubCommand):
 
         return result
 
+    def _is_valid_collection_input(self, source, dest):
+        """
+        Helper to validate the source and dest parameters passed to
+        _collect_actions()
+        """
+        result = True
+        if not self._is_valid_source(source):
+            result = False
+
+        if dest.exists():
+            if not self._is_valid_dest(dest):
+                result = False
+        return result
+
     def _is_valid_dest(self, dest):
         """
         Check if the dest argument is valid
@@ -129,18 +143,15 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             result = False
         else:
             if not utils.is_directory_writable(dest):
-                self.errors.add(
-                    errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                self.errors.add(errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
                 result = False
 
             if not utils.is_directory_readable(dest):
-                self.errors.add(
-                    errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                self.errors.add(errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
                 result = False
 
             if not utils.is_directory_executable(dest):
-                self.errors.add(
-                    errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                self.errors.add(errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
                 result = False
 
         return result
@@ -156,13 +167,11 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             result = False
         else:
             if not utils.is_directory_readable(source):
-                self.errors.add(
-                    errors.InsufficientPermissionsToSubcmdFrom(self.subcmd, source))
+                self.errors.add(errors.InsufficientPermissionsToSubcmdFrom(self.subcmd, source))
                 result = False
 
             if not utils.is_directory_executable(source):
-                self.errors.add(
-                    errors.InsufficientPermissionsToSubcmdFrom(self.subcmd, source))
+                self.errors.add(errors.InsufficientPermissionsToSubcmdFrom(self.subcmd, source))
                 result = False
 
         return result
@@ -205,20 +214,6 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         """
         pass
 
-    def _is_valid_collection_input(self, source, dest):
-        """
-        Helper to validate the source and dest parameters passed to
-        _collect_actions()
-        """
-        result = True
-        if not self._is_valid_source(source):
-            result = False
-
-        if dest.exists():
-            if not self._is_valid_dest(dest):
-                result = False
-        return result
-
     def _collect_actions_existing_dest(self, source, dest):
         """
         _collect_actions() helper to collect required actions to perform a stow
@@ -233,8 +228,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
         elif dest.is_dir() and source.is_dir:
             self._are_directories(source, dest)
         else:
-            self.errors.add(
-                errors.ConflictsWithExistingFile(self.subcmd, source, dest))
+            self.errors.add(errors.ConflictsWithExistingFile(self.subcmd, source, dest))
 
     def _collect_actions(self, source, dest):
         """
@@ -268,8 +262,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             if does_dest_path_exist:
                 self._collect_actions_existing_dest(source, dest_path)
             elif dest_path.is_symlink():
-                self.errors.add(
-                    errors.ConflictsWithExistingLink(self.subcmd, source, dest_path))
+                self.errors.add(errors.ConflictsWithExistingLink(self.subcmd, source, dest_path))
             elif not dest_path.parent.exists() and not self.is_unfolding:
                 self.errors.add(errors.NoSuchDirectory(self.subcmd, dest_path.parent))
             else:
@@ -455,8 +448,7 @@ class Link(AbstractBaseSubCommand):
 
         elif (not utils.is_file_writable(dest.parent)
               or not utils.is_directory_writable(dest.parent)):
-            self.errors.add(
-                errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+            self.errors.add(errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
             return False
 
         else:
@@ -472,15 +464,12 @@ class Link(AbstractBaseSubCommand):
             if utils.is_same_file(dest, source):
                 self.actions.add(actions.AlreadyLinked(self.subcmd, source, dest))
             else:
-                self.errors.add(
-                    errors.ConflictsWithExistingFile(self.subcmd, source, dest))
+                self.errors.add(errors.ConflictsWithExistingFile(self.subcmd, source, dest))
         elif dest.is_symlink():
-            self.errors.add(
-                errors.ConflictsWithExistingLink(self.subcmd, source, dest))
+            self.errors.add(errors.ConflictsWithExistingLink(self.subcmd, source, dest))
 
         elif not dest.parent.exists():
-            self.errors.add(
-                errors.NoSuchDirectoryToSubcmdInto(self.subcmd, dest.parent))
+            self.errors.add(errors.NoSuchDirectoryToSubcmdInto(self.subcmd, dest.parent))
 
         else:
             self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
