@@ -276,6 +276,84 @@ class AbstractBaseStow(AbstractBaseSubCommand):
                 self._are_other(source, dest_path)
 
 
+class Stow(AbstractBaseStow):
+    """
+    Concrete class implementation of the stow sub-command
+    """
+    # pylint: disable=too-many-arguments
+    def __init__(self, source, dest, is_silent=True, is_dry_run=False, ignore_patterns=None):
+        super().__init__("stow", source, dest, is_silent, is_dry_run, ignore_patterns)
+
+    def _unfold(self, source, dest):
+        """
+        Method unfold a destination directory
+        """
+        self.is_unfolding = True
+        self.actions.add(actions.UnLink(self.subcmd, dest))
+        self.actions.add(actions.MakeDirectory(self.subcmd, dest))
+        self._collect_actions(source, dest)
+        self.is_unfolding = False
+
+    def _handle_duplicate_actions(self):
+        """
+        check for symbolic link actions that would cause conflicting symbolic
+        links to the same destination. Also check for actions that conflict but
+        are candidates for unfolding instead.
+        """
+        has_conflicts = False
+        dupes = self.actions.get_duplicates()
+
+        if len(dupes) == 0:
+            return
+
+        for indices in dupes:
+            first_action = self.actions.actions[indices[0]]
+            remaining_actions = [self.actions.actions[i] for i in indices[1:]]
+
+            if first_action.source.is_dir():
+                self._unfold(first_action.source, first_action.dest)
+
+                for action in remaining_actions:
+                    self.is_unfolding = True
+                    self._collect_actions(action.source, action.dest)
+                    self.is_unfolding = False
+            else:
+                duplicate_action_sources = [str(self.actions.actions[i].source) for i in indices]
+                self.errors.add(
+                    errors.ConflictsWithAnotherSource(self.subcmd, duplicate_action_sources))
+                has_conflicts = True
+
+        if has_conflicts:
+            return
+
+        # remove duplicates
+        for indices in dupes:
+            for index in reversed(indices[1:]):
+                del self.actions.actions[index]
+
+        self._handle_duplicate_actions()
+
+    def _check_for_other_actions(self):
+        self._handle_duplicate_actions()
+
+    def _are_same_file(self, source, dest):
+        """
+        what to do if source and dest are the same files
+        """
+        if self.is_unfolding:
+            self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
+        else:
+            self.actions.add(actions.AlreadyLinked(self.subcmd, source, dest))
+
+    def _are_directories(self, source, dest):
+        if dest.is_symlink():
+            self._unfold(dest.resolve(), dest)
+        self._collect_actions(source, dest)
+
+    def _are_other(self, source, dest):
+        self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
+
+
 class UnStow(AbstractBaseStow):
     """
     Concrete class implementation of the unstow sub-command
@@ -406,81 +484,3 @@ class Link(AbstractBaseSubCommand):
 
         else:
             self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
-
-
-class Stow(AbstractBaseStow):
-    """
-    Concrete class implementation of the stow sub-command
-    """
-    # pylint: disable=too-many-arguments
-    def __init__(self, source, dest, is_silent=True, is_dry_run=False, ignore_patterns=None):
-        super().__init__("stow", source, dest, is_silent, is_dry_run, ignore_patterns)
-
-    def _unfold(self, source, dest):
-        """
-        Method unfold a destination directory
-        """
-        self.is_unfolding = True
-        self.actions.add(actions.UnLink(self.subcmd, dest))
-        self.actions.add(actions.MakeDirectory(self.subcmd, dest))
-        self._collect_actions(source, dest)
-        self.is_unfolding = False
-
-    def _handle_duplicate_actions(self):
-        """
-        check for symbolic link actions that would cause conflicting symbolic
-        links to the same destination. Also check for actions that conflict but
-        are candidates for unfolding instead.
-        """
-        has_conflicts = False
-        dupes = self.actions.get_duplicates()
-
-        if len(dupes) == 0:
-            return
-
-        for indices in dupes:
-            first_action = self.actions.actions[indices[0]]
-            remaining_actions = [self.actions.actions[i] for i in indices[1:]]
-
-            if first_action.source.is_dir():
-                self._unfold(first_action.source, first_action.dest)
-
-                for action in remaining_actions:
-                    self.is_unfolding = True
-                    self._collect_actions(action.source, action.dest)
-                    self.is_unfolding = False
-            else:
-                duplicate_action_sources = [str(self.actions.actions[i].source) for i in indices]
-                self.errors.add(
-                    errors.ConflictsWithAnotherSource(self.subcmd, duplicate_action_sources))
-                has_conflicts = True
-
-        if has_conflicts:
-            return
-
-        # remove duplicates
-        for indices in dupes:
-            for index in reversed(indices[1:]):
-                del self.actions.actions[index]
-
-        self._handle_duplicate_actions()
-
-    def _check_for_other_actions(self):
-        self._handle_duplicate_actions()
-
-    def _are_same_file(self, source, dest):
-        """
-        what to do if source and dest are the same files
-        """
-        if self.is_unfolding:
-            self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
-        else:
-            self.actions.add(actions.AlreadyLinked(self.subcmd, source, dest))
-
-    def _are_directories(self, source, dest):
-        if dest.is_symlink():
-            self._unfold(dest.resolve(), dest)
-        self._collect_actions(source, dest)
-
-    def _are_other(self, source, dest):
-        self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
