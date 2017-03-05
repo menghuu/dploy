@@ -28,19 +28,19 @@ class AbstractBaseSubCommand():
         self.is_dry_run = is_dry_run
 
         dest_input = pathlib.Path(dest)
+        source_inputs = [pathlib.Path(source) for source in sources]
 
 
-        if not self._is_there_duplicate_sources(sources):
-            for source in sources:
-                source_input = pathlib.Path(source)
-                ignore_file = source_input.parent / pathlib.Path('.dploystowignore')
+        if not self._is_there_duplicate_sources(source_inputs):
+            for source in source_inputs:
+                ignore_file = source.parent / pathlib.Path('.dploystowignore')
                 self.ignore = ignore.Ignore(ignore_patterns, ignore_file)
 
-                if self.ignore.should_ignore(source_input):
-                    self.ignore.ignore(source_input)
+                if self.ignore.should_ignore(source):
+                    self.ignore.ignore(source)
                     continue
-                if self._is_valid_input(source_input, dest_input):
-                    self._collect_actions(source_input, dest_input)
+                if self._is_valid_input(source, dest_input):
+                    self._collect_actions(source, dest_input)
 
         self._check_for_other_actions()
         self._execute_actions()
