@@ -433,22 +433,38 @@ class Link(AbstractBaseSubCommand):
         """
         Check to see if the input is valid
         """
-        if not source.exists():
-            self.errors.add(errors.NoSuchFileOrDirectory(self.subcmd, source))
+        if not self._is_valid_dest(dest):
             return False
 
-        elif not dest.parent.exists():
+        elif (not self._is_valid_source(source)
+              or not utils.is_directory_writable(dest.parent)):
+            return False
+
+        else:
+            return True
+
+
+    def _is_valid_dest(self, dest):
+        if not dest.parent.exists():
             self.errors.add(errors.NoSuchFileOrDirectory(self.subcmd, dest.parent))
-            return False
-
-        elif (not utils.is_file_readable(source)
-              or not utils.is_directory_readable(source)):
-            self.errors.add(errors.InsufficientPermissions(self.subcmd, source))
             return False
 
         elif (not utils.is_file_writable(dest.parent)
               or not utils.is_directory_writable(dest.parent)):
             self.errors.add(errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+            return False
+
+        else:
+            return True
+
+    def _is_valid_source(self, source):
+        if not source.exists():
+            self.errors.add(errors.NoSuchFileOrDirectory(self.subcmd, source))
+            return False
+
+        elif (not utils.is_file_readable(source)
+              or not utils.is_directory_readable(source)):
+            self.errors.add(errors.InsufficientPermissions(self.subcmd, source))
             return False
 
         else:
