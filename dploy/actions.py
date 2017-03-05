@@ -3,6 +3,7 @@ This module contains the actions that are combined to perform dploy's sub
 commands
 """
 
+from collections import defaultdict
 import dploy.utils as utils
 
 class Actions():
@@ -43,6 +44,18 @@ class Actions():
         """
         unlink_actions = self.get_unlink_actions()
         return [a.target for a in unlink_actions]
+
+    def get_duplicates(self):
+        """
+        return a tuple containing tuples with the following structure
+        (link destination, [indices of duplicates])
+        """
+        tally = defaultdict(list)
+        for index, action in enumerate(self.actions):
+            if isinstance(action, SymbolicLink):
+                tally[action.dest].append(index)
+        # sort for deterministic output
+        return sorted([indices for _, indices in tally.items() if len(indices) > 1])
 
 
 class AbstractBaseAction():

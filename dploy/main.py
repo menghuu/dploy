@@ -426,18 +426,6 @@ class Stow(AbstractBaseStow):
         self._collect_actions(source, dest)
         self.is_unfolding = False
 
-    def _get_duplicate_actions(self):
-        """
-        return a tuple containing tuples with the following structure
-        (link destination, [indices of duplicates])
-        """
-        tally = defaultdict(list)
-        for index, action in enumerate(self.actions.actions):
-            if isinstance(action, actions.SymbolicLink):
-                tally[action.dest].append(index)
-        # sort for deterministic output
-        return sorted([indices for _, indices in tally.items() if len(indices) > 1])
-
     def _handle_duplicate_actions(self):
         """
         check for symbolic link actions that would cause conflicting symbolic
@@ -445,7 +433,7 @@ class Stow(AbstractBaseStow):
         are candidates for unfolding instead.
         """
         has_conflicts = False
-        dupes = self._get_duplicate_actions()
+        dupes = self.actions.get_duplicates()
 
         if len(dupes) == 0:
             return
