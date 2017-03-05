@@ -5,6 +5,29 @@ commands
 
 import dploy.utils as utils
 
+class Actions():
+    def __init__(self, is_silent, is_dry_run):
+        self.actions = []
+        self.is_silent = is_silent
+        self.is_dry_run = is_dry_run
+
+    def add(self, action):
+        self.actions.append(action)
+
+    def execute(self):
+        for action in self.actions:
+            if not self.is_silent:
+                print(action)
+            if not self.is_dry_run:
+                action.execute()
+
+    def get_unlink_actions(self):
+        """
+        get the current Unlink() actions from the self.actions
+        """
+        return [a for a in self.actions if isinstance(a, UnLink)]
+
+
 
 class AbstractBaseAction():
     # pylint: disable=too-few-public-methods

@@ -20,8 +20,10 @@ class AbstractBaseSubCommand():
     # pylint: disable=too-many-arguments
     def __init__(self, subcmd, sources, dest, is_silent, is_dry_run, ignore_patterns):
         self.subcmd = subcmd
-        self.actions = []
+
+        self.actions = actions.Actions(is_silent, is_dry_run)
         self.errors = errors.Errors(is_silent)
+
         self.is_silent = is_silent
         self.is_dry_run = is_dry_run
 
@@ -89,11 +91,7 @@ class AbstractBaseSubCommand():
         exceptions.
         """
         self.errors.handle()
-        for action in self.actions:
-            if not self.is_silent:
-                print(action)
-            if not self.is_dry_run:
-                action.execute()
+        self.actions.execute()
 
 
 class AbstractBaseStow(AbstractBaseSubCommand):
@@ -290,29 +288,23 @@ class UnStow(AbstractBaseStow):
         """
         what to do if source and dest are the same files
         """
-        self.actions.append(actions.UnLink(self.subcmd, dest))
+        self.actions.add(actions.UnLink(self.subcmd, dest))
 
     def _are_directories(self, source, dest):
         self._collect_actions(source, dest)
 
     def _are_other(self, source, dest):
-        self.actions.append(actions.AlreadyUnlinked(self.subcmd, source, dest))
+        self.actions.add(actions.AlreadyUnlinked(self.subcmd, source, dest))
 
     def _check_for_other_actions(self):
         self._collect_folding_actions()
-
-    def _get_unlink_actions(self):
-        """
-        get the current Unlink() actions from the self.actions
-        """
-        return [a for a in self.actions if isinstance(a, actions.UnLink)]
 
     def _get_unlink_target_parents(self):
         """
         Get list of the parents for the current Unlink() actions from
         self.actions
         """
-        unlink_actions = self._get_unlink_actions()
+        unlink_actions = self.actions.get_unlink_actions()
         # sort for deterministic output
         return sorted(set([a.target.parent for a in unlink_actions]))
 
@@ -321,7 +313,7 @@ class UnStow(AbstractBaseStow):
         Get list of the targets for the current Unlink() actions from
         self.actions
         """
-        unlink_actions = self._get_unlink_actions()
+        unlink_actions = self.actions.get_unlink_actions()
         return [a.target for a in unlink_actions]
 
     def _collect_folding_actions(self):
@@ -363,15 +355,15 @@ class UnStow(AbstractBaseStow):
                         self._fold(source_parent, parent)
 
                 elif other_links_parent_count == 0:
-                    self.actions.append(actions.RemoveDirectory(self.subcmd, parent))
+                    self.actions.add(actions.RemoveDirectory(self.subcmd, parent))
 
     def _fold(self, source, dest):
         """
         add the required actions for folding
         """
         self._collect_actions(source, dest)
-        self.actions.append(actions.RemoveDirectory(self.subcmd, dest))
-        self.actions.append(actions.SymbolicLink(self.subcmd, source, dest))
+        self.actions.add(actions.RemoveDirectory(self.subcmd, dest))
+        self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
 
 
 # pylint: disable=too-few-public-methods
@@ -417,9 +409,7 @@ class Link(AbstractBaseSubCommand):
 
         if dest.exists():
             if utils.is_same_file(dest, source):
-                self.actions.append(actions.AlreadyLinked(self.subcmd,
-                                                          source,
-                                                          dest))
+                self.actions.add(actions.AlreadyLinked(self.subcmd, source, dest))
             else:
                 self.errors.add(
                     errors.ConflictsWithExistingFile(self.subcmd, source, dest))
@@ -432,7 +422,7 @@ class Link(AbstractBaseSubCommand):
                 errors.NoSuchDirectoryToSubcmdInto(self.subcmd, dest.parent))
 
         else:
-            self.actions.append(actions.SymbolicLink(self.subcmd, source, dest))
+            self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
 
 
 class Stow(AbstractBaseStow):
@@ -448,8 +438,8 @@ class Stow(AbstractBaseStow):
         Method unfold a destination directory
         """
         self.is_unfolding = True
-        self.actions.append(actions.UnLink(self.subcmd, dest))
-        self.actions.append(actions.MakeDirectory(self.subcmd, dest))
+        self.actions.add(actions.UnLink(self.subcmd, dest))
+        self.actions.add(actions.MakeDirectory(self.subcmd, dest))
         self._collect_actions(source, dest)
         self.is_unfolding = False
 
@@ -459,7 +449,7 @@ class Stow(AbstractBaseStow):
         (link destination, [indices of duplicates])
         """
         tally = defaultdict(list)
-        for index, action in enumerate(self.actions):
+        for index, action in enumerate(self.actions.actions):
             if isinstance(action, actions.SymbolicLink):
                 tally[action.dest].append(index)
         # sort for deterministic output
@@ -478,8 +468,8 @@ class Stow(AbstractBaseStow):
             return
 
         for indices in dupes:
-            first_action = self.actions[indices[0]]
-            remaining_actions = [self.actions[i] for i in indices[1:]]
+            first_action = self.actions.actions[indices[0]]
+            remaining_actions = [self.actions.actions[i] for i in indices[1:]]
 
             if first_action.source.is_dir():
                 self._unfold(first_action.source, first_action.dest)
@@ -489,7 +479,7 @@ class Stow(AbstractBaseStow):
                     self._collect_actions(action.source, action.dest)
                     self.is_unfolding = False
             else:
-                duplicate_action_sources = [str(self.actions[i].source) for i in indices]
+                duplicate_action_sources = [str(self.actions.actions[i].source) for i in indices]
                 self.errors.add(
                     errors.ConflictsWithAnotherSource(self.subcmd, duplicate_action_sources))
                 has_conflicts = True
@@ -500,7 +490,7 @@ class Stow(AbstractBaseStow):
         # remove duplicates
         for indices in dupes:
             for index in reversed(indices[1:]):
-                del self.actions[index]
+                del self.actions.actions[index]
 
         self._handle_duplicate_actions()
 
@@ -512,11 +502,9 @@ class Stow(AbstractBaseStow):
         what to do if source and dest are the same files
         """
         if self.is_unfolding:
-            self.actions.append(
-                actions.SymbolicLink(self.subcmd, source, dest))
+            self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
         else:
-            self.actions.append(
-                actions.AlreadyLinked(self.subcmd, source, dest))
+            self.actions.add(actions.AlreadyLinked(self.subcmd, source, dest))
 
     def _are_directories(self, source, dest):
         if dest.is_symlink():
@@ -524,5 +512,4 @@ class Stow(AbstractBaseStow):
         self._collect_actions(source, dest)
 
     def _are_other(self, source, dest):
-        self.actions.append(
-            actions.SymbolicLink(self.subcmd, source, dest))
+        self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
