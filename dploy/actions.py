@@ -27,6 +27,22 @@ class Actions():
         """
         return [a for a in self.actions if isinstance(a, UnLink)]
 
+    def get_unlink_target_parents(self):
+        """
+        Get list of the parents for the current Unlink() actions from
+        self.actions
+        """
+        unlink_actions = self.get_unlink_actions()
+        # sort for deterministic output
+        return sorted(set([a.target.parent for a in unlink_actions]))
+
+    def get_unlink_targets(self):
+        """
+        Get list of the targets for the current Unlink() actions from
+        self.actions
+        """
+        unlink_actions = self.get_unlink_actions()
+        return [a.target for a in unlink_actions]
 
 
 class AbstractBaseAction():
