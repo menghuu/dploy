@@ -100,7 +100,7 @@ def test_stow_with_file_as_dest(source_a, file_a):
 def test_stow_with_file_as_dest_and_source(file_a, file_b):
     with pytest.raises(NotADirectoryError) as e:
         dploy.stow([file_a], file_b)
-    assert (errors.NoSuchDirectory(subcmd=SUBCMD, file=file_a).msg
+    assert (errors.NoSuchDirectoryToSubcmdInto(subcmd=SUBCMD, file=file_b).msg
             in str(e.value))
 
 

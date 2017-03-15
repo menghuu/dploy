@@ -30,8 +30,15 @@ class AbstractBaseSubCommand():
         dest_input = pathlib.Path(dest)
         source_inputs = [pathlib.Path(source) for source in sources]
 
+        is_input_valid = True
+        if not self._is_there_duplicate_sources(source_inputs) and self._is_valid_dest(dest_input):
+            for source in source_inputs:
+                if not self._is_valid_source(source):
+                    is_input_valid = False
+        else:
+            is_input_valid = False
 
-        if not self._is_there_duplicate_sources(source_inputs):
+        if is_input_valid:
             for source in source_inputs:
                 ignore_file = source.parent / pathlib.Path('.dploystowignore')
                 self.ignore = ignore.Ignore(ignore_patterns, ignore_file)
@@ -39,8 +46,8 @@ class AbstractBaseSubCommand():
                 if self.ignore.should_ignore(source):
                     self.ignore.ignore(source)
                     continue
-                if self._is_valid_input(source, dest_input):
-                    self._collect_actions(source, dest_input)
+
+                self._collect_actions(source, dest_input)
 
         self._check_for_other_actions()
         self._execute_actions()
@@ -55,6 +62,18 @@ class AbstractBaseSubCommand():
     def _is_valid_input(self, source, dest):
         """
         Abstract method to check if the input to a sub-command is valid
+        """
+        pass
+
+    def _is_valid_dest(self, dest):
+        """
+        Abstract method to check if the dest input to a sub-command is valid
+        """
+        pass
+
+    def _is_valid_source(self, source):
+        """
+        Abstract method to check if the source input to a sub-command is valid
         """
         pass
 
@@ -82,8 +101,6 @@ class AbstractBaseSubCommand():
                 self.errors.add(errors.DuplicateSource(self.subcmd, source))
 
         return is_there_duplicates
-
-
 
     def _execute_actions(self):
         """

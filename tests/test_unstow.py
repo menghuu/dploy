@@ -74,8 +74,8 @@ def test_unstow_with_file_as_dest(source_a, file_a):
 def test_unstow_with_file_as_source_and_dest(file_a, file_b):
     with pytest.raises(NotADirectoryError) as e:
         dploy.unstow([file_a], file_b)
-    assert (errors.NoSuchDirectory(subcmd=SUBCMD,
-                                   file=file_a).msg in str(e.value))
+    assert (errors.NoSuchDirectoryToSubcmdInto(subcmd=SUBCMD,
+                                               file=file_b).msg in str(e.value))
 
 
 def test_unstow_with_read_only_dest(source_a, dest):
