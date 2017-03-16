@@ -75,14 +75,11 @@ class AbstractBaseAction():
     def __init__(self):
         pass
 
-    def _logic(self):
-        pass
-
     def execute(self):
         """
-        function that executes _logic() of each derived action
+        function that executes the logic of each concrete action
         """
-        self._logic()
+        pass
 
 
 class SymbolicLink(AbstractBaseAction):
@@ -97,7 +94,7 @@ class SymbolicLink(AbstractBaseAction):
         self.subcmd = subcmd
         self.dest = dest
 
-    def _logic(self):
+    def execute(self):
         self.dest.symlink_to(self.source_relative)
 
     def __repr__(self):
@@ -117,7 +114,7 @@ class AlreadyLinked(AbstractBaseAction):
         self.dest = dest
         self.subcmd = subcmd
 
-    def _logic(self):
+    def execute(self):
         pass
 
     def __repr__(self):
@@ -139,7 +136,7 @@ class AlreadyUnlinked(AbstractBaseAction):
         self.dest = dest
         self.subcmd = subcmd
 
-    def _logic(self):
+    def execute(self):
         pass
 
     def __repr__(self):
@@ -159,7 +156,7 @@ class UnLink(AbstractBaseAction):
         self.target = target
         self.subcmd = subcmd
 
-    def _logic(self):
+    def execute(self):
         if not self.target.is_symlink():
             #pylint: disable=line-too-long
             raise RuntimeError('dploy detected and aborted an attempt to unlink a non-symlink this is a bug and should be reported')
@@ -182,7 +179,7 @@ class MakeDirectory(AbstractBaseAction):
         self.target = target
         self.subcmd = subcmd
 
-    def _logic(self):
+    def execute(self):
         self.target.mkdir()
 
     def __repr__(self):
@@ -200,7 +197,7 @@ class RemoveDirectory(AbstractBaseAction):
         self.target = target
         self.subcmd = subcmd
 
-    def _logic(self):
+    def execute(self):
         self.target.rmdir()
 
     def __repr__(self):
