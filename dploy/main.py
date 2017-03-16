@@ -12,77 +12,23 @@ import dploy.ignore as ignore
 
 
 # pylint: disable=too-few-public-methods
-class AbstractBaseSubCommand():
+class Input():
     """
-    An abstract class to unify shared functionality in stow commands
     """
-
-    # pylint: disable=too-many-arguments
-    def __init__(self, subcmd, sources, dest, is_silent, is_dry_run, ignore_patterns):
+    def __init__(self, errors, subcmd):
+        self.errors = errors
         self.subcmd = subcmd
 
-        self.actions = actions.Actions(is_silent, is_dry_run)
-        self.errors = errors.Errors(is_silent)
-
-        self.is_silent = is_silent
-        self.is_dry_run = is_dry_run
-
-        dest_input = pathlib.Path(dest)
-        source_inputs = [pathlib.Path(source) for source in sources]
-
+    def is_valid(self, sources, dest):
         is_input_valid = True
-        if not self._is_there_duplicate_sources(source_inputs) and self._is_valid_dest(dest_input):
-            for source in source_inputs:
+        if not self._is_there_duplicate_sources(sources) and self._is_valid_dest(dest):
+            for source in sources:
                 if not self._is_valid_source(source):
                     is_input_valid = False
         else:
             is_input_valid = False
 
-        if is_input_valid:
-            for source in source_inputs:
-                ignore_file = source.parent / pathlib.Path('.dploystowignore')
-                self.ignore = ignore.Ignore(ignore_patterns, ignore_file)
-
-                if self.ignore.should_ignore(source):
-                    self.ignore.ignore(source)
-                    continue
-
-                self._collect_actions(source, dest_input)
-
-        self._check_for_other_actions()
-        self._execute_actions()
-
-    def _check_for_other_actions(self):
-        """
-        Abstract method for examine the existing action to see if more actions
-        need to be added or if some actions need to be removed.
-        """
-        pass
-
-    def _is_valid_input(self, source, dest):
-        """
-        Abstract method to check if the input to a sub-command is valid
-        """
-        pass
-
-    def _is_valid_dest(self, dest):
-        """
-        Abstract method to check if the dest input to a sub-command is valid
-        """
-        pass
-
-    def _is_valid_source(self, source):
-        """
-        Abstract method to check if the source input to a sub-command is valid
-        """
-        pass
-
-    def _collect_actions(self, source, dest):
-        """
-        Abstract method that collects the actions required to complete a
-        sub-command.
-        """
-        pass
+        return is_input_valid
 
     def _is_there_duplicate_sources(self, sources):
         """
@@ -102,52 +48,27 @@ class AbstractBaseSubCommand():
 
         return is_there_duplicates
 
-    def _execute_actions(self):
+    def _is_valid_dest(self, dest):
         """
-        Either executes collected actions by a sub command or raises collected
-        exceptions.
+        Abstract method to check if the dest input to a sub-command is valid
         """
-        self.errors.handle()
-        self.actions.execute()
+        pass
+
+    def _is_valid_source(self, source):
+        """
+        Abstract method to check if the source input to a sub-command is valid
+        """
+        pass
 
 
-class AbstractBaseStow(AbstractBaseSubCommand):
+class StowInput(Input):
     """
-    Abstract Base class that contains the shared logic for all of the stow
-    commands
     """
-    # pylint: disable=too-many-arguments
-    def __init__(self, subcmd, source, dest, is_silent, is_dry_run, ignore_patterns):
-        self.is_unfolding = False
-        super().__init__(subcmd, source, dest, is_silent, is_dry_run, ignore_patterns)
 
-    def _is_valid_input(self, source, dest):
+    def __init__(self, errors, subcmd):
         """
-        Check to see if the input is valid
         """
-        result = True
-
-        if not self._is_valid_source(source):
-            result = False
-
-        if not self._is_valid_dest(dest):
-            result = False
-
-        return result
-
-    def _is_valid_collection_input(self, source, dest):
-        """
-        Helper to validate the source and dest parameters passed to
-        _collect_actions()
-        """
-        result = True
-        if not self._is_valid_source(source):
-            result = False
-
-        if dest.exists():
-            if not self._is_valid_dest(dest):
-                result = False
-        return result
+        super().__init__(errors, subcmd)
 
     def _is_valid_dest(self, dest):
         """
@@ -192,6 +113,136 @@ class AbstractBaseStow(AbstractBaseSubCommand):
                 result = False
 
         return result
+
+    def is_valid_collection_input(self, source, dest):
+        """
+        Helper to validate the source and dest parameters passed to
+        _collect_actions()
+        """
+        result = True
+        if not self._is_valid_source(source):
+            result = False
+
+        if dest.exists():
+            if not self._is_valid_dest(dest):
+                result = False
+        return result
+
+
+class LinkInput(Input):
+    """
+    """
+
+    def __init__(self, errors, subcmd):
+        """
+        """
+        super().__init__(errors, subcmd)
+
+    def _is_valid_dest(self, dest):
+        if not dest.parent.exists():
+            self.errors.add(errors.NoSuchFileOrDirectory(self.subcmd, dest.parent))
+            return False
+
+        elif (not utils.is_file_writable(dest.parent)
+              or not utils.is_directory_writable(dest.parent)):
+            self.errors.add(errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+            return False
+
+        else:
+            return True
+
+    def _is_valid_source(self, source):
+        if not source.exists():
+            self.errors.add(errors.NoSuchFileOrDirectory(self.subcmd, source))
+            return False
+
+        elif (not utils.is_file_readable(source)
+              or not utils.is_directory_readable(source)):
+            self.errors.add(errors.InsufficientPermissions(self.subcmd, source))
+            return False
+
+        else:
+            return True
+
+
+# pylint: disable=too-few-public-methods
+class AbstractBaseSubCommand():
+    """
+    An abstract class to unify shared functionality in stow commands
+    """
+
+    # pylint: disable=too-many-arguments
+    def __init__(self, subcmd, sources, dest, is_silent, is_dry_run, ignore_patterns):
+        self.subcmd = subcmd
+
+        self.actions = actions.Actions(is_silent, is_dry_run)
+        self.errors = errors.Errors(is_silent)
+
+        self.is_silent = is_silent
+        self.is_dry_run = is_dry_run
+
+        dest_input = pathlib.Path(dest)
+        source_inputs = [pathlib.Path(source) for source in sources]
+
+        if self._is_valid_input(source_inputs, dest_input):
+            for source in source_inputs:
+                ignore_file = source.parent / pathlib.Path('.dploystowignore')
+                self.ignore = ignore.Ignore(ignore_patterns, ignore_file)
+
+                if self.ignore.should_ignore(source):
+                    self.ignore.ignore(source)
+                    continue
+
+                self._collect_actions(source, dest_input)
+
+        self._check_for_other_actions()
+        self._execute_actions()
+
+    def _check_for_other_actions(self):
+        """
+        Abstract method for examine the existing action to see if more actions
+        need to be added or if some actions need to be removed.
+        """
+        pass
+
+    def _is_valid_input(self, sources, dest):
+        """
+        Abstract method to check if the input to a sub-command is valid
+        """
+        pass
+
+    def _collect_actions(self, source, dest):
+        """
+        Abstract method that collects the actions required to complete a
+        sub-command.
+        """
+        pass
+
+    def _execute_actions(self):
+        """
+        Either executes collected actions by a sub command or raises collected
+        exceptions.
+        """
+        self.errors.handle()
+        self.actions.execute()
+
+
+class AbstractBaseStow(AbstractBaseSubCommand):
+    """
+    Abstract Base class that contains the shared logic for all of the stow
+    commands
+    """
+    # pylint: disable=too-many-arguments
+    def __init__(self, subcmd, source, dest, is_silent, is_dry_run, ignore_patterns):
+        self.is_unfolding = False
+        super().__init__(subcmd, source, dest, is_silent, is_dry_run, ignore_patterns)
+
+    def _is_valid_input(self, sources, dest):
+        """
+        Check to see if the input is valid
+        """
+        return StowInput(self.errors, self.subcmd).is_valid(sources, dest)
+
 
     def get_directory_contents(self, directory):
         """
@@ -257,7 +308,7 @@ class AbstractBaseStow(AbstractBaseSubCommand):
             self.ignore.ignore(source)
             return
 
-        if not self._is_valid_collection_input(source, dest):
+        if not StowInput(self.errors, self.subcmd).is_valid_collection_input(source, dest):
             return
 
         sources = self.get_directory_contents(source)
@@ -446,46 +497,12 @@ class Link(AbstractBaseSubCommand):
     def __init__(self, source, dest, is_silent=True, is_dry_run=False, ignore_patterns=None):
         super().__init__("link", [source], dest, is_silent, is_dry_run, ignore_patterns)
 
-    def _is_valid_input(self, source, dest):
+    def _is_valid_input(self, sources, dest):
         """
         Check to see if the input is valid
         """
-        if not self._is_valid_dest(dest):
-            return False
+        return LinkInput(self.errors, self.subcmd).is_valid(sources, dest)
 
-        elif (not self._is_valid_source(source)
-              or not utils.is_directory_writable(dest.parent)):
-            return False
-
-        else:
-            return True
-
-
-    def _is_valid_dest(self, dest):
-        if not dest.parent.exists():
-            self.errors.add(errors.NoSuchFileOrDirectory(self.subcmd, dest.parent))
-            return False
-
-        elif (not utils.is_file_writable(dest.parent)
-              or not utils.is_directory_writable(dest.parent)):
-            self.errors.add(errors.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
-            return False
-
-        else:
-            return True
-
-    def _is_valid_source(self, source):
-        if not source.exists():
-            self.errors.add(errors.NoSuchFileOrDirectory(self.subcmd, source))
-            return False
-
-        elif (not utils.is_file_readable(source)
-              or not utils.is_directory_readable(source)):
-            self.errors.add(errors.InsufficientPermissions(self.subcmd, source))
-            return False
-
-        else:
-            return True
 
     def _collect_actions(self, source, dest):
         """
