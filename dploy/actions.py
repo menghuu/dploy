@@ -7,15 +7,24 @@ from collections import defaultdict
 import dploy.utils as utils
 
 class Actions():
+    """
+    A class that collects and executes action objects
+    """
     def __init__(self, is_silent, is_dry_run):
         self.actions = []
         self.is_silent = is_silent
         self.is_dry_run = is_dry_run
 
     def add(self, action):
+        """
+        Adds an action
+        """
         self.actions.append(action)
 
     def execute(self):
+        """
+        Prints and executes actions
+        """
         for action in self.actions:
             if not self.is_silent:
                 print(action)

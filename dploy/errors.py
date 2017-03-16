@@ -6,14 +6,23 @@ import sys
 ERROR_HEAD = 'dploy {subcmd}: can not {subcmd} '
 
 class Errors():
+    """
+    A class that collects and executes action objects
+    """
     def __init__(self, is_silent):
         self.exceptions = []
         self.is_silent = is_silent
 
     def add(self, error):
+        """
+        Adds an error
+        """
         self.exceptions.append(error.exception)
 
     def handle(self):
+        """
+        Prints and handles errors
+        """
         if len(self.exceptions) > 0:
             if not self.is_silent:
                 for exception in self.exceptions:
