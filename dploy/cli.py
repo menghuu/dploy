@@ -4,7 +4,8 @@ The command line interface
 
 import sys
 import argparse
-import dploy.main as main
+import dploy.linkcmd as linkcmd
+import dploy.stowcmd as stowcmd
 import dploy.version as version
 
 def add_ignore_argument(parser):
@@ -69,9 +70,9 @@ def run(arguments=None):
     """
 
     subcmd_map = {
-        'stow': main.Stow,
-        'unstow': main.UnStow,
-        'link': main.Link,
+        'stow': stowcmd.Stow,
+        'unstow': stowcmd.UnStow,
+        'link': linkcmd.Link,
     }
 
     try:
