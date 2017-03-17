@@ -83,8 +83,7 @@ class AbstractBaseSubCommand():
 
         if self._is_valid_input(source_inputs, dest_input):
             for source in source_inputs:
-                ignore_file = source.parent / pathlib.Path('.dploystowignore')
-                self.ignore = ignore.Ignore(ignore_patterns, ignore_file)
+                self.ignore = ignore.Ignore(ignore_patterns, source)
 
                 if self.ignore.should_ignore(source):
                     self.ignore.ignore(source)
