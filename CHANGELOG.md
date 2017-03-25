@@ -19,6 +19,12 @@ organized by order of importance.
   unstowing a duplicate source the first time, but fail after trying to unstow
   nothing. By catching the bug before hand the error message is much clearer.
 
+- Fix bug stowing or linking paths that cannot be relative to each other and
+  caused a silent failure.
+  e.g. with windows paths: `dploy stow C:\some\path D:\other\Path`
+  Since the symbolic links can't use a relative path fallback to the path passed
+  in.
+
 ### Removed
 
 ## [0.1.1] - 2016-12-29

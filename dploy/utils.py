@@ -59,7 +59,11 @@ def get_relative_path(path, start_at):
     NOTE: python 3.4.5 & 3.5.2 support pathlib.Path.path =
     str(pathlib.Path)
     """
-    relative_path = os.path.relpath(str(path), str(start_at))
+    try:
+        relative_path = os.path.relpath(str(path), str(start_at))
+    except ValueError: # when a relative path does not exist
+        relative_path = str(path)
+
     return pathlib.Path(relative_path)
 
 
