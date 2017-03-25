@@ -5,7 +5,7 @@ The logic and workings behind the stow and unstow sub-commands
 from collections import defaultdict
 import pathlib
 import dploy.actions as actions
-import dploy.errors as errors
+import dploy.error as error
 import dploy.ignore as ignore
 
 
@@ -46,7 +46,7 @@ class Input():
         for source, count in tally.items():
             if count > 1:
                 is_there_duplicates = True
-                self.errors.add(errors.DuplicateSource(self.subcmd, source))
+                self.errors.add(error.DuplicateSource(self.subcmd, source))
 
         return is_there_duplicates
 
@@ -73,7 +73,7 @@ class AbstractBaseSubCommand():
         self.subcmd = subcmd
 
         self.actions = actions.Actions(is_silent, is_dry_run)
-        self.errors = errors.Errors(is_silent)
+        self.errors = error.Errors(is_silent)
 
         self.is_silent = is_silent
         self.is_dry_run = is_dry_run
