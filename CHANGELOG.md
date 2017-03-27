@@ -22,8 +22,8 @@ organized by order of importance.
 - Fix bug stowing or linking paths that cannot be relative to each other and
   caused a silent failure.
   e.g. with windows paths: `dploy stow C:\some\path D:\other\Path`
-  Since the symbolic links can't use a relative path fallback to the path passed
-  in.
+  Since the symbolic links can't use a relative path fallback to the absolute
+  version of the path passed in.
 
 ### Removed
 

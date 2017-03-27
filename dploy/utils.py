@@ -62,7 +62,7 @@ def get_relative_path(path, start_at):
     try:
         relative_path = os.path.relpath(str(path), str(start_at))
     except ValueError: # when a relative path does not exist
-        relative_path = str(path)
+        return get_absolute_path(path)
 
     return pathlib.Path(relative_path)
 
