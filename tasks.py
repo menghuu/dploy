@@ -5,9 +5,18 @@ Project Tasks that can be invoked using using the program "invoke" or "inv"
 import os
 import glob
 from invoke import task
+from invoke import collection
 
 # disable the check for unused-arguments to ignore unused ctx parameter in tasks
 # pylint: disable=unused-argument
+
+isWindows = os.name == 'nt'
+if isWindows:
+    # setting 'shell' is a work around for issue #345 of invoke
+    run_args = {'is_pty': False, 'shell': 'C:\Windows\System32\cmd.exe'}
+else:
+    run_args = {'is_pty': True}
+
 
 def get_files():
     """
@@ -27,14 +36,14 @@ def setup(ctx):
     """
     Install python requirements
     """
-    ctx.run('python3 -m pip install -r requirements.txt')
+    ctx.run('python3 -m pip install -r requirements.txt', **run_args)
 
 @task
 def clean(ctx):
     """
     Clean repository using git
     """
-    ctx.run('git clean --interactive', pty=True)
+    ctx.run('git clean --interactive', **run_args)
 
 @task
 def lint(ctx):
@@ -42,7 +51,7 @@ def lint(ctx):
     Run pylint on this module
     """
     cmd = 'python3 -m pylint --output-format=parseable {files}'
-    ctx.run(cmd.format(files=get_files()))
+    ctx.run(cmd.format(files=get_files()), **run_args)
 
 @task
 def metrics(ctx):
@@ -52,7 +61,7 @@ def metrics(ctx):
     cmd = 'radon {metric} --min B {files}'
     metrics_to_run = ['cc', 'mi']
     for metric in metrics_to_run:
-        ctx.run(cmd.format(metric=metric, files=get_files()))
+        ctx.run(cmd.format(metric=metric, files=get_files()), **run_args)
 
 @task
 def test(ctx):
@@ -60,7 +69,7 @@ def test(ctx):
     Test Task
     """
     cmd = 'py.test'
-    ctx.run(cmd)
+    ctx.run(cmd, **run_args)
 
 @task(test, lint, default=True)
 def default(ctx):
@@ -75,4 +84,4 @@ def build(ctx):
     Task to build an executable using pyinstaller
     """
     cmd = 'pyinstaller -n dploy --onefile ' + os.path.join('dploy', '__main__.py')
-    ctx.run(cmd)
+    ctx.run(cmd, **run_args)
