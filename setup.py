@@ -1,4 +1,3 @@
-
 """
 describes this package for distribution and installation
 """
