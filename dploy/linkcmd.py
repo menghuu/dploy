@@ -59,8 +59,7 @@ class LinkInput(main.Input):
             self.errors.add(error.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
             return False
 
-        else:
-            return True
+        return True
 
     def _is_valid_source(self, source):
         if not source.exists():
@@ -72,5 +71,4 @@ class LinkInput(main.Input):
             self.errors.add(error.InsufficientPermissions(self.subcmd, source))
             return False
 
-        else:
-            return True
+        return True
