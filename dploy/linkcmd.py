@@ -49,11 +49,6 @@ class LinkInput(main.Input):
     Input validator for the link command
     """
 
-    def __init__(self, errors, subcmd):
-        """
-        """
-        super().__init__(errors, subcmd)
-
     def _is_valid_dest(self, dest):
         if not dest.parent.exists():
             self.errors.add(error.NoSuchFileOrDirectory(self.subcmd, dest.parent))
