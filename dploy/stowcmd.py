@@ -96,12 +96,12 @@ class AbstractBaseStow(main.AbstractBaseSubCommand):
 
         sources = self.get_directory_contents(source)
 
-        for source in sources:
-            if self.ignore.should_ignore(source):
-                self.ignore.ignore(source)
+        for subsources in sources:
+            if self.ignore.should_ignore(subsources):
+                self.ignore.ignore(subsources)
                 continue
 
-            dest_path = dest / pathlib.Path(source.name)
+            dest_path = dest / pathlib.Path(subsources.name)
 
             does_dest_path_exist = False
             try:
@@ -111,13 +111,13 @@ class AbstractBaseStow(main.AbstractBaseSubCommand):
                 return
 
             if does_dest_path_exist:
-                self._collect_actions_existing_dest(source, dest_path)
+                self._collect_actions_existing_dest(subsources, dest_path)
             elif dest_path.is_symlink():
-                self.errors.add(error.ConflictsWithExistingLink(self.subcmd, source, dest_path))
+                self.errors.add(error.ConflictsWithExistingLink(self.subcmd, subsources, dest_path))
             elif not dest_path.parent.exists() and not self.is_unfolding:
                 self.errors.add(error.NoSuchDirectory(self.subcmd, dest_path.parent))
             else:
-                self._are_other(source, dest_path)
+                self._are_other(subsources, dest_path)
 
 
 # pylint: disable=too-few-public-methods
