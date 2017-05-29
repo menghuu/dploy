@@ -34,10 +34,8 @@ def test_cli_unstow_with_basic_senario(source_a, dest, capsys):
     dest_dir = os.path.join(dest, 'aaa')
     expected_output = (
         "dploy stow: link {dest_dir} => {src_dir}\n"
-        "dploy unstow: unlink {dest_dir} => {src_dir}\n"
-        "dploy unstow: remove directory {dest}\n".format(src_dir=src_dir,
-                                                         dest_dir=dest_dir,
-                                                         dest=dest))
+        "dploy unstow: unlink {dest_dir} => {src_dir}\n".format(src_dir=src_dir,
+                                                                dest_dir=dest_dir))
     assert out == (expected_output)
 
 

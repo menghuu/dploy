@@ -78,10 +78,10 @@ class AbstractBaseSubCommand():
         self.is_silent = is_silent
         self.is_dry_run = is_dry_run
 
-        dest_input = pathlib.Path(dest)
+        self.dest_input = pathlib.Path(dest)
         source_inputs = [pathlib.Path(source) for source in sources]
 
-        if self._is_valid_input(source_inputs, dest_input):
+        if self._is_valid_input(source_inputs, self.dest_input):
             for source in source_inputs:
                 self.ignore = ignore.Ignore(ignore_patterns, source)
 
@@ -89,7 +89,7 @@ class AbstractBaseSubCommand():
                     self.ignore.ignore(source)
                     continue
 
-                self._collect_actions(source, dest_input)
+                self._collect_actions(source, self.dest_input)
 
         self._check_for_other_actions()
         self._execute_actions()

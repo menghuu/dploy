@@ -20,6 +20,12 @@ def test_unstow_with_basic_senario(source_a, dest):
     assert not os.path.exists(os.path.join(dest, 'aaa'))
 
 
+def test_unstow_dwith_basic_senario_doesnt_delete_dest_directory(source_a, dest):
+    dploy.stow([source_a], dest)
+    dploy.unstow([source_a], dest)
+    assert os.path.exists(dest)
+
+
 def test_unstow_with_a_broken_link_dest(source_a, dest):
     conflicting_link = os.path.join(dest, 'aaa')
     source_file = os.path.join(source_a, 'aaa')

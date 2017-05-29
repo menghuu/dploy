@@ -14,6 +14,14 @@ organized by order of importance.
   effect of the option
 
 ### Fixed
+
+- Fix bug causing unstow to delete dest directory when unfolding.
+  When unstowing and nearly all actions have been collected additional checking
+  to find candidates for folding i.e. when a directory contains symlinks to
+  files that all share the same parent directory. It just so happens that the
+  dest directory passed into unstow could also meet this same criteria and would
+  be deleted in error.
+
 - Produce a helpful error when stowing or unstowing with duplicate sources.
   Before stow would fail, when conflicts were found, and unstow would succeed in
   unstowing a duplicate source the first time, but fail after trying to unstow

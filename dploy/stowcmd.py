@@ -261,7 +261,8 @@ class UnStow(AbstractBaseStow):
                                            other_links):
                         self._fold(source_parent, parent)
 
-                elif other_links_parent_count == 0:
+                elif (other_links_parent_count == 0
+                      and not utils.is_same_file(parent, self.dest_input)):
                     self.actions.add(actions.RemoveDirectory(self.subcmd, parent))
 
     def _fold(self, source, dest):
