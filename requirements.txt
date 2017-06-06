@@ -1,6 +1,6 @@
 pathlib>=1.0.1 # only required for python versions <3.4
 # development
-invoke==0.13.0
+invoke>=0.13.0
 virtualenv>=15.0.3
 pylint>=1.5.5
 pytest>=2.9.1
@@ -8,4 +8,4 @@ pytest-cov>=2.4.0
 radon>=1.4.2
 # deployment
 setuptools>=23.1.0
-PyInstaller==3.2
+PyInstaller>=3.2
