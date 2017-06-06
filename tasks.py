@@ -12,9 +12,9 @@ from invoke import task
 IS_WINDOWS = os.name == 'nt'
 if IS_WINDOWS:
     # setting 'shell' is a work around for issue #345 of invoke
-    RUN_ARGS = {'is_pty': False, 'shell': r'C:\Windows\System32\cmd.exe'}
+    RUN_ARGS = {'pty': False, 'shell': r'C:\Windows\System32\cmd.exe'}
 else:
-    RUN_ARGS = {'is_pty': True}
+    RUN_ARGS = {'pty': True}
 
 
 def get_files():
