@@ -42,6 +42,7 @@ class ChangeDirectory:
     """
     Context manager for changing the current working directory
     """
+
     def __init__(self, new_path):
         self.new_path = os.path.expanduser(new_path)
         self.saved_path = os.getcwd()

@@ -5,10 +5,12 @@ import sys
 
 ERROR_HEAD = 'dploy {subcmd}: can not {subcmd} '
 
+
 class Errors():
     """
     A class that collects and executes action objects
     """
+
     def __init__(self, is_silent):
         self.exceptions = []
         self.is_silent = is_silent
@@ -29,8 +31,10 @@ class Errors():
                     print(exception, file=sys.stderr)
             raise self.exceptions[0]
 
+
 # pylint: disable=missing-docstring
 # pylint: disable=too-few-public-methods
+
 
 class SourceIsSameAsDest():
     def __init__(self, subcmd, file):
@@ -42,7 +46,7 @@ class SourceIsSameAsDest():
 class ConflictsWithAnotherSource():
     def __init__(self, subcmd, files):
         self.msg = ERROR_HEAD + "the following: Conflicts with other source {files}"
-        files_list = '\n    '  + '\n    '.join(files)
+        files_list = '\n    ' + '\n    '.join(files)
         self.msg = self.msg.format(subcmd=subcmd, files=files_list)
         self.exception = ValueError(self.msg)
 
@@ -108,6 +112,7 @@ class NoSuchFileOrDirectory():
         self.msg = ERROR_HEAD + "'{file}': No such file or directory"
         self.msg = self.msg.format(subcmd=subcmd, file=file)
         self.exception = FileNotFoundError(self.msg)
+
 
 class DuplicateSource():
     def __init__(self, subcmd, file):

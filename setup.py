@@ -5,8 +5,10 @@ describes this package for distribution and installation
 import os
 from setuptools import setup
 
+
 def _read_file_for_long_description(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
 
 # pylint: disable=exec-used
 # get version string variable __version__
@@ -25,12 +27,9 @@ setup(
     license='MIT',
     description=DESCRIPTION,
     long_description=_read_file_for_long_description('README.md'),
-
     author='Ryan Carney',
     author_email='arecarn@gmail.com',
-
     url='https://github.com/arecarn/dploy',
-
     packages=['dploy'],
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -41,8 +40,5 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
-
-    entry_points={
-        'console_scripts': ['dploy=dploy.__main__:main']
-    },
+    entry_points={'console_scripts': ['dploy=dploy.__main__:main']},
 )

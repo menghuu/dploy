@@ -4,9 +4,9 @@ The logic and workings behind the stow and unstow sub-commands
 
 from collections import defaultdict
 import pathlib
-import dploy.actions as actions
-import dploy.error as error
-import dploy.ignore as ignore
+from dploy import actions
+from dploy import error
+from dploy import ignore
 
 
 # pylint: disable=too-few-public-methods
@@ -14,6 +14,7 @@ class Input():
     """
     Input validator abstract base class
     """
+
     def __init__(self, errors, subcmd):
         self.errors = errors
         self.subcmd = subcmd
@@ -23,7 +24,8 @@ class Input():
         Checks if the passes in source and dest are valid
         """
         is_input_valid = True
-        if not self._is_there_duplicate_sources(sources) and self._is_valid_dest(dest):
+        if (not self._is_there_duplicate_sources(sources)
+                and self._is_valid_dest(dest)):
             for source in sources:
                 if not self._is_valid_source(source):
                     is_input_valid = False
@@ -62,6 +64,7 @@ class Input():
         """
         pass
 
+
 # pylint: disable=too-few-public-methods
 class AbstractBaseSubCommand():
     """
@@ -69,7 +72,8 @@ class AbstractBaseSubCommand():
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self, subcmd, sources, dest, is_silent, is_dry_run, ignore_patterns):
+    def __init__(self, subcmd, sources, dest, is_silent, is_dry_run,
+                 ignore_patterns):
         self.subcmd = subcmd
 
         self.actions = actions.Actions(is_silent, is_dry_run)

@@ -7,6 +7,7 @@ import os
 import pathlib
 import shutil
 
+
 def get_directory_contents(directory):
     """
     return a sorted list of the contents of a directory
@@ -36,6 +37,7 @@ def is_same_file(file1, file2):
     """
     return file1.resolve() == file2.resolve()
 
+
 def is_same_files(files1, files2):
     """
     test if two collection of files are equivalent
@@ -43,6 +45,7 @@ def is_same_files(files1, files2):
     files1_resolved = [f.resolve() for f in files1]
     files2_resolved = [f.resolve() for f in files2]
     return files1_resolved == files2_resolved
+
 
 def get_absolute_path(file):
     """
@@ -61,7 +64,7 @@ def get_relative_path(path, start_at):
     """
     try:
         relative_path = os.path.relpath(str(path), str(start_at))
-    except ValueError: # when a relative path does not exist
+    except ValueError:  # when a relative path does not exist
         return get_absolute_path(path)
 
     return pathlib.Path(relative_path)

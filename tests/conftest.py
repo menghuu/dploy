@@ -14,7 +14,7 @@ def source_a(tmpdir):
     name = str(tmpdir.join('source_a'))
     tree = [
         {
-            name : [
+            name: [
                 {
                     'aaa': [
                         'aaa',
@@ -42,7 +42,7 @@ def source_b(tmpdir):
     name = str(tmpdir.join('source_b'))
     tree = [
         {
-            name : [
+            name: [
                 {
                     'aaa': [
                         'ddd',
@@ -61,6 +61,7 @@ def source_b(tmpdir):
     utils.create_tree(tree)
     return name
 
+
 @pytest.fixture()
 def source_d(tmpdir):
     """
@@ -69,7 +70,7 @@ def source_d(tmpdir):
     name = str(tmpdir.join('source_d'))
     tree = [
         {
-            name : [
+            name: [
                 {
                     'aaa': [
                         'ggg',
@@ -123,13 +124,11 @@ def source_only_files(tmpdir):
     a source directory to stow and unstow that only contains files
     """
     name = str(tmpdir.join('source_only_files'))
-    tree = [
-        {
-            name: [
-                'aaa',
-            ]
-        }
-    ]
+    tree = [{
+        name: [
+            'aaa',
+        ]
+    }]
     utils.create_tree(tree)
     return name
 
@@ -162,6 +161,7 @@ def file_b(tmpdir):
     name = str(tmpdir.join('file_b'))
     utils.create_file(name)
     return name
+
 
 @pytest.fixture()
 def file_dploystowignore(tmpdir):

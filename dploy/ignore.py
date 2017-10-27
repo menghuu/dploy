@@ -2,13 +2,15 @@
 Module for the --ignore IGNORE_PATTERN flag and .dploystowignore file
 """
 import pathlib
-import dploy.utils as utils
+from dploy import utils
+
 
 class Ignore():
     """
     Handles ignoring of files via glob patterns either passed in directly in or
     in a specified ignore file.
     """
+
     def __init__(self, patterns, source):
         if patterns is None:
             input_patterns = []
@@ -18,7 +20,7 @@ class Ignore():
 
         file = source.parent / pathlib.Path('.dploystowignore')
 
-        self.patterns = [str(file.name)] # ignore the ignore file
+        self.patterns = [str(file.name)]  # ignore the ignore file
         self.patterns.extend(input_patterns)
         self._read_ignore_file_patterns(file)
 
@@ -44,7 +46,7 @@ class Ignore():
         for pattern in self.patterns:
             try:
                 files = sorted(source.parent.glob(pattern))
-            except IndexError: # the glob result was empty
+            except IndexError:  # the glob result was empty
                 continue
 
             for file in files:
