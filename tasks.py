@@ -71,7 +71,7 @@ def test(ctx):
     """
     Test Task
     """
-    cmd = 'py.test --cov-report term-missing --cov=dploy'
+    cmd = 'pytest --cov-report term-missing --cov=dploy --color=no'
     ctx.run(cmd, **RUN_ARGS)
 
 @task(test, lint, default=True)
