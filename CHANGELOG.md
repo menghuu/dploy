@@ -7,9 +7,19 @@ All changes documented here should be written with the goal give the end-user
 organized by order of importance.
 
 ## [Unreleased] - YYYY-MM-DD
+
 ### Added
 
 ### Changed
+
+### Fixed
+
+### Removed
+
+## [0.1.2] - 2017-10-26
+
+### Changed
+
 - Renamed the CLI --quiet option to --silent because it better reflects the
   effect of the option
 
@@ -36,18 +46,26 @@ organized by order of importance.
 ### Removed
 
 ## [0.1.1] - 2016-12-29
+
 ### Fix
+
 - Added a MANIFEST.in to fix installation via PyPi
 
 ## [0.1.0] - 2016-12-29
+
 ### Changed
+
 - Added Dates to Change log releases
+
 ### Fixed
+
 - Fixed change log formatting
 - Fix PyPi Package so it can be installed
 
 ## [0.0.5] - 2016-12-28
+
 ### Added
+
 - Added --ignore argument to stow and unstow commands, to specify patterns file
   to ignore.
 - Added reading of .dploystowignore files in the directories of sources for
@@ -62,6 +80,7 @@ organized by order of importance.
   and dests directories that have invalid execute permissions.
 
 ### Changed
+
 - Check for additional issues with sub commands that are similar to the initial
   checks done on the input of stow and unstow
 - Prevent redundant errors when the src or dest are not directories
@@ -76,22 +95,24 @@ organized by order of importance.
   print what exactly the conflict is
 
 ### Fixed
+
 - Fixed issue when unstowing where some stowed packages directories created
   during the stowing process via unfolding would not be deleted.
 - Fix issue unstowing a folded dir with a stray link
-    - This fixed the following scenario: Given a dest directory with stowed
-      packages that share a folded directory, that also contains a stray link
-      along with the links created by stowing. When the stowed packages are
-      unstowed Then the folded directory was re-folded using the parent
-      directory of the single stray link and possibly linking new files that
-      were never intended to be linked there. When what was desired was the
-      directory to just remain with the single stray symlink.
+  - This fixed the following scenario: Given a dest directory with stowed
+    packages that share a folded directory, that also contains a stray link
+    along with the links created by stowing. When the stowed packages are
+    unstowed Then the folded directory was re-folded using the parent
+    directory of the single stray link and possibly linking new files that
+    were never intended to be linked there. When what was desired was the
+    directory to just remain with the single stray symlink.
 - Fix an improperly handled expetion that occurred when unstowing a package that
   had it's destination directories execute permission unset.
 
-
 ## [0.0.4] - 2016-09-13
+
 ### Added
+
 - Add folding of the remaining links that would be around after calling unstow
 - Add Checks for conflicts between multiple sources for stow
 - Add checking to see if args are directories for stow and unstow
@@ -103,6 +124,7 @@ organized by order of importance.
 - CLI: Add a message for case when a source is already unlinked
 
 ### Changed
+
 - Relicense under MIT
 - Make dploy module usage silent
 - Clarify message when a source argument is the same the dest argument
@@ -110,6 +132,7 @@ organized by order of importance.
   instead of just printing to stdout
 
 ### Fixed
+
 - CLI: Fix link to take only take one source
 - Fix link source arg so it takes a string not a list
 - Fix console output to print the correct command name e.g. stow, link, and
@@ -124,13 +147,15 @@ organized by order of importance.
   a directory into itself, since there will always be conflicts.
 
 ## [0.0.3] - 2016-04-11
+
 ### Added
+
 - Adds support for python 3.3
 - Add an unstow command to undo stowing
 
 ### Changed
+
 - Stow command is run in two passes and check for conflicts first before making
   any changes
 
-### Fixed
 - General bug fixes and improvements.
