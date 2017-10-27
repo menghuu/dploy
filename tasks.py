@@ -30,6 +30,7 @@ def get_files():
     files_string = ' '.join(files)
     return files_string
 
+
 @task
 def setup(ctx):
     """
@@ -37,12 +38,14 @@ def setup(ctx):
     """
     ctx.run('python3 -m pip install -r requirements.txt', **RUN_ARGS)
 
+
 @task
 def clean(ctx):
     """
     Clean repository using git
     """
     ctx.run('git clean --interactive', **RUN_ARGS)
+
 
 @task
 def lint(ctx):
@@ -53,8 +56,19 @@ def lint(ctx):
     base_cmd = 'python3 -m {cmd} {files}'
 
     for cmd in cmds:
-        ctx.run(base_cmd.format(cmd=cmd, files=get_files()),
-                **RUN_ARGS)
+        ctx.run(base_cmd.format(cmd=cmd, files=get_files()), **RUN_ARGS)
+
+
+@task
+def reformat(ctx):
+    """
+    Run formatting on this module
+    """
+    cmd = 'yapf --recursive --in-place'
+    base_cmd = 'python3 -m {cmd} {files}'
+
+    ctx.run(base_cmd.format(cmd=cmd, files=get_files()), **RUN_ARGS)
+
 
 @task
 def metrics(ctx):
@@ -66,6 +80,7 @@ def metrics(ctx):
     for metric in metrics_to_run:
         ctx.run(cmd.format(metric=metric, files=get_files()), **RUN_ARGS)
 
+
 @task
 def test(ctx):
     """
@@ -74,6 +89,7 @@ def test(ctx):
     cmd = 'pytest --cov-report term-missing --cov=dploy --color=no'
     ctx.run(cmd, **RUN_ARGS)
 
+
 @task(test, lint, default=True)
 def default(ctx):
     """
@@ -81,10 +97,12 @@ def default(ctx):
     """
     pass
 
+
 @task(clean)
 def build(ctx):
     """
     Task to build an executable using pyinstaller
     """
-    cmd = 'pyinstaller -n dploy --onefile ' + os.path.join('dploy', '__main__.py')
+    cmd = 'pyinstaller -n dploy --onefile ' + os.path.join(
+        'dploy', '__main__.py')
     ctx.run(cmd, **RUN_ARGS)
