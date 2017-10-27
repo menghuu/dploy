@@ -49,8 +49,12 @@ def lint(ctx):
     """
     Run pylint on this module
     """
-    cmd = 'python3 -m pylint --output-format=parseable {files}'
-    ctx.run(cmd.format(files=get_files()), **RUN_ARGS)
+    cmds = ['pylint --output-format=parseable', 'flake8']
+    base_cmd = 'python3 -m {cmd} {files}'
+
+    for cmd in cmds:
+        ctx.run(base_cmd.format(cmd=cmd, files=get_files()),
+                **RUN_ARGS)
 
 @task
 def metrics(ctx):
