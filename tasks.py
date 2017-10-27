@@ -86,7 +86,8 @@ def test(ctx):
     """
     Test Task
     """
-    cmd = 'pytest --cov-report term-missing --cov=dploy --color=no'
+    # Use py.test instead of the recommended pytest so it works on Python 3.3
+    cmd = 'py.test --cov-report term-missing --cov=dploy --color=no'
     ctx.run(cmd, **RUN_ARGS)
 
 
