@@ -14,7 +14,8 @@ def _read_file_for_long_description(fname):
 # get version string variable __version__
 exec(open('dploy/version.py').read())
 
-DESCRIPTION = "Provides functionality similar to GNU Stow as a cross platform CLI tool and Python 3 module"
+DESCRIPTION = ("Provides functionality similar to GNU Stow as a cross platform "
+               "CLI tool and Python 3 module")
 
 setup(
     name='dploy',
