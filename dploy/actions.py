@@ -5,6 +5,7 @@ commands
 
 from collections import defaultdict
 from dploy import utils
+import os
 
 
 class Actions():
@@ -164,15 +165,13 @@ class UnLink(AbstractBaseAction):
         if not self.target.is_symlink():
             # pylint: disable=line-too-long
             raise RuntimeError(
-                'dploy detected and aborted an attempt to unlink a non-symlink this is a bug and should be reported'
+                'dploy detected and aborted an attempt to unlink a non-symlink {target} this is a bug and should be reported'.format(target=self.target)
             )
         self.target.unlink()
 
     def __repr__(self):
-        source_relative = utils.get_relative_path(self.target.resolve(),
-                                                  self.target.parent)
         return "dploy {subcmd}: unlink {target} => {source}".format(
-            subcmd=self.subcmd, target=self.target, source=source_relative)
+            subcmd=self.subcmd, target=self.target, source=os.readlink(str(self.target)))
 
 
 class MakeDirectory(AbstractBaseAction):

@@ -4,6 +4,7 @@ The logic and workings behind the stow and unstow sub-commands
 
 from collections import Counter
 import pathlib
+import os
 from dploy import actions
 from dploy import utils
 from dploy import error
@@ -374,3 +375,89 @@ class StowInput(main.Input):
             if not self._is_valid_dest(dest):
                 result = False
         return result
+
+
+# pylint: disable=too-few-public-methods
+class Clean(main.AbstractBaseSubCommand):
+    """
+    Abstract Base class that contains the shared logic for all of the stow
+    commands
+    """
+
+    # pylint: disable=too-many-arguments
+    def __init__(self, source, dest, is_silent, is_dry_run,
+                 ignore_patterns):
+        self.source = [pathlib.Path(s) for s in source]
+        self.dest = pathlib.Path(dest)
+        super().__init__("clean", source, dest, is_silent, is_dry_run,
+                         ignore_patterns)
+
+    def _is_valid_input(self, sources, dest):
+        """
+        Check to see if the input is valid
+        """
+        return StowInput(self.errors, self.subcmd).is_valid(sources, dest)
+
+    def get_directory_contents(self, directory):
+        """
+        Get the contents of a directory while handling errors that may occur
+        """
+        contents = []
+
+        try:
+            contents = utils.get_directory_contents(directory)
+        except PermissionError:
+            self.errors.add(error.PermissionDenied(self.subcmd, directory))
+        except FileNotFoundError:
+            self.errors.add(
+                error.NoSuchFileOrDirectory(self.subcmd, directory))
+        except NotADirectoryError:
+            self.errors.add(error.NoSuchDirectory(self.subcmd, directory))
+
+        return contents
+
+    def _collect_clean_actions(self, source, source_parents, dest):
+
+        # for s in source:
+        #     if self.ignore.should_ignore(s):
+        #         self.ignore.ignore(s)
+        #         return
+
+        #     if not StowInput(self.errors, self.subcmd).is_valid_collection_input(
+        #             s, dest):
+        #         return
+
+        # in the base dir check for broken symlinks back to dest
+        # in the parallel directories in dest from src check for broken symlins
+        # back to dest
+        subdests = utils.get_directory_contents(dest)
+
+        for subdest in subdests:
+            if subdest.is_symlink():
+                link_dest = utils.get_link_location(subdest)
+                if not utils.relpath_exists(link_dest, subdest.parent):
+                    abs_link_dest = utils.abspath_relative_to_source(link_dest, subdest.parent)
+                    # print("does not exist: ", subdest, "->", link_dest)
+                    # print("abs_link_dest: ", abs_link_dest)
+                    if not source_parents.isdisjoint(set(abs_link_dest.parents)):
+
+                        # print(subdest, "->", link_dest)
+                        # print(source_parents)
+                        # print(set(abs_link_dest.parents))
+                        # print("")
+
+                        # if set(source).isdisjoint(set(pathlib.Path(link_dest).parents)):
+                        # print(source_parents)
+                        # print(set(pathlib.Path(link_dest).parents))
+                        self.actions.add(actions.UnLink(self.subcmd, subdest))
+
+            elif not subdest.is_symlink() and subdest.is_dir():
+                self._collect_clean_actions(source, source_parents, subdest)
+
+    def _check_for_other_actions(self):
+        """
+        Concrete method to collect required actions to perform a stow
+        sub-command
+        """
+        sp = [utils.get_absolute_path(s.parent) for s in self.source]
+        self._collect_clean_actions(self.source, set(sp), self.dest)

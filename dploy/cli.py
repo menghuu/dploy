@@ -56,6 +56,12 @@ def create_parser():
     unstow_parser.add_argument('dest', help='destination path to unstow')
     add_ignore_argument(unstow_parser)
 
+    clean_parser = sub_parsers.add_parser('clean')
+    clean_parser.add_argument(
+        'source', nargs='+', help='source directory to clean from')
+    clean_parser.add_argument('dest', help='destination path to clean')
+    add_ignore_argument(clean_parser)
+
     link_parser = sub_parsers.add_parser('link')
     link_parser.add_argument('source', help='source file or directory to link')
     link_parser.add_argument('dest', help='destination path to link')
@@ -71,6 +77,7 @@ def run(arguments=None):
     subcmd_map = {
         'stow': stowcmd.Stow,
         'unstow': stowcmd.UnStow,
+        'clean': stowcmd.Clean,
         'link': linkcmd.Link,
     }
 
@@ -90,9 +97,9 @@ def run(arguments=None):
                 is_silent=args.is_silent,
                 is_dry_run=args.is_dry_run,
                 ignore_patterns=args.ignore_patterns)
-        except (ValueError, PermissionError, FileNotFoundError,
-                NotADirectoryError):
-            sys.exit(1)
+        # except (ValueError, PermissionError, FileNotFoundError,
+        #         NotADirectoryError):
+        #     sys.exit(1)
         except KeyError:
             parser.print_help()
 

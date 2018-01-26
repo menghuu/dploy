@@ -103,3 +103,30 @@ def is_directory_executable(directory):
     check if a pathlib.Path() directory is executable
     """
     return os.access(str(directory), os.X_OK)
+
+class ch_dir(object):
+    """
+    Step into a directory temporarily.
+    """
+    def __init__(self, path):
+        self.old_dir = os.getcwd()
+        self.new_dir = str(path)
+
+    def __enter__(self):
+        os.chdir(self.new_dir)
+
+    def __exit__(self, *args):
+        os.chdir(self.old_dir)
+
+
+def get_link_location(path,):
+     return pathlib.Path(os.readlink(str(path)))
+
+
+def relpath_exists(path, source):
+    with ch_dir(str(source)):
+        return os.path.exists(str(path))
+
+def abspath_relative_to_source(path, source):
+    with ch_dir(source):
+        return pathlib.Path(os.path.abspath(str(path)))
