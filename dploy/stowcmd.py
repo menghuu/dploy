@@ -4,7 +4,6 @@ The logic and workings behind the stow and unstow sub-commands
 
 from collections import Counter
 import pathlib
-import os
 from dploy import actions
 from dploy import utils
 from dploy import error
@@ -418,14 +417,6 @@ class Clean(main.AbstractBaseSubCommand):
 
     def _collect_clean_actions(self, source, source_parents, dest):
 
-        # for s in source:
-        #     if self.ignore.should_ignore(s):
-        #         self.ignore.ignore(s)
-        #         return
-
-        #     if not StowInput(self.errors, self.subcmd).is_valid_collection_input(
-        #             s, dest):
-        #         return
 
         # in the base dir check for broken symlinks back to dest
         # in the parallel directories in dest from src check for broken symlins
@@ -459,5 +450,17 @@ class Clean(main.AbstractBaseSubCommand):
         Concrete method to collect required actions to perform a stow
         sub-command
         """
-        sp = [utils.get_absolute_path(s.parent) for s in self.source]
-        self._collect_clean_actions(self.source, set(sp), self.dest)
+        not_ignored_source = []
+        for s in self.source:
+            if self.ignore.should_ignore(s):
+                self.ignore.ignore(s)
+                continue
+            else:
+                not_ignored_source.append(s)
+
+            if not StowInput(self.errors, self.subcmd).is_valid_collection_input(
+                    s, self.dest):
+                return
+
+        sp = [utils.get_absolute_path(s.parent) for s in not_ignored_source]
+        self._collect_clean_actions(not_ignored_source, set(sp), self.dest)
