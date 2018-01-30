@@ -122,9 +122,9 @@ def resolve_relative(path, source):
     pathlib.Path object return a absolute path that is the resolved relative
     path relative to a source directory
     """
-    if not os.path.isabs(source):
+    if not os.path.isabs(str(source)):
         raise ValueError("'{source}' is not and absolute path".format(source=source))
-    elif not os.path.isdir(source):
+    elif not os.path.isdir(str(source)):
         raise ValueError("'{source}' is not a directory".format(source=source))
 
     abs_path = os.path.join(str(source), str(path))
