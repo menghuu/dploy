@@ -419,12 +419,12 @@ class Clean(main.AbstractBaseSubCommand):
         subdests = utils.get_directory_contents(dest)
         for subdest in subdests:
             if subdest.is_symlink():
-                link_dest = utils.get_link_location(subdest)
-                if not utils.relpath_exists(link_dest, subdest.parent):
-                    abs_link_dest = utils.abspath_relative_to_source(link_dest, subdest.parent)
-                    if not source_parents.isdisjoint(set(abs_link_dest.parents)):
-                        self.actions.add(actions.UnLink(self.subcmd, subdest))
-            elif not subdest.is_symlink() and subdest.is_dir():
+                link_target = utils.readlink(subdest)
+                abs_link_target = utils.resolve_relative(link_target, subdest.parent)
+                if (not abs_link_target.exists() and not
+                        source_parents.isdisjoint(set(abs_link_target.parents))):
+                    self.actions.add(actions.UnLink(self.subcmd, subdest))
+            elif subdest.is_dir():
                 self._collect_clean_actions(source, source_parents, subdest)
 
     def _check_for_other_actions(self):

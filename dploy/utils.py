@@ -104,29 +104,28 @@ def is_directory_executable(directory):
     """
     return os.access(str(directory), os.X_OK)
 
-class ch_dir(object):
+
+def readlink(path):
     """
-    Step into a directory temporarily.
+    get the target of a symbolic link passed as a pathlib.Path object
+
+    Note: we can't use pathlib.Path.resolve because it produces an absolute path
+    and it doesn't work for broken links and either raises FileNotFoundError
+    (Python <3.5)
     """
-    def __init__(self, path):
-        self.old_dir = os.getcwd()
-        self.new_dir = str(path)
-
-    def __enter__(self):
-        os.chdir(self.new_dir)
-
-    def __exit__(self, *args):
-        os.chdir(self.old_dir)
+    return pathlib.Path(os.readlink(str(path)))
 
 
-def get_link_location(path,):
-     return pathlib.Path(os.readlink(str(path)))
+def resolve_relative(path, source):
+    """
+    Given passed as a relative path pathlib.Path object and source directory
+    pathlib.Path object return a absolute path that is the resolved relative
+    path relative to a source directory
+    """
+    if not os.path.isabs(source):
+        raise ValueError("'{source}' is not and absolute path".format(source=source))
+    elif not os.path.isdir(source):
+        raise ValueError("'{source}' is not a directory".format(source=source))
 
-
-def relpath_exists(path, source):
-    with ch_dir(str(source)):
-        return os.path.exists(str(path))
-
-def abspath_relative_to_source(path, source):
-    with ch_dir(source):
-        return pathlib.Path(os.path.abspath(str(path)))
+    abs_path = os.path.join(str(source), str(path))
+    return pathlib.Path(os.path.abspath(str(abs_path)))
