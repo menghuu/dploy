@@ -26,7 +26,7 @@ def unstow(sources, dest, is_silent=True, is_dry_run=False,
 
 
 def clean(sources, dest, is_silent=True, is_dry_run=False,
-           ignore_patterns=None):
+          ignore_patterns=None):
     """
     sub command clean
     """

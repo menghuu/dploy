@@ -416,32 +416,14 @@ class Clean(main.AbstractBaseSubCommand):
         return contents
 
     def _collect_clean_actions(self, source, source_parents, dest):
-
-
-        # in the base dir check for broken symlinks back to dest
-        # in the parallel directories in dest from src check for broken symlins
-        # back to dest
         subdests = utils.get_directory_contents(dest)
-
         for subdest in subdests:
             if subdest.is_symlink():
                 link_dest = utils.get_link_location(subdest)
                 if not utils.relpath_exists(link_dest, subdest.parent):
                     abs_link_dest = utils.abspath_relative_to_source(link_dest, subdest.parent)
-                    # print("does not exist: ", subdest, "->", link_dest)
-                    # print("abs_link_dest: ", abs_link_dest)
                     if not source_parents.isdisjoint(set(abs_link_dest.parents)):
-
-                        # print(subdest, "->", link_dest)
-                        # print(source_parents)
-                        # print(set(abs_link_dest.parents))
-                        # print("")
-
-                        # if set(source).isdisjoint(set(pathlib.Path(link_dest).parents)):
-                        # print(source_parents)
-                        # print(set(pathlib.Path(link_dest).parents))
                         self.actions.add(actions.UnLink(self.subcmd, subdest))
-
             elif not subdest.is_symlink() and subdest.is_dir():
                 self._collect_clean_actions(source, source_parents, subdest)
 
@@ -450,17 +432,18 @@ class Clean(main.AbstractBaseSubCommand):
         Concrete method to collect required actions to perform a stow
         sub-command
         """
-        not_ignored_source = []
-        for s in self.source:
-            if self.ignore.should_ignore(s):
-                self.ignore.ignore(s)
+        valid_files = []
+        for a_file in self.source:
+            if self.ignore.should_ignore(a_file):
+                self.ignore.ignore(a_file)
                 continue
             else:
-                not_ignored_source.append(s)
+                valid_files.append(a_file)
 
             if not StowInput(self.errors, self.subcmd).is_valid_collection_input(
-                    s, self.dest):
+                    a_file, self.dest):
                 return
 
-        sp = [utils.get_absolute_path(s.parent) for s in not_ignored_source]
-        self._collect_clean_actions(not_ignored_source, set(sp), self.dest)
+        file_parents = [utils.get_absolute_path(f.parent) for f in valid_files]
+        file_paretns_set = set(file_parents)
+        self._collect_clean_actions(valid_files, file_paretns_set, self.dest)

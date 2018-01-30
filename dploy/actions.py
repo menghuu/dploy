@@ -3,9 +3,9 @@ This module contains the actions that are combined to perform dploy's sub
 commands
 """
 
+import os
 from collections import defaultdict
 from dploy import utils
-import os
 
 
 class Actions():
