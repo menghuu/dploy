@@ -8,6 +8,7 @@ from dploy import actions
 from dploy import utils
 from dploy import error
 from dploy import main
+from dploy import ignore
 
 
 # pylint: disable=too-few-public-methods
@@ -384,10 +385,10 @@ class Clean(main.AbstractBaseSubCommand):
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self, source, dest, is_silent, is_dry_run,
-                 ignore_patterns):
+    def __init__(self, source, dest, is_silent, is_dry_run, ignore_patterns):
         self.source = [pathlib.Path(s) for s in source]
         self.dest = pathlib.Path(dest)
+        self.ignore_patterns = ignore_patterns
         super().__init__("clean", source, dest, is_silent, is_dry_run,
                          ignore_patterns)
 
@@ -434,6 +435,7 @@ class Clean(main.AbstractBaseSubCommand):
         """
         valid_files = []
         for a_file in self.source:
+            self.ignore = ignore.Ignore(self.ignore_patterns, a_file)
             if self.ignore.should_ignore(a_file):
                 self.ignore.ignore(a_file)
                 continue
