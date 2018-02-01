@@ -3,7 +3,6 @@ This module contains the actions that are combined to perform dploy's sub
 commands
 """
 
-import os
 from collections import defaultdict
 from dploy import utils
 
@@ -171,7 +170,7 @@ class UnLink(AbstractBaseAction):
 
     def __repr__(self):
         return "dploy {subcmd}: unlink {target} => {source}".format(
-            subcmd=self.subcmd, target=self.target, source=os.readlink(str(self.target)))
+            subcmd=self.subcmd, target=self.target, source=utils.readlink(self.target))
 
 
 class MakeDirectory(AbstractBaseAction):

@@ -105,27 +105,21 @@ def is_directory_executable(directory):
     return os.access(str(directory), os.X_OK)
 
 
-def readlink(path):
+def readlink(path, absolute_target=False):
     """
-    get the target of a symbolic link passed as a pathlib.Path object
+    get the target of a symbolic link passed as a pathlib.Path object and
+    provide the option to return an absolute path even if the link target is
+    relative.
 
-    Note: we can't use pathlib.Path.resolve because it produces an absolute path
-    and it doesn't work for broken links and either raises FileNotFoundError
-    (Python <3.5)
+    Note: we can't use pathlib.Path.resolve because it doesn't work for broken
+    links and raises FileNotFoundError in (Python <3.5) and always returns a
+    relative path
+
     """
-    return pathlib.Path(os.readlink(str(path)))
-
-
-def resolve_relative(path, source):
-    """
-    Given passed as a relative path pathlib.Path object and source directory
-    pathlib.Path object return a absolute path that is the resolved relative
-    path relative to a source directory
-    """
-    if not os.path.isabs(str(source)):
-        raise ValueError("'{source}' is not and absolute path".format(source=source))
-    elif not os.path.isdir(str(source)):
-        raise ValueError("'{source}' is not a directory".format(source=source))
-
-    abs_path = os.path.join(str(source), str(path))
-    return pathlib.Path(os.path.abspath(str(abs_path)))
+    link_target = os.readlink(str(path))
+    path_dir = os.path.dirname(str(path))
+    if not os.path.isabs(link_target):
+        link_target_abs = os.path.join(path_dir, link_target)
+    if absolute_target:
+        return pathlib.Path(link_target_abs)
+    return pathlib.Path(link_target)
