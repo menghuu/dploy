@@ -416,16 +416,16 @@ class Clean(main.AbstractBaseSubCommand):
 
         return contents
 
-    def _collect_clean_actions(self, source, source_parents, dest):
+    def _collect_clean_actions(self, source, source_names, dest):
         subdests = utils.get_directory_contents(dest)
         for subdest in subdests:
             if subdest.is_symlink():
                 link_target = utils.readlink(subdest, absolute_target=True)
                 if (not link_target.exists() and not
-                        source_parents.isdisjoint(set(link_target.parents))):
+                        source_names.isdisjoint(set(link_target.parents))):
                     self.actions.add(actions.UnLink(self.subcmd, subdest))
             elif subdest.is_dir():
-                self._collect_clean_actions(source, source_parents, subdest)
+                self._collect_clean_actions(source, source_names, subdest)
 
     def _check_for_other_actions(self):
         """
@@ -445,6 +445,8 @@ class Clean(main.AbstractBaseSubCommand):
                     a_file, self.dest):
                 return
 
-        file_parents = [utils.get_absolute_path(f.parent) for f in valid_files]
-        file_paretns_set = set(file_parents)
-        self._collect_clean_actions(valid_files, file_paretns_set, self.dest)
+        # NOTE: an option to make clean more aggressive is to change f.name to
+        # f.parent this could a be a good --option
+        files_names = [utils.get_absolute_path(f.name) for f in valid_files]
+        files_names_set = set(files_names)
+        self._collect_clean_actions(valid_files, files_names_set, self.dest)
