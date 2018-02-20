@@ -1,5 +1,5 @@
 """
-Tests for the stow stub command
+Tests for the stow sub command
 """
 # pylint: disable=missing-docstring
 # disable lint errors for function names longer that 30 characters
