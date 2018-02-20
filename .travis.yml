@@ -24,4 +24,4 @@ os:
 install:
   - pip install --requirement requirements.txt
 
-script: inv
+script: invoke all
