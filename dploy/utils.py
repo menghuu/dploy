@@ -118,9 +118,8 @@ def readlink(path, absolute_target=False):
     """
     link_target = os.readlink(str(path))
     path_dir = os.path.dirname(str(path))
-    # error here link_target_abs local variable biz
-    if not os.path.isabs(link_target):
-        link_target_abs = os.path.join(path_dir, link_target)
     if absolute_target:
-        return pathlib.Path(link_target_abs)
+        if not os.path.isabs(link_target):
+            link_target = os.path.join(path_dir, link_target)
+        return pathlib.Path(link_target)
     return pathlib.Path(link_target)
