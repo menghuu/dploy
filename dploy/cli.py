@@ -13,12 +13,11 @@ def add_ignore_argument(parser):
     """
     adds the ignore argument to a subcmd parser
     """
-    parser.add_argument(
-        '--ignore',
-        dest='ignore_patterns',
-        action='append',
-        default=None,
-        help='glob pattern used to ignore directories')
+    parser.add_argument('--ignore',
+                        dest='ignore_patterns',
+                        action='append',
+                        default=None,
+                        help='glob pattern used to ignore directories')
 
 
 def create_parser():
@@ -31,34 +30,35 @@ def create_parser():
         '--version',
         action='version',
         version='%(prog)s {version}'.format(version=version.__version__))
-    parser.add_argument(
-        '--silent',
-        dest='is_silent',
-        action='store_true',
-        help='suppress all output')
-    parser.add_argument(
-        '--dry-run',
-        dest='is_dry_run',
-        action='store_true',
-        help='show what would be done without doing it')
+    parser.add_argument('--silent',
+                        dest='is_silent',
+                        action='store_true',
+                        help='suppress all output')
+    parser.add_argument('--dry-run',
+                        dest='is_dry_run',
+                        action='store_true',
+                        help='show what would be done without doing it')
 
     sub_parsers = parser.add_subparsers(dest="subcmd")
 
     stow_parser = sub_parsers.add_parser('stow')
-    stow_parser.add_argument(
-        'source', nargs='+', help='source directory to stow')
+    stow_parser.add_argument('source',
+                             nargs='+',
+                             help='source directory to stow')
     stow_parser.add_argument('dest', help='destination path to stow into')
     add_ignore_argument(stow_parser)
 
     unstow_parser = sub_parsers.add_parser('unstow')
-    unstow_parser.add_argument(
-        'source', nargs='+', help='source directory to unstow from')
+    unstow_parser.add_argument('source',
+                               nargs='+',
+                               help='source directory to unstow from')
     unstow_parser.add_argument('dest', help='destination path to unstow')
     add_ignore_argument(unstow_parser)
 
     clean_parser = sub_parsers.add_parser('clean')
-    clean_parser.add_argument(
-        'source', nargs='+', help='source directory to clean from')
+    clean_parser.add_argument('source',
+                              nargs='+',
+                              help='source directory to clean from')
     clean_parser.add_argument('dest', help='destination path to clean')
     add_ignore_argument(clean_parser)
 
@@ -91,16 +91,13 @@ def run(arguments=None):
 
         try:
             subcmd = subcmd_map[args.subcmd]
-            subcmd(
-                args.source,
-                args.dest,
-                is_silent=args.is_silent,
-                is_dry_run=args.is_dry_run,
-                ignore_patterns=args.ignore_patterns)
-        # except (ValueError, PermissionError, FileNotFoundError,
-        #         NotADirectoryError):
-        #     sys.exit(1)
-        except KeyError:
+            subcmd(args.source,
+                   args.dest,
+                   is_silent=args.is_silent,
+                   is_dry_run=args.is_dry_run,
+                   ignore_patterns=args.ignore_patterns)
+        except DployError:
+            sys.exit(1)
             parser.print_help()
 
     except (KeyboardInterrupt) as error:

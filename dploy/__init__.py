@@ -17,7 +17,10 @@ def stow(sources, dest, is_silent=True, is_dry_run=False,
     stowcmd.Stow(sources, dest, is_silent, is_dry_run, ignore_patterns)
 
 
-def unstow(sources, dest, is_silent=True, is_dry_run=False,
+def unstow(sources,
+           dest,
+           is_silent=True,
+           is_dry_run=False,
            ignore_patterns=None):
     """
     sub command unstow
@@ -25,7 +28,10 @@ def unstow(sources, dest, is_silent=True, is_dry_run=False,
     stowcmd.UnStow(sources, dest, is_silent, is_dry_run, ignore_patterns)
 
 
-def clean(sources, dest, is_silent=True, is_dry_run=False,
+def clean(sources,
+          dest,
+          is_silent=True,
+          is_dry_run=False,
           ignore_patterns=None):
     """
     sub command clean

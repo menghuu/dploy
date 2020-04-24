@@ -32,7 +32,8 @@ def test_clean_after_stow_removing_invalid_link_from_source(source_a, dest):
         '..', 'source_a', 'aaa')
 
 
-def test_clean_after_stow_not_removing_invalid_link_from_other_source(source_a, dest):
+def test_clean_after_stow_not_removing_invalid_link_from_other_source(
+        source_a, dest):
     dploy.stow([source_a], dest)
     broken = os.path.join('..', 'source_b', 'bbb')
     dest_path = os.path.join(dest, 'bbb')

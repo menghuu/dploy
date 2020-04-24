@@ -14,7 +14,6 @@ class Input():
     """
     Input validator abstract base class
     """
-
     def __init__(self, errors, subcmd):
         self.errors = errors
         self.subcmd = subcmd

@@ -42,8 +42,8 @@ class AbstractBaseStow(main.AbstractBaseSubCommand):
         except PermissionError:
             self.errors.add(error.PermissionDenied(self.subcmd, directory))
         except FileNotFoundError:
-            self.errors.add(
-                error.NoSuchFileOrDirectory(self.subcmd, directory))
+            self.errors.add(error.NoSuchFileOrDirectory(
+                self.subcmd, directory))
         except NotADirectoryError:
             self.errors.add(error.NoSuchDirectory(self.subcmd, directory))
 
@@ -309,7 +309,6 @@ class StowInput(main.Input):
     """
     Input validator for the link command
     """
-
     def _is_valid_dest(self, dest):
         """
         Check if the test argument is valid
@@ -409,8 +408,8 @@ class Clean(main.AbstractBaseSubCommand):
         except PermissionError:
             self.errors.add(error.PermissionDenied(self.subcmd, directory))
         except FileNotFoundError:
-            self.errors.add(
-                error.NoSuchFileOrDirectory(self.subcmd, directory))
+            self.errors.add(error.NoSuchFileOrDirectory(
+                self.subcmd, directory))
         except NotADirectoryError:
             self.errors.add(error.NoSuchDirectory(self.subcmd, directory))
 
@@ -421,8 +420,8 @@ class Clean(main.AbstractBaseSubCommand):
         for subdest in subdests:
             if subdest.is_symlink():
                 link_target = utils.readlink(subdest, absolute_target=True)
-                if (not link_target.exists() and not
-                        source_names.isdisjoint(set(link_target.parents))):
+                if (not link_target.exists() and
+                        not source_names.isdisjoint(set(link_target.parents))):
                     self.actions.add(actions.UnLink(self.subcmd, subdest))
             elif subdest.is_dir():
                 self._collect_clean_actions(source, source_names, subdest)
@@ -441,8 +440,9 @@ class Clean(main.AbstractBaseSubCommand):
             else:
                 valid_files.append(a_file)
 
-            if not StowInput(self.errors, self.subcmd).is_valid_collection_input(
-                    a_file, self.dest):
+            if not StowInput(self.errors,
+                             self.subcmd).is_valid_collection_input(
+                                 a_file, self.dest):
                 return
 
         # NOTE: an option to make clean more aggressive is to change f.name to

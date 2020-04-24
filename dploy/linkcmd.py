@@ -59,7 +59,6 @@ class LinkInput(main.Input):
     """
     Input validator for the link command
     """
-
     def _is_valid_dest(self, dest):
         if not dest.parent.exists():
             self.errors.add(

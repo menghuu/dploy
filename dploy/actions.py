@@ -11,7 +11,6 @@ class Actions():
     """
     A class that collects and executes action objects
     """
-
     def __init__(self, is_silent, is_dry_run):
         self.actions = []
         self.is_silent = is_silent
@@ -75,7 +74,6 @@ class AbstractBaseAction():
     """
     An abstract base class that define the interface for actions
     """
-
     def __init__(self):
         pass
 
@@ -91,7 +89,6 @@ class SymbolicLink(AbstractBaseAction):
     """
     Action to create a symbolic link relative to the source of the link
     """
-
     def __init__(self, subcmd, source, dest):
         super().__init__()
         self.source = source
@@ -112,7 +109,6 @@ class AlreadyLinked(AbstractBaseAction):
     """
     Action to used to print an already linked message
     """
-
     def __init__(self, subcmd, source, dest):
         super().__init__()
         self.source = source
@@ -133,7 +129,6 @@ class AlreadyUnlinked(AbstractBaseAction):
     """
     Action to used to print an already unlinked message
     """
-
     def __init__(self, subcmd, source, dest):
         super().__init__()
         self.source = source
@@ -154,7 +149,6 @@ class UnLink(AbstractBaseAction):
     """
     Action to unlink a symbolic link
     """
-
     def __init__(self, subcmd, target):
         super().__init__()
         self.target = target
@@ -164,13 +158,15 @@ class UnLink(AbstractBaseAction):
         if not self.target.is_symlink():
             # pylint: disable=line-too-long
             raise RuntimeError(
-                'dploy detected and aborted an attempt to unlink a non-symlink {target} this is a bug and should be reported'.format(target=self.target)
-            )
+                'dploy detected and aborted an attempt to unlink a non-symlink {target} this is a bug and should be reported'
+                .format(target=self.target))
         self.target.unlink()
 
     def __repr__(self):
         return "dploy {subcmd}: unlink {target} => {source}".format(
-            subcmd=self.subcmd, target=self.target, source=utils.readlink(self.target))
+            subcmd=self.subcmd,
+            target=self.target,
+            source=utils.readlink(self.target))
 
 
 class MakeDirectory(AbstractBaseAction):
@@ -178,7 +174,6 @@ class MakeDirectory(AbstractBaseAction):
     """
     Action to create a directory
     """
-
     def __init__(self, subcmd, target):
         super().__init__()
         self.target = target
@@ -197,7 +192,6 @@ class RemoveDirectory(AbstractBaseAction):
     """
     Action to remove a directory
     """
-
     def __init__(self, subcmd, target):
         super().__init__()
         self.target = target

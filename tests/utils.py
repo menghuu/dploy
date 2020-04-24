@@ -42,7 +42,6 @@ class ChangeDirectory:
     """
     Context manager for changing the current working directory
     """
-
     def __init__(self, new_path):
         self.new_path = os.path.expanduser(new_path)
         self.saved_path = os.getcwd()
@@ -92,10 +91,3 @@ def remove_execute_permission(path):
     """
     mode = os.stat(path)[stat.ST_MODE]
     os.chmod(path, mode & ~stat.S_IXUSR & ~stat.S_IXGRP & ~stat.S_IXOTH)
-
-
-def is_subcmd_error_message(subcmd, exception):
-    """
-    change users permissions to a path to read only
-    """
-    return "dploy {subcmd}:".format(subcmd=subcmd) in str(exception.value)

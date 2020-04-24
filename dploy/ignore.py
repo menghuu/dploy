@@ -10,7 +10,6 @@ class Ignore():
     Handles ignoring of files via glob patterns either passed in directly in or
     in a specified ignore file.
     """
-
     def __init__(self, patterns, source):
         if patterns is None:
             input_patterns = []

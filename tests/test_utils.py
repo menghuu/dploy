@@ -16,7 +16,8 @@ def test_readlink_with_broken_absolute_target(dest):
     dest_path = os.path.join(dest, 'bbb')
     os.symlink(target, dest_path)
     assert utils.readlink(dest_path) == pathlib.Path(target)
-    assert utils.readlink(dest_path, absolute_target=True) == pathlib.Path(target)
+    assert utils.readlink(dest_path,
+                          absolute_target=True) == pathlib.Path(target)
 
 
 def test_readlink_with_broken_relative_target(dest):
@@ -24,8 +25,9 @@ def test_readlink_with_broken_relative_target(dest):
     dest_path = os.path.join(dest, 'bbb')
     os.symlink(target, dest_path)
     assert utils.readlink(dest_path) == pathlib.Path(target)
-    assert (utils.readlink(dest_path, absolute_target=True)
-            == pathlib.Path(dest) / pathlib.Path(target))
+    assert (utils.readlink(dest_path,
+                           absolute_target=True) == pathlib.Path(dest) /
+            pathlib.Path(target))
 
 
 def test_readlink_with_relative_target(dest, source_a):
@@ -36,8 +38,9 @@ def test_readlink_with_relative_target(dest, source_a):
     dest_path = os.path.join(dest, 'bbb')
     os.symlink(target, dest_path)
     assert utils.readlink(dest_path) == pathlib.Path(target)
-    assert (utils.readlink(dest_path, absolute_target=True) ==
-            pathlib.Path(dest) / pathlib.Path(target))
+    assert (utils.readlink(dest_path,
+                           absolute_target=True) == pathlib.Path(dest) /
+            pathlib.Path(target))
     assert utils.readlink(dest_path, absolute_target=True).exists()
 
 
@@ -46,6 +49,7 @@ def test_readlink_with_absolute_target(dest, source_a):
     dest_path = os.path.join(dest, 'bbb')
     os.symlink(target, dest_path)
     assert utils.readlink(dest_path) == pathlib.Path(target)
-    assert utils.readlink(dest_path, absolute_target=True) == pathlib.Path(target)
+    assert utils.readlink(dest_path,
+                          absolute_target=True) == pathlib.Path(target)
     assert utils.readlink(dest_path, absolute_target=True).exists()
     assert utils.readlink(dest_path).exists()
