@@ -4,5 +4,7 @@ ignore =
     E501,
     # line break before binary operator
     W503,
+    # line break after binary operator
+    W504,
     # undefined name, let pylint handle this
     F821

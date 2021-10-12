@@ -1,4 +1,4 @@
-pathlib>=1.0.1 # only required for python versions <3.4
+pathlib>=1.0.1; python_version < '3.4'
 # development
 invoke>=0.13.0
 virtualenv>=15.0.3

@@ -7,6 +7,7 @@ import argparse
 from dploy import linkcmd
 from dploy import stowcmd
 from dploy import version
+from dploy.error import DployError
 
 
 def add_ignore_argument(parser):
