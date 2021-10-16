@@ -10,7 +10,18 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Topic :: Utilities"
 ]
-include = ["CHANGELOG.md", "invoke.yaml"]
+packages = [
+    { include = "dploy" },
+    { include = "tests" },
+]
+include = [
+    ".pylintrc",
+    "CHANGELOG.md",
+    "conftest.py",
+    "invoke.yaml",
+    "requirements.txt",
+    "tasks.py",
+]
 
 [tool.poetry.scripts]
 dploy = "dploy.__main__:main"
