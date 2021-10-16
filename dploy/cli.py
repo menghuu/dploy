@@ -90,8 +90,13 @@ def run(arguments=None):
         else:
             args = parser.parse_args(arguments)
 
-        try:
+        if args.subcmd in subcmd_map:
             subcmd = subcmd_map[args.subcmd]
+        else:
+            parser.print_help()
+            sys.exit(0)
+        
+        try:
             subcmd(args.source,
                    args.dest,
                    is_silent=args.is_silent,
@@ -99,7 +104,6 @@ def run(arguments=None):
                    ignore_patterns=args.ignore_patterns)
         except DployError:
             sys.exit(1)
-            parser.print_help()
 
     except (KeyboardInterrupt) as error:
         print(error, file=sys.stderr)
