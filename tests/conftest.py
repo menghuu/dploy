@@ -3,7 +3,7 @@ Contains the fixtures used by the dploy tests
 """
 
 import pytest
-import utils
+from tests import utils
 
 
 @pytest.fixture()
