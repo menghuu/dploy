@@ -28,7 +28,6 @@ dploy = "dploy.__main__:main"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-# pathlib = { version = ">=1.0.1", python = "<3.4" }
 importlib-metadata = { version = ">=1.0.0", python = "<3.8" }
 
 [tool.poetry.dev-dependencies]
