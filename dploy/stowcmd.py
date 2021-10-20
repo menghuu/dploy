@@ -19,11 +19,9 @@ class AbstractBaseStow(main.AbstractBaseSubCommand):
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self, subcmd, source, dest, is_silent, is_dry_run,
-                 ignore_patterns):
+    def __init__(self, subcmd, source, dest, is_silent, is_dry_run, ignore_patterns):
         self.is_unfolding = False
-        super().__init__(subcmd, source, dest, is_silent, is_dry_run,
-                         ignore_patterns)
+        super().__init__(subcmd, source, dest, is_silent, is_dry_run, ignore_patterns)
 
     def _is_valid_input(self, sources, dest):
         """
@@ -42,8 +40,7 @@ class AbstractBaseStow(main.AbstractBaseSubCommand):
         except PermissionError:
             self.errors.add(error.PermissionDenied(self.subcmd, directory))
         except FileNotFoundError:
-            self.errors.add(error.NoSuchFileOrDirectory(
-                self.subcmd, directory))
+            self.errors.add(error.NoSuchFileOrDirectory(self.subcmd, directory))
         except NotADirectoryError:
             self.errors.add(error.NoSuchDirectory(self.subcmd, directory))
 
@@ -79,14 +76,12 @@ class AbstractBaseStow(main.AbstractBaseSubCommand):
             if dest.is_symlink() or self.is_unfolding:
                 self._are_same_file(source, dest)
             else:
-                self.errors.add(
-                    error.SourceIsSameAsDest(self.subcmd, dest.parent))
+                self.errors.add(error.SourceIsSameAsDest(self.subcmd, dest.parent))
 
         elif dest.is_dir() and source.is_dir:
             self._are_directories(source, dest)
         else:
-            self.errors.add(
-                error.ConflictsWithExistingFile(self.subcmd, source, dest))
+            self.errors.add(error.ConflictsWithExistingFile(self.subcmd, source, dest))
 
     def _collect_actions(self, source, dest):
         """
@@ -99,7 +94,8 @@ class AbstractBaseStow(main.AbstractBaseSubCommand):
             return
 
         if not StowInput(self.errors, self.subcmd).is_valid_collection_input(
-                source, dest):
+            source, dest
+        ):
             return
 
         sources = self.get_directory_contents(source)
@@ -122,11 +118,10 @@ class AbstractBaseStow(main.AbstractBaseSubCommand):
                 self._collect_actions_existing_dest(subsources, dest_path)
             elif dest_path.is_symlink():
                 self.errors.add(
-                    error.ConflictsWithExistingLink(self.subcmd, subsources,
-                                                    dest_path))
+                    error.ConflictsWithExistingLink(self.subcmd, subsources, dest_path)
+                )
             elif not dest_path.parent.exists() and not self.is_unfolding:
-                self.errors.add(
-                    error.NoSuchDirectory(self.subcmd, dest_path.parent))
+                self.errors.add(error.NoSuchDirectory(self.subcmd, dest_path.parent))
             else:
                 self._are_other(subsources, dest_path)
 
@@ -138,14 +133,10 @@ class Stow(AbstractBaseStow):
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self,
-                 source,
-                 dest,
-                 is_silent=True,
-                 is_dry_run=False,
-                 ignore_patterns=None):
-        super().__init__("stow", source, dest, is_silent, is_dry_run,
-                         ignore_patterns)
+    def __init__(
+        self, source, dest, is_silent=True, is_dry_run=False, ignore_patterns=None
+    ):
+        super().__init__("stow", source, dest, is_silent, is_dry_run, ignore_patterns)
 
     def _unfold(self, source, dest):
         """
@@ -185,8 +176,10 @@ class Stow(AbstractBaseStow):
                     str(self.actions.actions[i].source) for i in indices
                 ]
                 self.errors.add(
-                    error.ConflictsWithAnotherSource(self.subcmd,
-                                                     duplicate_action_sources))
+                    error.ConflictsWithAnotherSource(
+                        self.subcmd, duplicate_action_sources
+                    )
+                )
                 has_conflicts = True
 
         if has_conflicts:
@@ -227,14 +220,10 @@ class UnStow(AbstractBaseStow):
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self,
-                 source,
-                 dest,
-                 is_silent=True,
-                 is_dry_run=False,
-                 ignore_patterns=None):
-        super().__init__("unstow", source, dest, is_silent, is_dry_run,
-                         ignore_patterns)
+    def __init__(
+        self, source, dest, is_silent=True, is_dry_run=False, ignore_patterns=None
+    ):
+        super().__init__("unstow", source, dest, is_silent, is_dry_run, ignore_patterns)
 
     def _are_same_file(self, source, dest):
         """
@@ -269,8 +258,7 @@ class UnStow(AbstractBaseStow):
                     try:
                         does_item_exist = item.exists()
                     except PermissionError:
-                        self.errors.add(
-                            error.PermissionDenied(self.subcmd, item))
+                        self.errors.add(error.PermissionDenied(self.subcmd, item))
                         return
 
                     if does_item_exist and item.is_symlink():
@@ -287,14 +275,14 @@ class UnStow(AbstractBaseStow):
                 if other_links_parent_count == 1:
                     assert source_parent is not None
                     if utils.is_same_files(
-                            utils.get_directory_contents(source_parent),
-                            other_links):
+                        utils.get_directory_contents(source_parent), other_links
+                    ):
                         self._fold(source_parent, parent)
 
-                elif (other_links_parent_count == 0
-                      and not utils.is_same_file(parent, self.dest_input)):
-                    self.actions.add(
-                        actions.RemoveDirectory(self.subcmd, parent))
+                elif other_links_parent_count == 0 and not utils.is_same_file(
+                    parent, self.dest_input
+                ):
+                    self.actions.add(actions.RemoveDirectory(self.subcmd, parent))
 
     def _fold(self, source, dest):
         """
@@ -309,6 +297,7 @@ class StowInput(main.Input):
     """
     Input validator for the link command
     """
+
     def _is_valid_dest(self, dest):
         """
         Check if the test argument is valid
@@ -316,23 +305,25 @@ class StowInput(main.Input):
         result = True
 
         if not dest.is_dir():
-            self.errors.add(
-                error.NoSuchDirectoryToSubcmdInto(self.subcmd, dest))
+            self.errors.add(error.NoSuchDirectoryToSubcmdInto(self.subcmd, dest))
             result = False
         else:
             if not utils.is_directory_writable(dest):
                 self.errors.add(
-                    error.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                    error.InsufficientPermissionsToSubcmdTo(self.subcmd, dest)
+                )
                 result = False
 
             if not utils.is_directory_readable(dest):
                 self.errors.add(
-                    error.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                    error.InsufficientPermissionsToSubcmdTo(self.subcmd, dest)
+                )
                 result = False
 
             if not utils.is_directory_executable(dest):
                 self.errors.add(
-                    error.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+                    error.InsufficientPermissionsToSubcmdTo(self.subcmd, dest)
+                )
                 result = False
 
         return result
@@ -349,14 +340,14 @@ class StowInput(main.Input):
         else:
             if not utils.is_directory_readable(source):
                 self.errors.add(
-                    error.InsufficientPermissionsToSubcmdFrom(
-                        self.subcmd, source))
+                    error.InsufficientPermissionsToSubcmdFrom(self.subcmd, source)
+                )
                 result = False
 
             if not utils.is_directory_executable(source):
                 self.errors.add(
-                    error.InsufficientPermissionsToSubcmdFrom(
-                        self.subcmd, source))
+                    error.InsufficientPermissionsToSubcmdFrom(self.subcmd, source)
+                )
                 result = False
 
         return result
@@ -388,8 +379,7 @@ class Clean(main.AbstractBaseSubCommand):
         self.source = [pathlib.Path(s) for s in source]
         self.dest = pathlib.Path(dest)
         self.ignore_patterns = ignore_patterns
-        super().__init__("clean", source, dest, is_silent, is_dry_run,
-                         ignore_patterns)
+        super().__init__("clean", source, dest, is_silent, is_dry_run, ignore_patterns)
 
     def _is_valid_input(self, sources, dest):
         """
@@ -408,8 +398,7 @@ class Clean(main.AbstractBaseSubCommand):
         except PermissionError:
             self.errors.add(error.PermissionDenied(self.subcmd, directory))
         except FileNotFoundError:
-            self.errors.add(error.NoSuchFileOrDirectory(
-                self.subcmd, directory))
+            self.errors.add(error.NoSuchFileOrDirectory(self.subcmd, directory))
         except NotADirectoryError:
             self.errors.add(error.NoSuchDirectory(self.subcmd, directory))
 
@@ -420,8 +409,9 @@ class Clean(main.AbstractBaseSubCommand):
         for subdest in subdests:
             if subdest.is_symlink():
                 link_target = utils.readlink(subdest, absolute_target=True)
-                if (not link_target.exists() and
-                        not source_names.isdisjoint(set(link_target.parents))):
+                if not link_target.exists() and not source_names.isdisjoint(
+                    set(link_target.parents)
+                ):
                     self.actions.add(actions.UnLink(self.subcmd, subdest))
             elif subdest.is_dir():
                 self._collect_clean_actions(source, source_names, subdest)
@@ -440,9 +430,9 @@ class Clean(main.AbstractBaseSubCommand):
             else:
                 valid_files.append(a_file)
 
-            if not StowInput(self.errors,
-                             self.subcmd).is_valid_collection_input(
-                                 a_file, self.dest):
+            if not StowInput(self.errors, self.subcmd).is_valid_collection_input(
+                a_file, self.dest
+            ):
                 return
 
         # NOTE: an option to make clean more aggressive is to change f.name to

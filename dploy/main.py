@@ -10,10 +10,11 @@ from dploy import ignore
 
 
 # pylint: disable=too-few-public-methods
-class Input():
+class Input:
     """
     Input validator abstract base class
     """
+
     def __init__(self, errors, subcmd):
         self.errors = errors
         self.subcmd = subcmd
@@ -23,8 +24,7 @@ class Input():
         Checks if the passes in source and dest are valid
         """
         is_input_valid = True
-        if (not self._is_there_duplicate_sources(sources)
-                and self._is_valid_dest(dest)):
+        if not self._is_there_duplicate_sources(sources) and self._is_valid_dest(dest):
             for source in sources:
                 if not self._is_valid_source(source):
                     is_input_valid = False
@@ -65,14 +65,13 @@ class Input():
 
 
 # pylint: disable=too-few-public-methods
-class AbstractBaseSubCommand():
+class AbstractBaseSubCommand:
     """
     An abstract class to unify shared functionality in stow commands
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self, subcmd, sources, dest, is_silent, is_dry_run,
-                 ignore_patterns):
+    def __init__(self, subcmd, sources, dest, is_silent, is_dry_run, ignore_patterns):
         self.subcmd = subcmd
 
         self.actions = actions.Actions(is_silent, is_dry_run)

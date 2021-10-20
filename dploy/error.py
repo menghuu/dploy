@@ -3,13 +3,14 @@ All the exceptions and their messages used by the program
 """
 import sys
 
-ERROR_HEAD = 'dploy {subcmd}: can not {subcmd} '
+ERROR_HEAD = "dploy {subcmd}: can not {subcmd} "
 
 
-class Errors():
+class Errors:
     """
     A class that collects and executes action objects
     """
+
     def __init__(self, is_silent):
         self.exceptions = []
         self.is_silent = is_silent
@@ -41,7 +42,9 @@ class DployError(Exception):
 
 class SourceIsSameAsDest(DployError):
     def __init__(self, subcmd, file):
-        self.msg = ERROR_HEAD + "'{file}': A source argument is the same as the dest argument"
+        self.msg = (
+            ERROR_HEAD + "'{file}': A source argument is the same as the dest argument"
+        )
         self.msg = self.msg.format(subcmd=subcmd, file=file)
         # self.exception = ValueError(self.msg)
 
@@ -52,7 +55,7 @@ class SourceIsSameAsDest(DployError):
 class ConflictsWithAnotherSource(DployError):
     def __init__(self, subcmd, files):
         self.msg = ERROR_HEAD + "the following: Conflicts with other source {files}"
-        files_list = '\n    ' + '\n    '.join(files)
+        files_list = "\n    " + "\n    ".join(files)
         self.msg = self.msg.format(subcmd=subcmd, files=files_list)
         # self.exception = ValueError(self.msg)
 

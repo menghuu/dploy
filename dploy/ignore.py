@@ -5,11 +5,12 @@ import pathlib
 from dploy import utils
 
 
-class Ignore():
+class Ignore:
     """
     Handles ignoring of files via glob patterns either passed in directly in or
     in a specified ignore file.
     """
+
     def __init__(self, patterns, source):
         if patterns is None:
             input_patterns = []
@@ -17,7 +18,7 @@ class Ignore():
             input_patterns = patterns
         self.ignored_files = []
 
-        file = source.parent / pathlib.Path('.dploystowignore')
+        file = source.parent / pathlib.Path(".dploystowignore")
 
         self.patterns = [str(file.name)]  # ignore the ignore file
         self.patterns.extend(input_patterns)

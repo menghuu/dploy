@@ -15,14 +15,10 @@ class Link(main.AbstractBaseSubCommand):
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self,
-                 source,
-                 dest,
-                 is_silent=True,
-                 is_dry_run=False,
-                 ignore_patterns=None):
-        super().__init__("link", [source], dest, is_silent, is_dry_run,
-                         ignore_patterns)
+    def __init__(
+        self, source, dest, is_silent=True, is_dry_run=False, ignore_patterns=None
+    ):
+        super().__init__("link", [source], dest, is_silent, is_dry_run, ignore_patterns)
 
     def _is_valid_input(self, sources, dest):
         """
@@ -38,18 +34,16 @@ class Link(main.AbstractBaseSubCommand):
 
         if dest.exists():
             if utils.is_same_file(dest, source):
-                self.actions.add(
-                    actions.AlreadyLinked(self.subcmd, source, dest))
+                self.actions.add(actions.AlreadyLinked(self.subcmd, source, dest))
             else:
                 self.errors.add(
-                    error.ConflictsWithExistingFile(self.subcmd, source, dest))
+                    error.ConflictsWithExistingFile(self.subcmd, source, dest)
+                )
         elif dest.is_symlink():
-            self.errors.add(
-                error.ConflictsWithExistingLink(self.subcmd, source, dest))
+            self.errors.add(error.ConflictsWithExistingLink(self.subcmd, source, dest))
 
         elif not dest.parent.exists():
-            self.errors.add(
-                error.NoSuchDirectoryToSubcmdInto(self.subcmd, dest.parent))
+            self.errors.add(error.NoSuchDirectoryToSubcmdInto(self.subcmd, dest.parent))
 
         else:
             self.actions.add(actions.SymbolicLink(self.subcmd, source, dest))
@@ -59,16 +53,16 @@ class LinkInput(main.Input):
     """
     Input validator for the link command
     """
+
     def _is_valid_dest(self, dest):
         if not dest.parent.exists():
-            self.errors.add(
-                error.NoSuchFileOrDirectory(self.subcmd, dest.parent))
+            self.errors.add(error.NoSuchFileOrDirectory(self.subcmd, dest.parent))
             return False
 
-        elif (not utils.is_file_writable(dest.parent)
-              or not utils.is_directory_writable(dest.parent)):
-            self.errors.add(
-                error.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
+        elif not utils.is_file_writable(dest.parent) or not utils.is_directory_writable(
+            dest.parent
+        ):
+            self.errors.add(error.InsufficientPermissionsToSubcmdTo(self.subcmd, dest))
             return False
 
         return True
@@ -78,8 +72,9 @@ class LinkInput(main.Input):
             self.errors.add(error.NoSuchFileOrDirectory(self.subcmd, source))
             return False
 
-        elif (not utils.is_file_readable(source)
-              or not utils.is_directory_readable(source)):
+        elif not utils.is_file_readable(source) or not utils.is_directory_readable(
+            source
+        ):
             self.errors.add(error.InsufficientPermissions(self.subcmd, source))
             return False
 
