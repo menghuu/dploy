@@ -116,6 +116,8 @@ def test_unstow_with_write_only_source(source_a, dest):
                        match=message):
         dploy.unstow([source_a], dest)
 
+    utils.add_read_permission(source_a)
+
 
 def test_unstow_with_dest_with_no_executue_permissions(source_a, dest):
     dploy.stow([source_a], dest)

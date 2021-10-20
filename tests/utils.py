@@ -77,6 +77,14 @@ def remove_read_permission(path):
     os.chmod(path, mode & ~stat.S_IRUSR & ~stat.S_IRGRP & ~stat.S_IROTH)
 
 
+def add_read_permission(path):
+    """
+    change users permissions to a path to write only
+    """
+    mode = os.stat(path)[stat.ST_MODE]
+    os.chmod(path, mode | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+
+
 def remove_write_permission(path):
     """
     change users permissions to a path to read only
