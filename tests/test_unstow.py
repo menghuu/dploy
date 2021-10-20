@@ -10,7 +10,7 @@ import os
 import pytest
 import dploy
 from dploy import error
-import utils
+from tests import utils
 
 SUBCMD = 'unstow'
 
