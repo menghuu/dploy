@@ -124,4 +124,4 @@ def add_user_permissions(path: os.PathLike) -> None:
 
     mode = stat.S_IMODE(os.lstat(path).st_mode)
     if mode & wanted != wanted:
-        os.lchmod(path, mode | wanted)
+        os.chmod(path, mode | wanted, follow_symlinks=False)
