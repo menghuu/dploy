@@ -100,3 +100,28 @@ def remove_execute_permission(path):
     """
     mode = os.stat(path)[stat.ST_MODE]
     os.chmod(path, mode & ~stat.S_IXUSR & ~stat.S_IXGRP & ~stat.S_IXOTH)
+
+
+def restore_tree_permissions(top_directory: os.PathLike) -> None:
+    """Reset users's permissions on a directory tree."""
+    if not os.path.isdir(top_directory):
+        raise NotADirectoryError(f"Invalid directory: {top_directory}")
+
+    add_user_permissions(top_directory)
+    for current_dir, dirs, files in os.walk(top_directory):
+        for file_name in dirs + files:
+            add_user_permissions(os.path.join(current_dir, file_name))
+
+
+def add_user_permissions(path: os.PathLike) -> None:
+    """Restore owner's file/dir permissions."""
+    if not os.path.exists(path) and not os.path.islink(path):
+        raise FileNotFoundError(f"Invalid file or directory: {path}")
+
+    wanted = stat.S_IREAD | stat.S_IWRITE
+    if os.path.isdir(path):
+        wanted |= stat.S_IEXEC
+
+    mode = stat.S_IMODE(os.lstat(path).st_mode)
+    if mode & wanted != wanted:
+        os.chmod(path, mode | wanted, follow_symlinks=False)

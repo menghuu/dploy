@@ -31,7 +31,8 @@ def source_a(tmpdir):
         },
     ]
     utils.create_tree(tree)
-    return name
+    yield name
+    utils.restore_tree_permissions(tmpdir)
 
 
 @pytest.fixture()
@@ -59,7 +60,8 @@ def source_b(tmpdir):
         },
     ]
     utils.create_tree(tree)
-    return name
+    yield name
+    utils.restore_tree_permissions(tmpdir)
 
 
 @pytest.fixture()
@@ -87,7 +89,8 @@ def source_d(tmpdir):
         },
     ]
     utils.create_tree(tree)
-    return name
+    yield name
+    utils.restore_tree_permissions(tmpdir)
 
 
 @pytest.fixture()
@@ -115,7 +118,8 @@ def source_c(tmpdir):
         },
     ]
     utils.create_tree(tree)
-    return name
+    yield name
+    utils.restore_tree_permissions(tmpdir)
 
 
 @pytest.fixture()
@@ -132,7 +136,8 @@ def source_only_files(tmpdir):
         }
     ]
     utils.create_tree(tree)
-    return name
+    yield name
+    utils.restore_tree_permissions(tmpdir)
 
 
 @pytest.fixture()
@@ -142,7 +147,8 @@ def dest(tmpdir):
     """
     name = str(tmpdir.join("dest"))
     utils.create_directory(name)
-    return name
+    yield name
+    utils.restore_tree_permissions(tmpdir)
 
 
 @pytest.fixture()

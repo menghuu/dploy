@@ -141,8 +141,6 @@ def test_stow_with_write_only_source(source_a, source_c, dest):
     with pytest.raises(error.InsufficientPermissionsToSubcmdFrom, match=message):
         dploy.stow([source_a, source_c], dest)
 
-    utils.add_read_permission(source_a)  # cleanup
-
 
 def test_stow_with_source_with_no_executue_permissions(source_a, source_c, dest):
     utils.remove_execute_permission(source_a)
