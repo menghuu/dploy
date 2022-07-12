@@ -14,6 +14,8 @@ organized by order of importance.
 
 ### Fixed
 
+- Fixed pytest.
+
 ### Removed
 
 ## [0.1.2] - 2017-10-26
